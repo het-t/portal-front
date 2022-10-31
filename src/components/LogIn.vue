@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 import { mapActions } from 'vuex'
     export default {
         name: 'LogIn',
@@ -26,21 +26,23 @@ import { mapActions } from 'vuex'
         methods: {
             ...mapActions(['rights']),
             login() {
-                axios.post('api/login', {
-                    email: this.email,
-                    password: this.pwd
-                }, {
-                    withCredentials: true,
-                })
-                .then((results) => {
-                    console.log("login() LogIn.vue ",results?.data ,results?.data == 1)
-                    if (results?.data == 1) {
-                        this.$router.push({name: 'u'})
-                    }
-                    else {
-                        this.$router.push({name: 'login'})
-                    }
-                })
+                this.$router.push({name: 'u'})
+
+                // axios.post('api/login', {
+                //     email: this.email,
+                //     password: this.pwd
+                // }, {
+                //     withCredentials: true,
+                // })
+                // .then((results) => {
+                //     console.log("login() LogIn.vue ",results?.data ,results?.data == 1)
+                //     if (results?.data == 1) {
+                //         this.$router.push({name: 'u'})
+                //     }
+                //     else {
+                //         this.$router.push({name: 'login'})
+                //     }
+                // })
             },
             clear() {
                 this.email = ''
