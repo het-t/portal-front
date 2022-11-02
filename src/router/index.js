@@ -39,13 +39,13 @@ const routes = [{
           name: 'users_list',
           component: () => import('../components/UserList.vue'),
         }, 
-        {
-          path: 'edit/:editUserId',
-          name: 'edit_user',
-          meta: {protected: true},
-          component: () => import('../components/UserCreate.vue'),
-          props: true,
-        }
+        // {
+        //   path: 'edit/:editUserId',
+        //   name: 'edit_user',
+        //   meta: {protected: true},
+        //   component: () => import('../components/UserCreate.vue'),
+        //   props: true,
+        // }
       ]
     }, {
       path: 'roles',

@@ -10,26 +10,37 @@
 
             <div class="mr16 ml16 mt16">
                 <table>
-                    <tr>
-                        <th></th>
+                    <tr class="tr">
+                        <!-- <th></th> -->
                         <th>title</th>
                         <th>client</th>
                         <th>progress</th>
                         <th>status</th>
                     </tr>
-                    <tr class="tr" v-for="(task,index) of tasksList" :key="index">
-                        <td class="dots">
-                            <router-link :to='{name:"edit_task", state: {taskId: task.taskId}}'>
-                                <img src="../assets/icons/dots-icon.png" alt="" class="dots">
-                            </router-link>
-                        </td>
-                        <td>{{task.taskTitle}}</td>
-                        <td>{{task.taskClient}}</td>
-                        <td>
-                            <tasks-progress />
-                        </td>
-                        <td>{{task.taskStatus}}</td>
-                    </tr>
+
+                    <template v-for="(task, index) of tasksList" :key="task.taskId">
+                        <tr class="tr">
+                            <!-- <td >
+                            </td> -->
+                            <td class="flex">
+                                <div class="dots">
+                                    <img @click="editTask('row'+index)" src="../assets/icons/dots-icon.png" alt="" class="dots">
+                                </div>
+                                <!-- {{task.taskTitle}} -->
+                                {{task.taskTitle}}
+                            </td>
+                            <td>{{task.taskClient}}</td>
+                            <td>
+                                <tasks-progress/>
+                            </td>
+                            <td>{{task.taskStatus}}</td>
+                        </tr>
+
+                        <tr class="tr tr-hidden hide" :ref="'row'+index">
+                            <tasks-create :taskId="task.taskId"/>
+                        </tr>
+                    </template>
+
                 </table>
             </div>
         </div>
@@ -37,6 +48,7 @@
 </template>
 
 <script>
+import TasksCreate from './TasksCreate.vue';
 import TasksProgress from './TasksProgress.vue';
     export default {
     name: "TasksList",
@@ -58,12 +70,34 @@ import TasksProgress from './TasksProgress.vue';
                 taskStatus: "done"
             }];
     },
-    components: { TasksProgress }
+    methods: {
+        editTask(rowIndex) {
+            const show = this.$refs[rowIndex][0].classList.contains('hide')
+            if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
+            else this.$refs[rowIndex][0].classList.add('hide')
+        }
+    },
+    components: { TasksProgress, TasksCreate }
 }
 </script>
 
 <style scoped>
     .tr:hover .dots img {
         display: inline !important;
+    }
+    .tr {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr 1fr;    
+    }
+    .tr-hidden {
+        grid-template-columns: auto;
+        grid-column: 1/-1;
+    }
+    .hide {
+        display: none !important;
+    }
+    .flex {
+        display: flex;
+        column-gap: 12px;
     }
 </style>

@@ -168,6 +168,7 @@
 import { mapActions } from 'vuex'
     export default {
         name: 'TasksCreate',
+        props: ['taskId'],
         data() {
             return {
                 tableHead: 'create task',
@@ -224,8 +225,8 @@ import { mapActions } from 'vuex'
         methods: {
             ...mapActions(['promptMessage']),
             getTaskStatus(subTasks) {
-                let o = subTasks.find(o => o.subTaskStatus != "done")
-                typeof o == 'undefined' ? this.taskStatus = 'unbilled' : this.taskStatus = o.subTaskStatus 
+                let o = subTasks?.find(o => o?.subTaskStatus != "done")
+                typeof o == 'undefined' ? this.taskStatus = 'unbilled' : this.taskStatus = o?.subTaskStatus 
             },
             addSubTask() {
                 console.log("subtasks", this.subTasks)
@@ -269,6 +270,20 @@ import { mapActions } from 'vuex'
                 this.taskCoordinator = taskData?.taskCoordinator
                 this.getTaskStatus(this.subTasks)
                 console.log("fetch data of task ", window.history.state.taskId)
+            }
+            else if (this.taskId != '') {
+                console.log(this.taslId)
+                this.tableHead = 'edit task'         
+                let taskData = this.taskData.find(o => o.taskId == this.taskId)
+                console.log("taskId to edit ",this.taskId)
+                this.taskTitle = taskData?.taskTitle
+                this.taskClient = taskData?.taskClient
+                this.taskTasks = taskData?.taskTasks
+                this.taskRepeat = taskData?.taskRepeat
+                this.taskRepeatOn = taskData?.taskRepeatOn
+                this.subTasks = taskData?.taskSubTasks
+                this.taskCoordinator = taskData?.taskCoordinator
+                this.getTaskStatus(this.subTasks)
             }
         }
     }
