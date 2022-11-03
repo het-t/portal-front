@@ -39,13 +39,13 @@ const routes = [{
           name: 'users_list',
           component: () => import('../components/UserList.vue'),
         }, 
-        // {
-        //   path: 'edit/:editUserId',
-        //   name: 'edit_user',
-        //   meta: {protected: true},
-        //   component: () => import('../components/UserCreate.vue'),
-        //   props: true,
-        // }
+        {
+          path: 'edit/:editUserId',
+          name: 'edit_user',
+          meta: {protected: true},
+          component: () => import('../components/UserCreate.vue'),
+          props: true,
+        }
       ]
     }, {
       path: 'roles',
@@ -107,12 +107,14 @@ const routes = [{
         path: 'create-task',
         name: 'create_task',
         component: () => import('../components/TasksCreate.vue')
-      }, {
-        path: 'edit-task',
-        name: 'edit_task',
-        component: () => import('../components/TasksCreate.vue'),
-        props: true,        
-      }]
+      }
+      //, {
+      //   path: 'edit-task',
+      //   name: 'edit_task',
+      //   component: () => import('../components/TasksCreate.vue'),
+      //   props: true,        
+      // }
+      ]
     }, {
       path: 'my-tasks',
       name: 'my_tasks',

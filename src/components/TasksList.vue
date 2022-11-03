@@ -86,6 +86,7 @@ import TasksProgress from './TasksProgress.vue';
         display: inline !important;
     }
     .tr {
+        padding: 0;
         display: grid;
         grid-template-columns: 2fr 1fr 1fr 1fr 1fr;    
     }
@@ -99,5 +100,8 @@ import TasksProgress from './TasksProgress.vue';
     .flex {
         display: flex;
         column-gap: 12px;
+    }
+    .tr.tr-hidden {
+        padding: 0;
     }
 </style>

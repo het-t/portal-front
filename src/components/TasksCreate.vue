@@ -6,7 +6,12 @@
                 <h5 class="table-head m0">{{tableHead}}</h5>
             </div>
 
-            <div class="fg-wrapper mt16 mb16 pr16 pl16">
+            <div class="table-tabs">
+                <button @click="openTab($event, 'details')" ref="defaultTab" class="button neutral tab">details</button>
+                <button @click="openTab($event, 'logs')" class="button neutral tab">logs</button>
+            </div>
+
+            <div class="fg-wrapper mt16 mb16 pr16 pl16 hide" ref="details">
                 <div class="fg pl16">
                     <form class="mb16">
                         <div>
@@ -136,7 +141,7 @@
 
         </div>
 
-        <div class="card mt16">
+        <div class="card hide" ref="logs">
             <div class="card-head m0 pb16 pt16 pr16 pl16">
                 <h5 class="table-head m0">logs</h5>
             </div>
@@ -224,6 +229,16 @@ import { mapActions } from 'vuex'
         },
         methods: {
             ...mapActions(['promptMessage']),
+            openTab(e, newTab) {
+                var tabs = document.getElementsByClassName('tab')
+                let curTab = [...tabs].find(tab => tab.classList.contains('tab-open') == true)
+                curTab?.classList.remove('tab-open')
+
+                e?.target?.classList?.add('tab-open')
+                this.$refs['details'].classList.add('hide')
+                this.$refs['logs'].classList.add('hide')
+                this.$refs[newTab].classList.remove('hide')
+            },
             getTaskStatus(subTasks) {
                 let o = subTasks?.find(o => o?.subTaskStatus != "done")
                 typeof o == 'undefined' ? this.taskStatus = 'unbilled' : this.taskStatus = o?.subTaskStatus 
@@ -258,6 +273,7 @@ import { mapActions } from 'vuex'
             }
         },
         created() {
+            console.log("task created props", this.taskId)
             if (window.history.state.taskId != undefined){   
                 this.tableHead = 'edit task'         
                 let taskData = this.taskData.find(o => o.taskId == window.history.state.taskId)
@@ -271,7 +287,7 @@ import { mapActions } from 'vuex'
                 this.getTaskStatus(this.subTasks)
                 console.log("fetch data of task ", window.history.state.taskId)
             }
-            else if (this.taskId != '') {
+            else if (this.taskId != undefined) {
                 console.log(this.taslId)
                 this.tableHead = 'edit task'         
                 let taskData = this.taskData.find(o => o.taskId == this.taskId)
@@ -285,11 +301,29 @@ import { mapActions } from 'vuex'
                 this.taskCoordinator = taskData?.taskCoordinator
                 this.getTaskStatus(this.subTasks)
             }
+        },
+        mounted() {
+            this.$refs.defaultTab.click()
         }
     }
 </script>
 
 <style scoped>
+.table-tabs {
+    display: flex;
+}
+.tab {
+    padding: auto;
+    width: 50%;
+    background-color: white;
+    border-radius: 0;
+}
+.tab-open {
+    border: solid 1px #d2d2d2;
+}
+.tab-close {
+    background-color: red;
+}
 #save-task-template, #recurring {
     width: fit-content;
 }
