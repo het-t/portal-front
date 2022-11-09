@@ -10,15 +10,14 @@
 
             <div class="mr16 ml16 mt16">
                 <table>
-                    <tr class="tr">
-                        <!-- <th></th> -->
+                    <tr class="table-heading">
                         <th>title</th>
                         <th>client</th>
                         <th>progress</th>
                         <th>status</th>
                     </tr>
 
-                    <template v-for="(task, index) of tasksList" :key="task.taskId">
+                    <div v-for="(task, index) of tasksList" :key="task.taskId">
                         <tr class="tr">
                             <td class="flex">
                                 <div class="dots">
@@ -34,9 +33,9 @@
                         </tr>
 
                         <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
-                            <tasks-create :taskId="task.taskId" displayHead='false' :uk="index" class="tasks-create"/>
+                            <tasks-create :taskId="task.taskId" displayHead='false' :key="index" class="tasks-create"/>
                         </tr>
-                    </template>
+                    </div>
 
                 </table>
             </div>
@@ -79,13 +78,10 @@ import TasksProgress from './TasksProgress.vue';
 </script>
 
 <style scoped>
-    .tasks-create .card {
-        border: none !important;
-    }
     .tr:hover .dots img {
         display: inline !important;
     }
-    .tr {
+    .tr, .table-heading {
         padding: 0;
         display: grid;
         grid-template-columns: 2fr 1fr 1fr 1fr 1fr;    
@@ -103,5 +99,6 @@ import TasksProgress from './TasksProgress.vue';
     }
     .tr.tr-hidden {
         padding: 0;
+        border-top: 0;
     }
 </style>

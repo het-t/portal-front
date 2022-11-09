@@ -305,6 +305,9 @@ import { mapActions } from 'vuex'
 </script>
 
 <style scoped>
+.tasks-create .card {
+    border: none !important;
+}
 .table-tabs {
     display: flex;
 }
