@@ -16,26 +16,26 @@
                     <form class="mb16">
                         <div>
                             <div class="row">
-                                <label for="task-title" class="labels c1">title</label>
-                                <input v-model="taskTitle" type="text" id="task-title">
+                                <label :for="'task-title'+uk" class="labels c1">title</label>
+                                <input v-model="taskTitle" type="text" :id='"task-title"+uk'>
                             </div>
                             
                             <div class="row mt8">
-                                <label for="task-client" class="labels c1">client</label>
-                                <select @change="changeRoute($event)" v-model="taskClient" id="task-client">
+                                <label :for="'task-client'+uk" class="labels c1">client</label>
+                                <select @change="changeRoute($event)" v-model="taskClient" :id='"task-client"+uk'>
                                     <option value="/u/clients/create-client">create new client</option>
-                                    <option v-for="(client, index) in clientList" :value="client" :key="index">{{client}}</option>
+                                    <option v-for="(client, index) in clientList" :value="client" :key="index+uk">{{client}}</option>
                                 </select>
                             </div>
 
                             <div class="row mt8">
-                                <label for="task-status" class="labels c1">status</label>
-                                <input v-model="taskStatus" type="text" id="task-status">
+                                <label :for="'task-status'+uk" class="labels c1">status</label>
+                                <input v-model="taskStatus" type="text" :id='"task-status"+uk'>
                             </div>
 
                             <div class="row mt8">
-                                <label for="task-coordinator" class="labels c1">co-ordinator</label>
-                                <select v-model="taskCoordinator" name="task-coordinator" id="task-coordinator">
+                                <label :for="'task-coordinator'+uk" class="labels c1">co-ordinator</label>
+                                <select v-model="taskCoordinator" name="task-coordinator" :id='"task-coordinator"+uk'>
                                     <option value="Mayur Buha">Mayur Buha</option>
                                     <option value="Pritul Patel">Pritul Patel</option>
                                     <option value="Nikhil Pethani">Nikhil Pethani</option>
@@ -45,7 +45,7 @@
 
                             <div class="row mt8">
                                 <label for="task-tasks" class="labels c1">task</label>
-                                <select @change="changeRoute($event)" type="text" v-model="taskTasks" id="task-tasks">
+                                <select @change="changeRoute($event)" type="text" v-model="taskTasks" :id='"task-tasks"+uk'>
                                     <option value="">existing tasks</option>
                                 </select>
                             </div>
@@ -53,19 +53,19 @@
                         </div>
 
                         <div class="flex mt8">
-                            <input v-model="repeat" type="checkbox" id="recurring" class="mt8">
-                            <label for="recurring" class="mt8">recurring</label>
-                            <select v-if="repeat" v-model="taskRepeat" type="text" id="task-repeat" class="p0 ml8 mt8">
+                            <input v-model="repeat" type="checkbox" :id='"recurring"+uk' class="mt8 recurring">
+                            <label :for="'recurring'+uk" class="mt8">recurring</label>
+                            <select v-if="repeat" v-model="taskRepeat" type="text" :id='"task-repeat"+uk' class="p0 ml8 mt8">
                                 <option value="year">every year</option>
                                 <option value="month">every month</option>
                                 <option value="day">every day</option>
                             </select>
-                            <input v-if="repeat" v-model="taskRepeatOn" type="date" id="task-repeat-on" class="p0 pl8 ml8">
+                            <input v-if="repeat" v-model="taskRepeatOn" type="date" :id='"task-repeat-on"+uk' class="p0 pl8 ml8">
                         </div>
 
                         <div class="flex mt16">
-                            <input type="checkbox" id="save-task-template">
-                            <label for="save-task-template">save task template for future use </label>
+                            <input type="checkbox" :id="'save-task-template'+uk" class="save-task-template">
+                            <label :for="'save-task-template'+uk">save task template for future use </label>
                         </div>
 
                         <button @click.prevent="clear()" class="neutral mt16 button">cancel</button>
@@ -77,9 +77,9 @@
                 <div class="fg pr16">
                     <div>
                         <div class="row mt8">
-                            <label for="task-sub-task" class="labels c1">sub task</label>
+                            <label :for="'task-sub-task'+uk" class="labels c1">sub task</label>
                             <div style="width:80%; display:flex">
-                                <input v-model="newSubTask" style="width: 100%" type="text" id="task-sub-task">
+                                <input v-model="newSubTask" style="width: 100%" type="text" :id="'task-sub-task'+uk">
                                 <button @click.prevent="addSubTask" class="ml16 button action-button">
                                     <img src="../assets/icons/plus-icon.png" class="" alt="">
                                 </button>
@@ -127,7 +127,7 @@
                                 </div>
                                 
                                 <div class="ml16">
-                                    <input v-model="task.cost" type="text" id="sub-task-cost" placeholder="cost" class="sub-task-extra">
+                                    <input v-model="task.cost" type="text" :id="'sub-task-cost'+uk" placeholder="cost" class="sub-task-extra">
                                 </div>
 
                                 <div class="ml16">
@@ -169,7 +169,7 @@
 import { mapActions } from 'vuex'
     export default {
         name: 'TasksCreate',
-        props: ['taskId', 'displayHead'],
+        props: ['taskId', 'displayHead', 'uk'],
         data() {
             return {
                 tableHead: 'create task',
@@ -320,7 +320,7 @@ import { mapActions } from 'vuex'
 .tab-close {
     background-color: red;
 }
-#save-task-template, #recurring {
+.save-task-template, .recurring {
     width: fit-content;
 }
 .hide {display: none;}
@@ -368,7 +368,7 @@ input, select {
     display: flex;
     column-gap: 12px;
 }
-#task-repeat, #task-repeat-on {
+.task-repeat, .task-repeat-on {
     border: none;
     border-bottom: solid 1px #e7eaec;
 }
