@@ -24,7 +24,7 @@ import { mapActions } from 'vuex'
             }
         },
         methods: {
-            ...mapActions(['rights']),
+            ...mapActions(['rights', 'promptMessage']),
             login() {
                 axios.post('api/login', {
                     email: this.email,
@@ -33,12 +33,22 @@ import { mapActions } from 'vuex'
                     withCredentials: true,
                 })
                 .then((results) => {
-                    console.log("login() LogIn.vue ",results?.data ,results?.data == 1)
                     if (results?.data == 1) {
                         this.$router.push({name: 'u'})
+                        this.promptMessage({
+                            title: 'login',
+                            msg: 'successfully',
+                            bgcolor: 'green'
+                        })
                     }
                     else {
+                        console.log("invalid")
                         this.$router.push({name: 'login'})
+                        this.promptMessage({
+                            title: 'login',
+                            msg: 'invalid',
+                            bgcolor: 'red'
+                        })
                     }
                 })
             },

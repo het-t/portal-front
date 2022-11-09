@@ -105,7 +105,8 @@ export default {
             this.$router.push('/u/clients/list')
             this.promptMessage({
                 title: 'Client Created',
-                msg: 'successfully'
+                msg: 'successfully',
+                bgcolor: 'green'
             })
         }
     }

@@ -2,7 +2,7 @@
     <div>
         <div class="card">
 
-            <div class="card-head m0 pb16 pt16 pr16 pl16">
+            <div class="card-head m0 pb16 pt16 pr16 pl16" v-if="displayHead != 'false'">
                 <h5 class="table-head m0">{{tableHead}}</h5>
             </div>
 
@@ -141,11 +141,7 @@
 
         </div>
 
-        <div class="card hide" ref="logs">
-            <div class="card-head m0 pb16 pt16 pr16 pl16">
-                <h5 class="table-head m0">logs</h5>
-            </div>
-            
+        <div class="card hide" ref="logs">            
             <div class="mr16 ml16 mt16">
                 <table>
                     <tr>
@@ -173,7 +169,7 @@
 import { mapActions } from 'vuex'
     export default {
         name: 'TasksCreate',
-        props: ['taskId'],
+        props: ['taskId', 'displayHead'],
         data() {
             return {
                 tableHead: 'create task',

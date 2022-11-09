@@ -76,7 +76,7 @@
           </div>
         </div>
       </div>
-      <MessageC v-if="getMessageVisiblity"/>
+      <!-- <MessageC v-if="getMessageVisiblity"/> -->
 
       <router-view>
       </router-view>
@@ -88,7 +88,6 @@
 import LogOut from '@/components/LogOut.vue'
 import axios from 'axios'
 import { mapActions, mapGetters } from 'vuex'
-import MessageC from '@/components/MessageC.vue'
   
   export default {
     name: "MainView",
@@ -102,7 +101,6 @@ import MessageC from '@/components/MessageC.vue'
     },
     components: {
       LogOut,
-      MessageC
     },
     methods: {
       ...mapActions(['rights']),

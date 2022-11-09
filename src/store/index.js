@@ -8,6 +8,7 @@ export default createStore({
       display: false,
       msg: '',
       title: '',
+      bgcolor: '',
     }
   },
   getters: {
@@ -20,7 +21,8 @@ export default createStore({
     getMessageData(state) {
       return {
         msg: state.message.msg,
-        title: state.message.title
+        title: state.message.title,
+        bgcolor: state.message.bgcolor
       }
     }
   },
@@ -33,15 +35,17 @@ export default createStore({
       console.log("mutaions setRights ", r)
       state.rights = r
     },
-    showMessage(state, {msg, title}) {
+    showMessage(state, {msg, title, bgcolor}) {
       state.message.display = true
       state.message.msg = msg
       state.message.title = title
+      state.message.bgcolor = bgcolor
     },
     hideMessage(state) {
       state.message.display = false
       state.message.title = ''
       state.message.msg = ''
+      state.message.bgcolor = ''
     }
   },
   actions: {      
@@ -50,9 +54,9 @@ export default createStore({
       context.commit('setRights', rights)
       this.state.persistant = true
     },
-    promptMessage(context, {msg, title}) {
+    promptMessage(context, {msg, title, bgcolor}) {
       new Promise((resolve) => {
-        context.commit('showMessage', {msg, title})
+        context.commit('showMessage', {msg, title, bgcolor})
         setTimeout(()=>{
           resolve()
         }, 5000)

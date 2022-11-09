@@ -1,5 +1,5 @@
 <template>
-    <div @click.prevent="hideMessage" class="mb8 pr16 pl16 pt16 pb16">
+    <div @click.prevent="hideMessage" :class="getMessageData.bgcolor" class="mb8 pr16 pl16 pt16 pb16">
         <h5 class="table-head">{{getMessageData.title}}</h5>
         <p>{{getMessageData.msg}}</p>
         <div id="timer" ref="timer" :style="{width: timer}"></div>
@@ -32,15 +32,19 @@ import { mapGetters, mapMutations } from 'vuex'
         },
         created() {
             this.changeWidth()
-            console.log(this.getMessageData)
-            console.log("message shown", this.getMessageData.title, this.getMessageData.msg)
-        }
+            console.log("message shown", this.getMessageData.title, this.getMessageData.msg, this.getMessageData.bgcolor)
+        },
     }
 </script>
 
 <style scoped>
-    div {
+    .green {
         background-color: rgb(27, 175, 131);
+    }
+    .red {
+        background-color: rgb(255, 85, 85);
+    }
+    div {
         width: 200px;
         position: absolute;
         right: 0;
@@ -59,6 +63,11 @@ import { mapGetters, mapMutations } from 'vuex'
         top: 0;
         right: 0;
         height: 5px;
+    }
+    .green #timer {
         background-color: rgb(0, 81, 0);
+    }
+    .red #timer {
+        background-color: red;
     }
 </style>

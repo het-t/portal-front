@@ -20,13 +20,10 @@
 
                     <template v-for="(task, index) of tasksList" :key="task.taskId">
                         <tr class="tr">
-                            <!-- <td >
-                            </td> -->
                             <td class="flex">
                                 <div class="dots">
                                     <img @click="editTask('row'+index)" src="../assets/icons/dots-icon.png" alt="" class="dots">
                                 </div>
-                                <!-- {{task.taskTitle}} -->
                                 {{task.taskTitle}}
                             </td>
                             <td>{{task.taskClient}}</td>
@@ -36,8 +33,8 @@
                             <td>{{task.taskStatus}}</td>
                         </tr>
 
-                        <tr class="tr tr-hidden hide" :ref="'row'+index">
-                            <tasks-create :taskId="task.taskId"/>
+                        <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
+                            <tasks-create :taskId="task.taskId" displayHead='false' :uk="index" class="tasks-create"/>
                         </tr>
                     </template>
 
@@ -82,6 +79,9 @@ import TasksProgress from './TasksProgress.vue';
 </script>
 
 <style scoped>
+    .tasks-create .card {
+        border: none !important;
+    }
     .tr:hover .dots img {
         display: inline !important;
     }
