@@ -20,15 +20,9 @@
                         <div id="i3" class="row mt8">
                             <label for="client-type" class="labels c1">type</label>
                             <select v-model="clientType" id="client-type">
-                                <option value="private-company">private-company</option>
-                                <option value="unlisted-company">unlisted-company</option>
-                                <option value="listed-company">listed-company</option>
-                                <option value="nidhi-company">nidhi-company</option>
-                                <option value="LLP">LLP</option>
-                                <option value="partnership">partnership</option>
-                                <option value="proprietorship">proprietorship</option>
-                                <option value="individual">individual</option>
-                                <option value="others">others</option>
+                                <option v-for="(clientType, index) of clientTypes" :key="index" :value="clientType.id">
+                                    {{clientType.type}}
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -91,12 +85,15 @@
 </template>
 
 <script>
+import axios from 'axios'
 import { mapActions } from 'vuex'
 export default {
     name: 'ClientCreate',
     data() {
         return {
-            clientName: ''
+            clientName: '',
+            clientType: '',
+            clientTypes: '',
         }
     },
     methods: {
@@ -109,6 +106,15 @@ export default {
                 bgcolor: 'green'
             })
         }
+    },
+    created() {
+        axios.get('/api/clients/types', {
+            withCredentials: true
+        })
+        .then((types) => {
+            this.clientTypes = types.data
+            console.log(this.clientTypes)
+        })
     }
 }
 </script>
@@ -120,5 +126,7 @@ export default {
     input, select {
         width: 100%;
     }
-
+    option {
+        text-transform: capitalize;
+    }
 </style>
