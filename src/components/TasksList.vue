@@ -84,6 +84,7 @@ import TasksProgress from './TasksProgress.vue';
     .tr, .table-heading {
         padding: 0;
         display: grid;
+        align-items: center;
         grid-template-columns: 2fr 1fr 1fr 1fr 1fr;    
     }
     .tr-hidden {
@@ -100,5 +101,6 @@ import TasksProgress from './TasksProgress.vue';
     .tr.tr-hidden {
         padding: 0;
         border-top: 0;
+        margin-bottom: 58px !important;
     }
 </style>
