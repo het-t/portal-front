@@ -7,11 +7,11 @@
             </div>
 
             <div class="table-tabs">
-                <button @click="openTab($event, 'details')" ref="defaultTab" class="button neutral tab">details</button>
+                <button @click="openTab($event, 'details')" :ref='"defaultTab"+uk' class="button neutral tab">details</button>
                 <button @click="openTab($event, 'logs')" class="button neutral tab">logs</button>
             </div>
 
-            <div class="fg-wrapper mt16 mb16 pr16 pl16 hide" ref="details">
+            <div class="fg-wrapper mt16 mb16 pr16 pl16 hide" :ref='"details"+uk'>
                 <div class="fg pl16">
                     <form class="mb16">
                         <div>
@@ -44,7 +44,7 @@
                             </div>
 
                             <div class="row mt8">
-                                <label for="task-tasks" class="labels c1">task</label>
+                                <label :for="'task-tasks'+uk" class="labels c1">task</label>
                                 <select @change="changeRoute($event)" type="text" v-model="taskTasks" :id='"task-tasks"+uk'>
                                     <option value="">existing tasks</option>
                                 </select>
@@ -52,15 +52,15 @@
 
                         </div>
 
-                        <div class="flex mt8">
-                            <input v-model="repeat" type="checkbox" :id='"recurring"+uk' class="mt8 recurring">
-                            <label :for="'recurring'+uk" class="mt8">recurring</label>
-                            <select v-if="repeat" v-model="taskRepeat" type="text" :id='"task-repeat"+uk' class="p0 ml8 mt8">
+                        <div class="flex mt16">
+                            <input v-model="repeat" type="checkbox" :id='"recurring"+uk' class="recurring">
+                            <label :for="'recurring'+uk">recurring</label>
+                            <select v-if="repeat" v-model="taskRepeat" type="text" :id='"task-repeat"+uk' class="task-repeat p0 ml8">
                                 <option value="year">every year</option>
                                 <option value="month">every month</option>
                                 <option value="day">every day</option>
                             </select>
-                            <input v-if="repeat" v-model="taskRepeatOn" type="date" :id='"task-repeat-on"+uk' class="p0 pl8 ml8">
+                            <input v-if="repeat" v-model="taskRepeatOn" type="date" :id='"task-repeat-on"+uk' class="task-repeat p0 pl8 ml8">
                         </div>
 
                         <div class="flex mt16">
@@ -80,7 +80,7 @@
                             <label :for="'task-sub-task'+uk" class="labels c1">sub task</label>
                             <div style="width:80%; display:flex">
                                 <input v-model="newSubTask" style="width: 100%" type="text" :id="'task-sub-task'+uk">
-                                <button @click.prevent="addSubTask" class="ml16 button action-button">
+                                <button @click.prevent="addSubTask()" class="ml16 button action-button">
                                     <img src="../assets/icons/plus-icon.png" class="" alt="">
                                 </button>
                             </div>
@@ -141,7 +141,7 @@
 
         </div>
 
-        <div class="card hide" ref="logs">            
+        <div class="card hide" :ref="'logs'+uk">            
             <div class="mr16 ml16 mt16">
                 <table>
                     <tr>
@@ -226,14 +226,13 @@ import { mapActions } from 'vuex'
         methods: {
             ...mapActions(['promptMessage']),
             openTab(e, newTab) {
-                var tabs = document.getElementsByClassName('tab')
-                let curTab = [...tabs].find(tab => tab.classList.contains('tab-open') == true)
-                curTab?.classList.remove('tab-open')
-
+                 var tabs = e.target.parentElement.getElementsByClassName('tab')
+                let curTab = [...tabs].find(tab => tab?.classList?.contains('tab-open') == true)
+                curTab?.classList?.remove('tab-open')
                 e?.target?.classList?.add('tab-open')
-                this.$refs['details'].classList.add('hide')
-                this.$refs['logs'].classList.add('hide')
-                this.$refs[newTab].classList.remove('hide')
+                this.$refs['details'+this.uk]?.classList?.add('hide')
+                this.$refs['logs'+this.uk]?.classList?.add('hide')
+                this.$refs[newTab+this.uk]?.classList?.remove('hide')
             },
             getTaskStatus(subTasks) {
                 let o = subTasks?.find(o => o?.subTaskStatus != "done")
@@ -241,6 +240,7 @@ import { mapActions } from 'vuex'
             },
             addSubTask() {
                 console.log("subtasks", this.subTasks)
+                document.getElementById('task-sub-task'+this.uk).focus()
                 this.subTasks.push({
                     title: this.newSubTask,
                     subTaskStatus: 'to do',
@@ -299,7 +299,7 @@ import { mapActions } from 'vuex'
             }
         },
         mounted() {
-            this.$refs.defaultTab.click()
+            this.$refs['defaultTab'+this.uk].click()
         }
     }
 </script>
@@ -319,9 +319,8 @@ import { mapActions } from 'vuex'
 }
 .tab-open {
     border: solid 1px #d2d2d2;
-}
-.tab-close {
-    background-color: red;
+    color:  #e7eaec;
+    background-color: #2F4050;
 }
 .save-task-template, .recurring {
     width: fit-content;
@@ -370,8 +369,10 @@ input, select {
 .flex {
     display: flex;
     column-gap: 12px;
+    align-items: center;
 }
-.task-repeat, .task-repeat-on {
+.task-repeat {
+    width: fit-content;
     border: none;
     border-bottom: solid 1px #e7eaec;
 }
