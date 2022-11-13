@@ -25,7 +25,7 @@
                             {{index+1}}
                         </td>
                         <td>
-                            {{client}}
+                            {{client.name}}
                         </td>
                     </tr>
                 </table>
@@ -36,15 +36,23 @@
 
 <script>
     import TableFilter from './TableFilter.vue'
-import TableSort from './TableSort.vue';
+    import TableSort from './TableSort.vue';
+    import {getClients} from '@/api/index.js'
 
     export default {
         name: 'ClientList',
         data() {
             return {
-                clientList: ['TechAvidus', 'TechSome']
+                clientList: ''
             }
         },
-        components: { TableFilter, TableSort }
+        components: { TableFilter, TableSort },
+        created() {
+            getClients()
+            .then(results => {
+                console.log(results.data)
+                this.clientList = results.data
+            })
+        }
     }
 </script>
