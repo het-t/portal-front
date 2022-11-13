@@ -1,5 +1,6 @@
 <template>
     <div>
+        {{subTasks}}
         <div class="card">
 
             <div class="card-head m0 pb16 pt16 pr16 pl16" v-if="displayHead != 'false'">
@@ -22,7 +23,6 @@
                             
                             <div class="row mt8">
                                 <label :for="'task-client'+uk" class="labels c1">client</label>
-                                <!-- v-model="taskClient" -->
                                 <select v-model="taskClient" :id='"task-client"+uk'>
                                     <option value="/u/clients/create-client">create new client</option>
                                     <option v-for="(client, index) in allClients" :value="client" :key="index.toString()+uk">
@@ -102,7 +102,7 @@
                                     <img @click.prevent="toggleDisplaySubTask(index)" class="dots" src="../assets/icons/dots-icon.png" alt="">
                                 </div>
                                 <div>{{index+1}})</div>
-                                <div>{{task.title}}</div>
+                                <div>{{task.description}}</div>
 
                                 <button @click.prevent="removeSubTask(index)" class="button action-button">
                                     <img src="../assets/icons/minus-icon.png" class="" alt="">
@@ -111,16 +111,10 @@
 
                             <div :ref="'sub-task'+index" class="hide ml24">
                                 <div class="ml16">
-                                    <select v-model="task.subTaskStatus" type="text" class="sub-task-extra">
-                                        <option value="hold">hold</option>
-                                        <option value="to do" selected>to do</option>
-                                        <option value="in progress">in progress</option>
-                                        <option value="pending for approval">pending for approval</option>
-                                        <option value="done">done</option>
-                                        <option value="cancel">cancel</option>
-                                        <option value="pending with client">pending with client</option>
-                                        <option value="pending with signed documents">pending with signed documents</option>
-                                        <option value="pending with DSC">pending with DSC</option>
+                                    <select v-model="task.status" type="text" class="sub-task-extra">
+                                        <option v-for="(status, index) in subTaskStatuses" :value="status.id" :key="index+uk?.toString()">
+                                            {{status.status}}
+                                        </option>
                                     </select>
                                 </div>
 
@@ -184,6 +178,7 @@ import { getUsers, getClients, createTask } from '@/api/index.js'
                 editing: false,
                 allUsers: '',
                 allClients: '',
+                subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "pending with signed documents"}, {id: 9, status: "pending with DSC"}],
                 tableHead: 'create task',
                 subTasks: [], 
                 repeat: false,
@@ -256,8 +251,8 @@ import { getUsers, getClients, createTask } from '@/api/index.js'
                 console.log("subtasks", this.subTasks)
                 document.getElementById('task-sub-task'+this.uk).focus()
                 this.subTasks.push({
-                    title: this.newSubTask,
-                    subTaskStatus: 'to do',
+                    description: this.newSubTask,
+                    status: 2,
                     assignedTo: '',
                     comments: '',
                     cost: '',
@@ -281,7 +276,8 @@ import { getUsers, getClients, createTask } from '@/api/index.js'
                     createTask({
                         title: this.taskTitle,
                         cost: this.taskCost,
-                        saved: new Number(this.save)
+                        saved: new Number(this.save),
+                        subTasks: this.subTasks
                     })
                     .then(()=> {
                         this.promptMessage({

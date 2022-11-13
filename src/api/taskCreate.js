@@ -1,14 +1,15 @@
 import axios from 'axios'
 
 const createTaskReq = (url, args) => {
-    const {title, cost, saved} = args
+    const {title, cost, saved, subTasks} = args
 
     return axios.get(url, {
         withCredentials: true,
         params: {
             title,
             cost,
-            saved
+            saved,
+            subTasks: JSON.stringify(subTasks)
         }
     })
 }
