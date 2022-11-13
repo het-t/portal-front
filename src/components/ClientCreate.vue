@@ -108,6 +108,18 @@ export default {
     },
     methods: {
         ...mapActions(['promptMessage']),
+        clear() {
+            this.clientName = ''
+            this.clientType = ''
+            this.cin = ''
+            this.firmAddress = ''
+            this.firmName = ''
+            this.caEmail = ''
+            this.caPanDetail = ''
+            this.conName = ''
+            this.conEmail = ''
+            this.conPhone = ''
+        },
         proceed() {
             const args = {
                 clientName: this.clientName,
