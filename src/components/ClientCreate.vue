@@ -10,7 +10,7 @@
                         <p class="head-tr">client</p>
                         <div class="row mt8">
                             <label for="client-cli-llpin" class="labels c1">CIN/LLPIN</label>
-                            <input type="number" id="client-cli-llpin">
+                            <input v-model="cin" type="text" id="client-cli-llpin">
                         </div>
                         <div id="i1" class="row mt8">
                             <label for="client-name" class="labels c1">name</label>
@@ -43,12 +43,12 @@
 
                         <div id="i7" class="row mt8">
                             <label for="PAN" class="labels c1">PAN</label>
-                            <input v-model="panDetail" type="text" id="PAN">
+                            <input v-model="caPanDetail" type="text" id="PAN">
                         </div>
 
                         <div id="i8" class="row mt8">
                             <label for="ca-email" class="labels c1">email</label>
-                            <input v-model="email" type="text" id="ca-email">
+                            <input v-model="caEmail" type="text" id="ca-email">
                         </div>
                     </div>
                 </div>
@@ -58,17 +58,17 @@
                         <p class="head-tr">contact</p>
                         <div class="row mt8">
                             <label for="contact-name" class="labels c1">name</label>
-                            <input type="text" id="contact-name">
+                            <input v-model="conName" type="text" id="contact-name">
                         </div>
                         
                         <div class="row mt8">
                             <label for="contact-email" class="labels c1">email</label>
-                            <input type="text" id="contact-email">
+                            <input v-model="conEmail" type="text" id="contact-email">
                         </div>
 
                         <div class="row mt8">
                             <label for="contact-phone" class="labels c1">phone</label>
-                            <input type="text" id="contact-phone">
+                            <input v-model="conPhone" type="text" id="contact-phone">
                         </div>
                     </div>
 
@@ -87,23 +87,55 @@
 <script>
 import axios from 'axios'
 import { mapActions } from 'vuex'
+import {createClient} from '@/api/index.js'
+
 export default {
     name: 'ClientCreate',
     data() {
         return {
+            cin: '',
             clientName: '',
             clientType: '',
+            firmName: '',
+            firmAddress: '',
+            caPanDetail: '',
+            caEmail: '',
+            conName: '',
+            conEmail: '',
+            conPhone: '',
             clientTypes: '',
         }
     },
     methods: {
         ...mapActions(['promptMessage']),
         proceed() {
-            this.$router.push('/u/clients/list')
-            this.promptMessage({
-                title: 'Client Created',
-                msg: 'successfully',
-                bgcolor: 'green'
+            const args = {
+                clientName: this.clientName,
+                clientType: this.clientType,
+                cin: this.cin,
+                firmName: this.firmName,
+                firmAddress: this.firmAddress,
+                caEmail: this.caEmail,
+                caPanDetail: this.caPanDetail,
+                conName: this.conName,
+                conEmail: this.conEmail,
+                conPhone: this.conPhone
+            }
+            createClient(args)
+            .then(() => {
+                this.$router.push('/u/clients/list')        
+                this.promptMessage({
+                    title: 'Client Created',
+                    msg: 'successfully',
+                    bgcolor: 'green'
+                })
+            })
+            .catch((e) => {
+                this.promptMessage({
+                    title: 'Error',
+                    msg: 'client cannot be created' + e,
+                    bgcolor: 'red'
+                })
             })
         }
     },
