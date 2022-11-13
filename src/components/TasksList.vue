@@ -37,7 +37,7 @@
                     </tr>
 
                     <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
-                        <tasks-create :taskId="task.taskId" displayHead='false' :uk="index" class="tasks-create"/>
+                        <tasks-create :taskId="task.taskId" displayHead='false' :uk="index" class="tasks-create" editing="true" />
                     </tr>
                 </div>
             </template>

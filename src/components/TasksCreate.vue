@@ -22,9 +22,12 @@
                             
                             <div class="row mt8">
                                 <label :for="'task-client'+uk" class="labels c1">client</label>
-                                <select @change="changeRoute($event)" v-model="taskClient" :id='"task-client"+uk'>
+                                <!-- v-model="taskClient" -->
+                                <select v-model="taskClient" :id='"task-client"+uk'>
                                     <option value="/u/clients/create-client">create new client</option>
-                                    <option v-for="(client, index) in clientList" :value="client" :key="index+uk">{{client}}</option>
+                                    <option v-for="(client, index) in allClients" :value="client" :key="index.toString()+uk">
+                                        {{client}}
+                                    </option>
                                 </select>
                             </div>
 
@@ -44,9 +47,15 @@
 
                             <div class="row mt8">
                                 <label :for="'task-tasks'+uk" class="labels c1">task</label>
-                                <select @change="changeRoute($event)" type="text" v-model="taskTasks" :id='"task-tasks"+uk'>
+                                <select type="text" v-model="taskTasks" :id='"task-tasks"+uk'>
                                     <option value="">existing tasks</option>
                                 </select>
+                            </div>
+
+                            
+                            <div class="row mt8">
+                                <label :for="'task-cost'+uk" class="labels c1">cost</label>
+                                <input type="number" v-model="taskCost" :id="'task-cost'+uk">
                             </div>
 
                         </div>
@@ -63,7 +72,7 @@
                         </div>
 
                         <div class="flex mt16">
-                            <input type="checkbox" :id="'save-task-template'+uk" class="save-task-template">
+                            <input v-model="save" type="checkbox" :id="'save-task-template'+uk" class="save-task-template">
                             <label :for="'save-task-template'+uk">save task template for future use </label>
                         </div>
 
@@ -165,23 +174,27 @@
 
 <script>
 import { mapActions } from 'vuex'
-import { getUsers, getClients } from '@/api/index.js'
+import { getUsers, getClients, createTask } from '@/api/index.js'
 
     export default {
         name: 'TasksCreate',
         props: ['taskId', 'displayHead', 'uk'],
         data() {
             return {
+                editing: false,
                 allUsers: '',
+                allClients: '',
                 tableHead: 'create task',
                 subTasks: [], 
                 repeat: false,
-                clientList:'',
+                // clientList:'',
                 newSubTask: '',
                 taskStatus: '',
                 taskTitle: '',
                 taskClient: '',
                 taskTasks: '',
+                taskCost: '',
+                save: false,
                 taskRepeat: '',
                 taskRepeatOn: '',
                 taskSubTasks: '',
@@ -263,16 +276,34 @@ import { getUsers, getClients } from '@/api/index.js'
             },
             proceed() {
                 this.$router.push('/u/tasks/list')
-                this.promptMessage({
-                    title: 'Task Created',
-                    msg: 'successfully'
-                })
+
+                if (this.editing == false) {
+                    createTask({
+                        title: this.taskTitle,
+                        cost: this.taskCost,
+                        saved: new Number(this.save)
+                    })
+                    .then(()=> {
+                        this.promptMessage({
+                            title: 'Task Created',
+                            msg: 'successfully',
+                            bgcolor: 'green'
+                        })
+                    })
+                    .catch((e) => {
+                        this.promptMessage({
+                            title: 'Error',
+                            msg: 'task cannot be created'+e,
+                            bgcolor: 'red'
+                        })
+                    })
+                }
             }
         },
         created() {
             getClients()
             .then((allClients) => {
-                this.clientList = allClients.data.map(o => o.name)
+                this.allClients = allClients.data.map(o => o.name)
             })
             getUsers({from: null, recordsPerPage: null})
             .then(allUsers => {
@@ -296,7 +327,6 @@ import { getUsers, getClients } from '@/api/index.js'
                 console.log(this.taslId)
                 this.tableHead = 'edit task'         
                 let taskData = this.taskData.find(o => o.taskId == this.taskId)
-                console.log("taskId to edit ",this.taskId)
                 this.taskTitle = taskData?.taskTitle
                 this.taskClient = taskData?.taskClient
                 this.taskTasks = taskData?.taskTasks
