@@ -36,10 +36,9 @@
                             <div class="row mt8">
                                 <label :for="'task-coordinator'+uk" class="labels c1">co-ordinator</label>
                                 <select v-model="taskCoordinator" name="task-coordinator" :id='"task-coordinator"+uk'>
-                                    <option value="Mayur Buha">Mayur Buha</option>
-                                    <option value="Pritul Patel">Pritul Patel</option>
-                                    <option value="Nikhil Pethani">Nikhil Pethani</option>
-                                    <option value="Divya Prajapati">Divya Prajapati</option>
+                                    <option v-for="(user, index) in allUsers" :key="index" :value="user.id">
+                                        {{user.first_name}} {{user.last_name}}
+                                    </option>
                                 </select>
                             </div>
 
@@ -119,10 +118,9 @@
                                 <div class="ml16">
                                     <select v-model="task.assignedTo" name="assigned-to" class="sub-task-extra">
                                         <option value="" disabled selected hidden>assign</option>
-                                        <option value="Mayur Buha">Mayur Buha</option>
-                                        <option value="Pritul Patel">Pritul Patel</option>
-                                        <option value="Nikhil Pethani">Nikhil Pethani</option>
-                                        <option value="Divya Prajapati">Divya Prajapati</option>
+                                        <option v-for="(user, index) in allUsers" :key="index" :value="user.id">
+                                            {{user.first_name}} {{user.last_name}}
+                                        </option>
                                     </select>
                                 </div>
                                 
@@ -167,12 +165,14 @@
 
 <script>
 import { mapActions } from 'vuex'
-import { getClients } from '@/api/index.js'
+import { getUsers, getClients } from '@/api/index.js'
+
     export default {
         name: 'TasksCreate',
         props: ['taskId', 'displayHead', 'uk'],
         data() {
             return {
+                allUsers: '',
                 tableHead: 'create task',
                 subTasks: [], 
                 repeat: false,
@@ -271,8 +271,12 @@ import { getClients } from '@/api/index.js'
         },
         created() {
             getClients()
-            .then((results) => {
-                this.clientList = results.data.map(o => o.name)
+            .then((allClients) => {
+                this.clientList = allClients.data.map(o => o.name)
+            })
+            getUsers({from: null, recordsPerPage: null})
+            .then(allUsers => {
+                this.allUsers = allUsers.data
             })
             console.log("task created props", this.taskId)
             if (window.history.state.taskId != undefined){   
