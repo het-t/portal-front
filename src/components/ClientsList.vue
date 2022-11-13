@@ -18,6 +18,10 @@
                             </div>
                         </th>
                         <th>name</th>
+                        <th>CIN/LLPIN</th>
+                        <th>type</th>
+                        <th>CA</th>
+                        <th>contact</th>
                     </tr>
 
                     <tr class="tr" v-for="(client, index) in clientList" :key="index">
@@ -26,6 +30,37 @@
                         </td>
                         <td>
                             {{client.name}}
+                        </td>
+                        <td>
+                            {{client.cin}}
+                        </td>
+                        <td>
+                            {{client.type}}
+                        </td>
+                        <td>
+                            <p>
+                                Name: {{client.ca_firm_name}}
+                            </p>
+                            <p>
+                                E-Mail: {{client.ca_email}}
+                            </p>
+                            <p>
+                                Pan: {{client.ca_pan}}
+                            </p>
+                            <p>
+                                Address: {{client.ca_address}}
+                            </p>
+                        </td>
+                        <td>
+                            <p>
+                                Name: {{client.con_name}}
+                            </p>
+                            <p>
+                                Phone: {{client.con_phone}}
+                            </p>
+                            <p>
+                                E-Mail: {{client.con_email}}
+                            </p>
                         </td>
                     </tr>
                 </table>
