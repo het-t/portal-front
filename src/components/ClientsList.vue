@@ -11,12 +11,12 @@
             <div class="mr16 ml16 mt16">
                 <table>
                     <tr>
-                        <th>
+                        <!-- <th>
                             <div class="tr-th">
                                 id
                                 <TableSort :tableData="''" keyToSort="''" />
                             </div>
-                        </th>
+                        </th> -->
                         <th>name</th>
                         <th>CIN/LLPIN</th>
                         <th>type</th>
@@ -25,10 +25,14 @@
                     </tr>
 
                     <tr class="tr" v-for="(client, index) in clientList" :key="index">
-                        <td>
+                        <!-- <td class="flex">
+
                             {{index+1}}
-                        </td>
-                        <td>
+                        </td> -->
+                        <td class="flex">
+                            <div class="dots">
+                                <img @click="editTask('row'+index)" src="../assets/icons/dots-icon.png" alt="" class="dots">
+                            </div>
                             {{client.name}}
                         </td>
                         <td>
@@ -70,8 +74,8 @@
 </template>
 
 <script>
-    import TableFilter from './TableFilter.vue'
-    import TableSort from './TableSort.vue';
+    // import TableFilter from './TableFilter.vue'
+    // import TableSort from './TableSort.vue';
     import {getClients} from '@/api/index.js'
 
     export default {
@@ -81,7 +85,7 @@
                 clientList: ''
             }
         },
-        components: { TableFilter, TableSort },
+        // components: { TableFilter, TableSort },
         created() {
             getClients()
             .then(results => {
@@ -91,3 +95,20 @@
         }
     }
 </script>
+
+<style scoped>
+    .tr:hover .dots img {
+        display: inline !important;
+    }
+    .flex {
+        display: flex;
+        column-gap: 12px;
+        margin: auto 0;
+    }
+    .tr {
+        align-items: center;
+    }
+    td {
+        vertical-align: text-top;
+    }
+</style>
