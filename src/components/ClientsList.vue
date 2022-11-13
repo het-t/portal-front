@@ -25,13 +25,9 @@
                     </tr>
 
                     <tr class="tr" v-for="(client, index) in clientList" :key="index">
-                        <!-- <td class="flex">
-
-                            {{index+1}}
-                        </td> -->
                         <td class="flex">
                             <div class="dots">
-                                <img @click="editTask('row'+index)" src="../assets/icons/dots-icon.png" alt="" class="dots">
+                                <img @click="editClient('row'+index)" src="../assets/icons/dots-icon.png" alt="" class="dots">
                             </div>
                             {{client.name}}
                         </td>
@@ -85,6 +81,11 @@
                 clientList: ''
             }
         },
+        // methods: {
+        //     editClient(rowIndex) {
+                
+        //     }
+        // },
         // components: { TableFilter, TableSort },
         created() {
             getClients()

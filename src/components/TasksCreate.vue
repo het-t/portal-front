@@ -167,6 +167,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import { getClients } from '@/api/index.js'
     export default {
         name: 'TasksCreate',
         props: ['taskId', 'displayHead', 'uk'],
@@ -175,7 +176,7 @@ import { mapActions } from 'vuex'
                 tableHead: 'create task',
                 subTasks: [], 
                 repeat: false,
-                clientList: ['TechAvidus', 'TechSome'],
+                clientList:'',
                 newSubTask: '',
                 taskStatus: '',
                 taskTitle: '',
@@ -269,6 +270,10 @@ import { mapActions } from 'vuex'
             }
         },
         created() {
+            getClients()
+            .then((results) => {
+                this.clientList = results.data.map(o => o.name)
+            })
             console.log("task created props", this.taskId)
             if (window.history.state.taskId != undefined){   
                 this.tableHead = 'edit task'         
