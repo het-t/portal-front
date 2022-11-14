@@ -110,7 +110,7 @@
 
                             <div :ref="'sub-task'+index" class="hide ml24">
                                 <div class="ml16">
-                                    <select v-model="task.status" class="sub-task-extra">
+                                    <select v-model="task.status_id" class="sub-task-extra">
                                         <option v-for="(status, index) in subTaskStatuses" :value="status.id" :key="index.toString()+uk">
                                             {{status.status}}
                                         </option>
@@ -118,7 +118,7 @@
                                 </div>
 
                                 <div class="ml16">
-                                    <select v-model="task.assignedTo" name="assigned-to" class="sub-task-extra">
+                                    <select v-model="task.assigned_to" name="assigned-to" class="sub-task-extra">
                                         <option value="" disabled selected hidden>assign</option>
                                         <option v-for="(user, index) in allUsers" :key="index.toString()+uk" :value="user.id">
                                             {{user.first_name}} {{user.last_name}}
@@ -192,45 +192,6 @@ import { getUsers, getClients, createTask, getSubTasks } from '@/api/index.js'
                 save: false,
                 taskRepeat: '',
                 taskRepeatOn: '',
-                taskSubTasks: '',
-                
-                taskData: [{
-                    taskId: 1,
-                    taskTitle: 'Incorporation of Company',
-                    taskClient: 'TechAvidus',
-                    taskCoordinator: 'Mayur Buha',
-                    taskSubTasks: [{
-                        title: 'Check Name of Company',
-                        subTaskStatus: 'done',
-                        assignedTo: 'Mayur Buha',
-                        cost: '50000',
-                        comments: 'XYZ'
-                    }, {
-                        title: 'Draft Main Object of Company',
-                        subTaskStatus: 'pending with client',
-                        assignedTo: 'Pritul Patel',
-                        cost: '0',
-                        comments: 'SRN:T21929139'
-                    }],
-                }, {
-                    taskId: 2,
-                    taskTitle: 'Income Tax return',
-                    taskClient: 'TechSome',
-                    taskCoordinator: 'Pritul Patel',
-                    taskSubTasks: [{
-                        title: 'Collect Documents',
-                        subTaskStatus: 'done',
-                        assignedTo: 'Mayur Buha',
-                        cost: '0',
-                        comments: 'XYZ'
-                    }, {
-                        title: 'Verify documents',
-                        subTaskStatus: 'done',
-                        assignedTo: 'Pritul Patel',
-                        cost: '1000',
-                        comments: ''
-                    }],
-                }]
             }
         },
         methods: {
@@ -326,29 +287,11 @@ import { getUsers, getClients, createTask, getSubTasks } from '@/api/index.js'
             if (window.history.state.taskId != undefined){ 
                 this.editing = true  
                 this.tableHead = 'edit task'         
-                let taskData = this.taskData.find(o => o.taskId == window.history.state.taskId)
-                this.taskTitle = taskData?.taskTitle
-                this.taskClient = taskData?.taskClient
-                this.taskTasks = taskData?.taskTasks
-                this.taskRepeat = taskData?.taskRepeat
-                this.taskRepeatOn = taskData?.taskRepeatOn
-                this.subTasks = taskData?.taskSubTasks
-                this.taskCoordinator = taskData?.taskCoordinator
                 this.getTaskStatus(this.subTasks)
-                console.log("fetch data of task ", window.history.state.taskId)
             }
             else if (this.taskId != undefined) {
                 this.editing = true
-                console.log(this.taslId)
                 this.tableHead = 'edit task'         
-                let taskData = this.taskData.find(o => o.taskId == this.taskId)
-                this.taskTitle = taskData?.taskTitle
-                this.taskClient = taskData?.taskClient
-                this.taskTasks = taskData?.taskTasks
-                this.taskRepeat = taskData?.taskRepeat
-                this.taskRepeatOn = taskData?.taskRepeatOn
-                this.subTasks = taskData?.taskSubTasks
-                this.taskCoordinator = taskData?.taskCoordinator
                 this.getTaskStatus(this.subTasks)
             }
         },
@@ -359,8 +302,10 @@ import { getUsers, getClients, createTask, getSubTasks } from '@/api/index.js'
                 console.log("getting sub tasks of taskId ", this.taskId)
                 getSubTasks({taskId: this.taskId})
                 .then((subTasks) => {
-                    this.subTasks = subTasks.data[0]
+                    this.subTasks = subTasks.data
                 })
+            } else {
+                console.log("not editing")
             }
         }
     }
