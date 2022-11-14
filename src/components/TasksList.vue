@@ -27,13 +27,13 @@
                             <div class="dots">
                                 <img @click="editTask('row'+index)" src="../assets/icons/dots-icon.png" alt="" class="dots">
                             </div>
-                            {{task.taskTitle}}
+                            {{task.title}}
                         </td>
-                        <td>{{task.taskClient}}</td>
+                        <td>{{task.client}}</td>
                         <td>
                             <tasks-progress/>
                         </td>
-                        <td>{{task.taskStatus}}</td>
+                        <td>{{task.status}}</td>
                     </tr>
 
                     <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
@@ -89,6 +89,7 @@
 import TasksCreate from './TasksCreate.vue';
 import TasksProgress from './TasksProgress.vue';
 import TableMain from './TableMain.vue';
+import { getTasks } from '@/api/index.js';
 
     export default {
     name: "TasksList",
@@ -98,17 +99,22 @@ import TableMain from './TableMain.vue';
         };
     },
     created() {
-        this.tasksList = [{
-                taskId: 26,
-                taskTitle: "Incorporation of Company",
-                taskClient: "TechAvidus",
-                taskStatus: "pending"
-            }, {
-                taskId: 29,
-                taskTitle: "Income Tax return",
-                taskClient: "TechSome",
-                taskStatus: "done"
-            }];
+        getTasks()
+        .then(tasks => {
+            this.tasksList = tasks.data
+            console.log(tasks.data)
+        })
+        // this.tasksList = [{
+        //         taskId: 26,
+        //         taskTitle: "Incorporation of Company",
+        //         taskClient: "TechAvidus",
+        //         taskStatus: "pending"
+        //     }, {
+        //         taskId: 29,
+        //         taskTitle: "Income Tax return",
+        //         taskClient: "TechSome",
+        //         taskStatus: "done"
+        //     }];
     },
     methods: {
         editTask(rowIndex) {
