@@ -35,6 +35,9 @@ body, #app {
     height: 12px;
     filter: invert(70%);
 }
+a, button {
+    cursor: pointer;
+}
 #users-icon {
     transform: scale(2);
 }
@@ -75,7 +78,6 @@ body, #app {
 .button {
     border-radius: 4px;
     border: none;
-    cursor: pointer;
 }
 
 #pb {
@@ -171,6 +173,7 @@ th:hover .tr-th img, .tr-th button:focus img {
 .card-head {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     border-bottom: solid 1px #e7eaec;
 }
 
@@ -192,7 +195,6 @@ th:hover .tr-th img, .tr-th button:focus img {
 }
 .link {
     color:grey;
-    cursor: pointer;
 }
 .sorting-img {
     width: 13px;

@@ -3,7 +3,7 @@
         <div class="card">
             <div class="card-head m0 pb16 pt16 pr16 pl16">
                 <h5 class="table-head m0">clients</h5>
-                <router-link to="/u/clients/create-client" class="table-action" >create client</router-link>
+                <table-action-plus url="/u/clients/create-client" />
             </div>
 
             <TableFilter :tableData="''" @filtered="''" class="mr16 ml16 mt16 actions"/>
@@ -73,8 +73,10 @@
     // import TableFilter from './TableFilter.vue'
     // import TableSort from './TableSort.vue';
     import {getClients} from '@/api/index.js'
+import TableActionPlus from './TableActionPlus.vue'
 
     export default {
+  components: { TableActionPlus },
         name: 'ClientList',
         data() {
             return {

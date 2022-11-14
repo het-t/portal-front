@@ -11,7 +11,7 @@
         <div class="card">
             <div class="card-head m0 pb16 pt16 pr16 pl16">
                 <h5 class="table-head m0">roles</h5>
-                <router-link class="table-action" to="/u/roles/create-role">create role</router-link>
+                <table-action-plus url="/u/roles/create-role"/>
             </div>
 
             <TableFilter :tableData="rolesList" @filtered="filteredRolesList = $event" class="mr16 ml16 mt16 actions"/>
@@ -69,6 +69,7 @@ import AlertC from './AlertC.vue'
 import TablePagination from './TablePagination.vue'
 import TableSort from './TableSort.vue'
 import TableFilter from './TableFilter.vue'
+import TableActionPlus from './TableActionPlus.vue'
 
     export default {
     name: "EditRoleList",
@@ -122,7 +123,7 @@ import TableFilter from './TableFilter.vue'
             this.roleName = "";
         }
     },
-    components: { AlertC, TablePagination, TableSort, TableFilter }
+    components: { AlertC, TablePagination, TableSort, TableFilter, TableActionPlus }
 }
 </script>
 

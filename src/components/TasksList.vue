@@ -6,9 +6,7 @@
             </template>
 
             <template #table-action>
-                <router-link to="/u/tasks/create-task" class="table-action">
-                    create task
-                </router-link>
+                <table-action-plus url="/u/tasks/create-task" />
             </template>
 
             <template #thead>
@@ -50,6 +48,7 @@ import TasksCreate from './TasksCreate.vue';
 import TasksProgress from './TasksProgress.vue';
 import TableMain from './TableMain.vue';
 import { getTasks } from '@/api/index.js';
+import TableActionPlus from './TableActionPlus.vue';
 
     export default {
     name: "TasksList",
@@ -71,7 +70,7 @@ import { getTasks } from '@/api/index.js';
             else this.$refs[rowIndex][0].classList.add('hide')
         }
     },
-    components: { TasksProgress, TasksCreate, TableMain }
+    components: { TasksProgress, TasksCreate, TableMain, TableActionPlus }
 }
 </script>
 

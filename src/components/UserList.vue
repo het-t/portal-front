@@ -9,9 +9,7 @@
         <div class="card">
             <div class="card-head m0 pb16 pt16 pr16 pl16">
                 <h5 class="table-head m0">users</h5>
-                <router-link class="table-action" to="/u/users/create-user">
-                    create user
-                </router-link>
+                <table-action-plus url="/u/users/create-user" />
             </div>
 
             <TableFilter :tableData="usersList" @filtered="filteredUsersList = $event" class="mr16 ml16 mt16 actions"/>
@@ -58,6 +56,7 @@
     import AlertC from './AlertC.vue'
     import TablePagination from './TablePagination.vue'
     import TableFilter from './TableFilter.vue';
+import TableActionPlus from './TableActionPlus.vue';
 
     export default {
     name: "UserList",
@@ -101,7 +100,7 @@
             this.alertData.msg = msg
         }
     },
-    components: { AlertC, TablePagination, TableFilter }
+    components: { AlertC, TablePagination, TableFilter, TableActionPlus }
 }
 </script>
 

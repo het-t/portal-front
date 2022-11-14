@@ -1,8 +1,7 @@
 <template>
-  <div>
-    <button @click.prevent="logout()" class="mt8 mb8 neutral button">
-      logout
-      <!-- <img src="../assets/icons/logout-icon.png" alt=""> -->
+  <div class="header">
+    <button @click.prevent="logout()" class="mt8 mb8 neutral">
+      <img src="../assets/icons/logout-icon.png" alt="">
     </button>
   </div>
 </template>
@@ -34,15 +33,14 @@
 </script>
 
 <style scoped>
-img {
-  background-color: rgba(255, 255, 255, 0);
-  width: 20px;
-  height: 20px;
-}
 button {
-  background-color: rgba(255, 255, 255, .4);
-}
-button:hover img, button:hover {
+  padding: 0;
+  border: none;
   background-color: white;
+  border: solid 1px white;
+}
+img {
+  filter: invert(0.1);
+  scale: 1.25;  
 }
 </style>
