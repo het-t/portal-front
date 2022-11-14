@@ -4,6 +4,7 @@ const endpoints = {
     getAllUsers: '/u/api/users/',
     createTask: '/u/api/tasks/create-task',
     createSubTask: '/u/api/tasks/create-sub-task',
+    getSubTasks: '/u/api/tasks/get-sub-tasks'
 }
 
 export default endpoints
