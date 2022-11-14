@@ -1,6 +1,5 @@
 <template>
     <div>
-        {{subTasks}}
         <div class="card">
 
             <div class="card-head m0 pb16 pt16 pr16 pl16" v-if="displayHead != 'false'">
@@ -25,8 +24,8 @@
                                 <label :for="'task-client'+uk" class="labels c1">client</label>
                                 <select v-model="taskClient" :id='"task-client"+uk'>
                                     <option value="/u/clients/create-client">create new client</option>
-                                    <option v-for="(client, index) in allClients" :value="client" :key="index.toString()+uk">
-                                        {{client}}
+                                    <option v-for="(client, index) in allClients" :value="client.id" :key="index.toString()+uk">
+                                        {{client.client}}
                                     </option>
                                 </select>
                             </div>
@@ -39,7 +38,7 @@
                             <div class="row mt8">
                                 <label :for="'task-coordinator'+uk" class="labels c1">co-ordinator</label>
                                 <select v-model="taskCoordinator" name="task-coordinator" :id='"task-coordinator"+uk'>
-                                    <option v-for="(user, index) in allUsers" :key="index" :value="user.id">
+                                    <option v-for="(user, index) in allUsers" :key="index.toString()+uk" :value="user.id">
                                         {{user.first_name}} {{user.last_name}}
                                     </option>
                                 </select>
@@ -47,7 +46,7 @@
 
                             <div class="row mt8">
                                 <label :for="'task-tasks'+uk" class="labels c1">task</label>
-                                <select type="text" v-model="taskTasks" :id='"task-tasks"+uk'>
+                                <select v-model="taskTasks" :id='"task-tasks"+uk'>
                                     <option value="">existing tasks</option>
                                 </select>
                             </div>
@@ -63,7 +62,7 @@
                         <div class="flex mt16">
                             <input v-model="repeat" type="checkbox" :id='"recurring"+uk' class="recurring">
                             <label :for="'recurring'+uk">recurring</label>
-                            <select v-if="repeat" v-model="taskRepeat" type="text" :id='"task-repeat"+uk' class="task-repeat p0 ml8">
+                            <select v-if="repeat" v-model="taskRepeat" :id='"task-repeat"+uk' class="task-repeat p0 ml8">
                                 <option value="year">every year</option>
                                 <option value="month">every month</option>
                                 <option value="day">every day</option>
@@ -111,8 +110,8 @@
 
                             <div :ref="'sub-task'+index" class="hide ml24">
                                 <div class="ml16">
-                                    <select v-model="task.status" type="text" class="sub-task-extra">
-                                        <option v-for="(status, index) in subTaskStatuses" :value="status.id" :key="index+uk?.toString()">
+                                    <select v-model="task.status" class="sub-task-extra">
+                                        <option v-for="(status, index) in subTaskStatuses" :value="status.id" :key="index.toString()+uk">
                                             {{status.status}}
                                         </option>
                                     </select>
@@ -121,7 +120,7 @@
                                 <div class="ml16">
                                     <select v-model="task.assignedTo" name="assigned-to" class="sub-task-extra">
                                         <option value="" disabled selected hidden>assign</option>
-                                        <option v-for="(user, index) in allUsers" :key="index" :value="user.id">
+                                        <option v-for="(user, index) in allUsers" :key="index.toString()+uk" :value="user.id">
                                             {{user.first_name}} {{user.last_name}}
                                         </option>
                                     </select>
@@ -168,7 +167,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import { getUsers, getClients, createTask } from '@/api/index.js'
+import { getUsers, getClients, createTask, getSubTasks } from '@/api/index.js'
 
     export default {
         name: 'TasksCreate',
@@ -180,19 +179,21 @@ import { getUsers, getClients, createTask } from '@/api/index.js'
                 allClients: '',
                 subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "pending with signed documents"}, {id: 9, status: "pending with DSC"}],
                 tableHead: 'create task',
+                
                 subTasks: [], 
                 repeat: false,
-                // clientList:'',
                 newSubTask: '',
                 taskStatus: '',
                 taskTitle: '',
                 taskClient: '',
                 taskTasks: '',
                 taskCost: '',
+                taskCoordinator: '',
                 save: false,
                 taskRepeat: '',
                 taskRepeatOn: '',
                 taskSubTasks: '',
+                
                 taskData: [{
                     taskId: 1,
                     taskTitle: 'Incorporation of Company',
@@ -277,7 +278,9 @@ import { getUsers, getClients, createTask } from '@/api/index.js'
                         title: this.taskTitle,
                         cost: this.taskCost,
                         saved: new Number(this.save),
-                        subTasks: this.subTasks
+                        subTasks: this.subTasks,
+                        clientId: this.taskClient,
+                        coordinatorId: this.taskCoordinator,
                     })
                     .then(()=> {
                         this.promptMessage({
@@ -294,19 +297,34 @@ import { getUsers, getClients, createTask } from '@/api/index.js'
                         })
                     })
                 }
+            },
+            clear() {
+                this.subTasks = [] 
+                this.repeat = false
+                this.newSubTask =  ''
+                this.taskStatus = ''
+                this.taskTitle = ''
+                this.taskClient = ''
+                this.taskTasks = ''
+                this.taskCost = ''
+                this.taskCoordinator = ''
+                this.save = false
+                this.taskRepeat = ''
+                this.taskRepeatOn = ''
+                this.taskSubTasks = ''
             }
         },
         created() {
             getClients()
             .then((allClients) => {
-                this.allClients = allClients.data.map(o => o.name)
+                this.allClients = allClients.data.map(o => { return {client: o.name, id: o.id} })
             })
             getUsers({from: null, recordsPerPage: null})
             .then(allUsers => {
                 this.allUsers = allUsers.data
             })
-            console.log("task created props", this.taskId)
-            if (window.history.state.taskId != undefined){   
+            if (window.history.state.taskId != undefined){ 
+                this.editing = true  
                 this.tableHead = 'edit task'         
                 let taskData = this.taskData.find(o => o.taskId == window.history.state.taskId)
                 this.taskTitle = taskData?.taskTitle
@@ -320,6 +338,7 @@ import { getUsers, getClients, createTask } from '@/api/index.js'
                 console.log("fetch data of task ", window.history.state.taskId)
             }
             else if (this.taskId != undefined) {
+                this.editing = true
                 console.log(this.taslId)
                 this.tableHead = 'edit task'         
                 let taskData = this.taskData.find(o => o.taskId == this.taskId)
@@ -335,6 +354,14 @@ import { getUsers, getClients, createTask } from '@/api/index.js'
         },
         mounted() {
             this.$refs['defaultTab'+this.uk].click()
+
+            if (this.editing == true) {
+                console.log("getting sub tasks of taskId ", this.taskId)
+                getSubTasks({taskId: this.taskId})
+                .then((subTasks) => {
+                    this.subTasks = subTasks.data[0]
+                })
+            }
         }
     }
 </script>
