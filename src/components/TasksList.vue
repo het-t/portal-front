@@ -11,6 +11,7 @@
 
             <template #thead>
                 <tr class="table-heading">
+                    <div></div>
                     <th>title</th>
                     <th>client</th>
                     <th>progress</th>
@@ -21,10 +22,10 @@
             <template #tbody>
                 <div v-for="(task, index) of tasksList" :key="task.taskId">
                     <tr class="tr">
-                        <td class="flex">
-                            <div class="dots">
-                                <img @click="editTask('row'+index)" src="../assets/icons/dots-icon.png" alt="" class="dots">
-                            </div>
+                        <div class="dots">
+                            <img @click="editTask('row'+index)" src="../assets/icons/dots-icon.png" alt="" class="dots">
+                        </div>
+                        <td>
                             {{task.title}}
                         </td>
                         <td>{{task.client}}</td>
@@ -76,13 +77,13 @@ import TableActionPlus from './TableActionPlus.vue';
 
 <style scoped>
     .tr:hover .dots img {
-        display: inline !important;
+        visibility: visible !important;
     }
     .tr, .table-heading {
         padding: 0;
         display: grid;
         align-items: center;
-        grid-template-columns: 2fr 1fr 1fr 1fr 1fr;    
+        grid-template-columns: 8px 2fr 1fr 1fr 1fr 1fr;    
     }
     .tr-hidden {
         grid-template-columns: auto;
