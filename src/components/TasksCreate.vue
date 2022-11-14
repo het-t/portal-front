@@ -167,7 +167,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import { getUsers, getClients, createTask, getSubTasks } from '@/api/index.js'
+import { getUsers, getClients, createTask, getSubTasks, getTaskData } from '@/api/index.js'
 
     export default {
         name: 'TasksCreate',
@@ -303,6 +303,16 @@ import { getUsers, getClients, createTask, getSubTasks } from '@/api/index.js'
                 getSubTasks({taskId: this.taskId})
                 .then((subTasks) => {
                     this.subTasks = subTasks.data
+                })
+                getTaskData({taskId: this.taskId})
+                .then((taskData) => {
+                    console.log("editing task", taskData.data)
+                    const {title, cost, coordinator_id, client_id } = taskData.data[0]
+                    this.taskTitle = title
+                    this.taskCost = cost
+                    this.taskCoordinator = coordinator_id
+                    this.taskClient = client_id
+                    console.log(this.taskTitle, this.taskCost, this.taskCoordinator, this.taskClient)
                 })
             } else {
                 console.log("not editing")
