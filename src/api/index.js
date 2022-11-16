@@ -1,19 +1,25 @@
 import endpoints from "./endpoints.js"
-import createClientReq from "./clientsCreate.js"
-import getClientsReq from './clientsList.js'
-import getUsersReq from './getUsers.js'
-import createTaskReq from "./taskCreate.js"
-import getSubTasksReq from "./tasksGetSubTasks.js"
-import getTasksReq from "./tasksList.js"
-import getTaskDataReq from "./taskData.js"
+import makeGetReq from "./makeGetReq.js"
+import makePostReq from './makePostReq.js'
 
-const createClient = (args) => createClientReq(endpoints.createClient, args)
-const getClients = () => getClientsReq(endpoints.getClients)
-const getUsers = (args) => getUsersReq(endpoints.getAllUsers, args)
-const createTask = (args) => createTaskReq(endpoints.createTask, args)
-const getSubTasks = (args) => getSubTasksReq(endpoints.getSubTasks, args)
-const getTasks = () => getTasksReq(endpoints.getTasks)
-const getTaskData = (args) => getTaskDataReq(endpoints.getTaskData, args)
+const createClient = (args) => makeGetReq(endpoints.createClient, args)
+const getClients = () => makeGetReq(endpoints.getClients)
+const getUsers = (args) => makeGetReq(endpoints.getAllUsers, args)
+const createTask = (args) => makeGetReq(endpoints.createTask, args)
+const getSubTasks = (args) => makeGetReq(endpoints.getSubTasks, args)
+const getTasks = () => makeGetReq(endpoints.getTasks)
+const getTaskData = (args) => makeGetReq(endpoints.getTaskData, args)
+const getRoles = (args) => makeGetReq(endpoints.getRoles, args)
+const getUserData = (args) => makeGetReq(endpoints.getUserData, args)
+const getRoleData = (args) => makeGetReq(endpoints.editRole, args)
+const createRole = (args) => makeGetReq(endpoints.createRole, args)
+const getAllRights = (args) => makeGetReq(endpoints.getRoleRights, args)
+
+const createUser = (args) => makePostReq(endpoints.createUser, args)
+const editUser = (args) => makePostReq(endpoints.editUser, args)
+const deleteUser = (args) => makePostReq(endpoints.deleteUser, args)
+const deleteRole = (args) => makePostReq(endpoints.deleteRole, args)
+const editRole = (args) => makePostReq(endpoints.editRole, args)
 
 export {
     createClient,
@@ -23,4 +29,15 @@ export {
     getSubTasks,
     getTasks,
     getTaskData,
+    createUser,
+    editUser,
+    getRoles,
+    deleteUser,
+    getUserData,
+    getRoleData,
+    deleteRole,
+    createRole,
+    getAllRights,
+    editRole,
+
 }

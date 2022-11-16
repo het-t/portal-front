@@ -122,16 +122,16 @@ export default {
         },
         proceed() {
             const args = {
-                clientName: this.clientName,
-                clientType: this.clientType,
+                client_name: this.clientName,
+                client_type: this.clientType,
                 cin: this.cin,
-                firmName: this.firmName,
-                firmAddress: this.firmAddress,
-                caEmail: this.caEmail,
-                caPanDetail: this.caPanDetail,
-                conName: this.conName,
-                conEmail: this.conEmail,
-                conPhone: this.conPhone
+                firm_name: this.firmName,
+                firm_address: this.firmAddress,
+                ca_email: this.caEmail,
+                ca_pan_detail: this.caPanDetail,
+                con_name: this.conName,
+                con_email: this.conEmail,
+                con_phone: this.conPhone
             }
             createClient(args)
             .then(() => {

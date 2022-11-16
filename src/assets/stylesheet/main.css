@@ -68,7 +68,7 @@ a, button {
 .dots {
     width: 13px;
     height: 13px;
-    filter: invert(0.5);
+    /* filter: invert(0.5); */
     cursor: pointer;
 }
 .dots img {
@@ -418,6 +418,10 @@ input:focus, select:focus, textarea:focus {
 }
 .pl16 {
     padding-left: 16px;
+}
+
+.p12 {
+    padding: 12px;
 }
 
 h5 {

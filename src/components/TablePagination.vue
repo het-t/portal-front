@@ -60,7 +60,7 @@
                 axios.get(`/u/api/${this.tableName}`, {
                     params: {
                         from: (this.currentPage-1)*this.recordsPerPage,
-                        records_per_page: this.recordsPerPage,
+                        recordsPerPage: this.recordsPerPage,
                     },
                     withCredentials: true
                 })

@@ -39,7 +39,7 @@
                                 <label :for="'task-coordinator'+uk" class="labels c1">co-ordinator</label>
                                 <select v-model="taskCoordinator" name="task-coordinator" :id='"task-coordinator"+uk'>
                                     <option v-for="(user, index) in allUsers" :key="index.toString()+uk" :value="user.id">
-                                        {{user.first_name}} {{user.last_name}}
+                                        {{user.firstName}} {{user.lastName}}
                                     </option>
                                 </select>
                             </div>
@@ -110,7 +110,7 @@
 
                             <div :ref="'sub-task'+index" class="hide ml24">
                                 <div class="ml16">
-                                    <select v-model="task.status_id" class="sub-task-extra">
+                                    <select v-model="task.statusId" class="sub-task-extra">
                                         <option v-for="(status, index) in subTaskStatuses" :value="status.id" :key="index.toString()+uk">
                                             {{status.status}}
                                         </option>
@@ -118,10 +118,10 @@
                                 </div>
 
                                 <div class="ml16">
-                                    <select v-model="task.assigned_to" name="assigned-to" class="sub-task-extra">
+                                    <select v-model="task.assignedTo" name="assigned-to" class="sub-task-extra">
                                         <option value="" disabled selected hidden>assign</option>
                                         <option v-for="(user, index) in allUsers" :key="index.toString()+uk" :value="user.id">
-                                            {{user.first_name}} {{user.last_name}}
+                                            {{user.firstName}} {{user.lastName}}
                                         </option>
                                     </select>
                                 </div>
@@ -307,12 +307,11 @@ import { getUsers, getClients, createTask, getSubTasks, getTaskData } from '@/ap
                 getTaskData({taskId: this.taskId})
                 .then((taskData) => {
                     console.log("editing task", taskData.data)
-                    const {title, cost, coordinator_id, client_id } = taskData.data[0]
+                    const {title, cost, coordinatorId, clientId } = taskData.data[0]
                     this.taskTitle = title
                     this.taskCost = cost
-                    this.taskCoordinator = coordinator_id
-                    this.taskClient = client_id
-                    console.log(this.taskTitle, this.taskCost, this.taskCoordinator, this.taskClient)
+                    this.taskCoordinator = coordinatorId
+                    this.taskClient = clientId
                 })
             } else {
                 console.log("not editing")
@@ -379,9 +378,8 @@ input, select {
     padding: 0;
     border: none;
 }
-/* .action-button img {display: none;} */
 .grid:hover .dots img {
-    display: inline !important;
+    visibility: visible !important;
 }
 .flex {
     display: flex;

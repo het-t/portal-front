@@ -53,11 +53,11 @@
                         </td>
                         
                         <td>
-                            {{activity?.reference_table}}
+                            {{activity?.referenceTable}}
                         </td>
 
                         <td>
-                            {{activity?.reference_table_pk_id}}
+                            {{activity?.referenceTablePkId}}
                         </td>
 
                         <td>

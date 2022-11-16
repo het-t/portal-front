@@ -10,13 +10,14 @@
 
             <div class="mr16 ml16 mt16">
                 <table>
-                    <tr>
+                    <tr class="table-heading">
                         <!-- <th>
                             <div class="tr-th">
                                 id
                                 <TableSort :tableData="''" keyToSort="''" />
                             </div>
                         </th> -->
+                        <div class="p12"></div>
                         <th>name</th>
                         <th>CIN/LLPIN</th>
                         <th>type</th>
@@ -25,10 +26,10 @@
                     </tr>
 
                     <tr class="tr" v-for="(client, index) in clientList" :key="index">
+                        <div class="dots p12 mr8">
+                            <img @click="editClient('row'+index)" src="../assets/icons/dots-icon.png" alt="" class="dots">
+                        </div>
                         <td class="flex">
-                            <div class="dots">
-                                <img @click="editClient('row'+index)" src="../assets/icons/dots-icon.png" alt="" class="dots">
-                            </div>
                             {{client.name}}
                         </td>
                         <td>
@@ -39,27 +40,27 @@
                         </td>
                         <td>
                             <p>
-                                Name: {{client.ca_firm_name}}
+                                Name: {{client.caFirmName}}
                             </p>
                             <p>
-                                E-Mail: {{client.ca_email}}
+                                E-Mail: {{client.caEmail}}
                             </p>
                             <p>
-                                Pan: {{client.ca_pan}}
+                                Pan: {{client.caPan}}
                             </p>
                             <p>
-                                Address: {{client.ca_address}}
+                                Address: {{client.caAddress}}
                             </p>
                         </td>
                         <td>
                             <p>
-                                Name: {{client.con_name}}
+                                Name: {{client.conName}}
                             </p>
                             <p>
-                                Phone: {{client.con_phone}}
+                                Phone: {{client.conPhone}}
                             </p>
                             <p>
-                                E-Mail: {{client.con_email}}
+                                E-Mail: {{client.conEmail}}
                             </p>
                         </td>
                     </tr>
@@ -72,8 +73,8 @@
 <script>
     // import TableFilter from './TableFilter.vue'
     // import TableSort from './TableSort.vue';
-    import {getClients} from '@/api/index.js'
-import TableActionPlus from './TableActionPlus.vue'
+    import {getClients, editClient} from '@/api/index.js'
+    import TableActionPlus from './TableActionPlus.vue'
 
     export default {
   components: { TableActionPlus },
@@ -83,11 +84,11 @@ import TableActionPlus from './TableActionPlus.vue'
                 clientList: ''
             }
         },
-        // methods: {
-        //     editClient(rowIndex) {
-                
-        //     }
-        // },
+        methods: {
+            editClient() {
+                editClient()
+            }
+        },
         // components: { TableFilter, TableSort },
         created() {
             getClients()
@@ -101,17 +102,18 @@ import TableActionPlus from './TableActionPlus.vue'
 
 <style scoped>
     .tr:hover .dots img {
-        display: inline !important;
+        visibility: visible !important;
     }
-    .flex {
-        display: flex;
-        column-gap: 12px;
-        margin: auto 0;
-    }
-    .tr {
-        align-items: center;
+    .tr, .table-heading {
+        display: grid;
+        align-items: initial;
+        /* justify-content: ; */
+        grid-template-columns: 36px 1fr 1fr 1fr 2fr 2fr;
     }
     td {
         vertical-align: text-top;
+    }
+    p {
+        margin-top: 0;
     }
 </style>

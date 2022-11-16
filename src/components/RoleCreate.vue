@@ -31,8 +31,9 @@
 </template>
 
 <script>
-    import axios from 'axios'
+import { editRole, createRole } from '@/api'
 import { mapActions } from 'vuex'
+import { getRoleData, getAllRights } from '../api'
 
     export default {
         name: 'CreateRole',
@@ -58,24 +59,10 @@ import { mapActions } from 'vuex'
                 else this.createRole()
             },
             createRole() {
-                console.log(this.roleRights)
-                axios.get('/u/api/roles/create-role',{
-                    withCredentials: true,
-                    params: {
-                        role_name: this.roleName,
-                        role_rights: this.roleRights
-                    }
-                })
+                createRole({roleName: this.roleName, roleRights: this.roleRights})
             },
             editRole() {
-                axios.post('/u/api/roles/edit-role', {
-                    params: {
-                        role_name: this.roleName,
-                        role_rights: this.roleRights
-                    }
-                }, {
-                    withCredentials: true
-                })
+                editRole({roleName: this.roleName, roleRight: this.roleRights})
             },
             clear() {
                 this.roleName = ''
@@ -87,12 +74,7 @@ import { mapActions } from 'vuex'
                 this.formHead = 'edit role'
                 this.proceedBtn = 'save'
                 console.log("editing role", this.editRoleName)
-                axios.get('/u/api/roles/edit', {
-                    withCredentials: true,
-                    params: {
-                        editRoleName: this.editRoleName
-                    }
-                })
+                getRoleData({editRoleName: this.editRoleName})
                 .then((roleData) => {
                     const editRoleData = roleData.data
                     this.roleName = editRoleData.name
@@ -101,15 +83,12 @@ import { mapActions } from 'vuex'
                 })
             }
             
-            {
-                axios.get('/u/api/roles/get-rights',{
-                    withCredentials: true,
-                })
+            getAllRights()
                 .then((rights) => {
                     console.log("rights => ", rights.data)
                     this.dbRights = rights.data
                 })
-            }
+
         }
     }
 </script>

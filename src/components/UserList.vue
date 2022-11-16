@@ -23,7 +23,7 @@
 
                     <tr class="tr" v-for="user in usersListToDisplay()" :key="user?.id">
                         <td>
-                            {{user.first_name + ' ' + user.last_name}}
+                            {{user.firstName + ' ' + user.lastName}}
                         </td>
                         <td>
                             {{user.rights}}
@@ -52,11 +52,11 @@
 </template>
 
 <script>
-    import axios from 'axios'
+    import {deleteUser} from '../api/index.js'
     import AlertC from './AlertC.vue'
     import TablePagination from './TablePagination.vue'
     import TableFilter from './TableFilter.vue';
-import TableActionPlus from './TableActionPlus.vue';
+    import TableActionPlus from './TableActionPlus.vue';
 
     export default {
     name: "UserList",
@@ -64,7 +64,7 @@ import TableActionPlus from './TableActionPlus.vue';
         return {
             alertData: {
                 params: [{
-                    user_id: ''
+                    userId: ''
                 }],
                 msg: '',
             },
@@ -85,18 +85,14 @@ import TableActionPlus from './TableActionPlus.vue';
             }
         },
         deleteUser(params) {
-            axios.post('/u/api/users/delete-user', {
-                ...params,
-            }, {
-                withCredentials: true
-            })
+            deleteUser(params)
             .then((results) => {
                 console.log("deleteUser", results.data)
             })
         },
         alert(msg, userId) {
             this.displayAlert = true
-            this.alertData.params[0].user_id = userId
+            this.alertData.params[0].userId = userId
             this.alertData.msg = msg
         }
     },

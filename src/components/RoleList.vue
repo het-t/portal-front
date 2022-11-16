@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import {deleteRole} from '@/api/index.js'
 import AlertC from './AlertC.vue'
 import TablePagination from './TablePagination.vue'
 import TableSort from './TableSort.vue'
@@ -95,21 +95,11 @@ import TableActionPlus from './TableActionPlus.vue'
                 return this.rolesList
             }
         },
-        editRole() {
-            axios.get("/u/api/roles/edit-role", {
-                withCredentials: true,
-                params: {
-                    role_name: this.roleName,
-                }
-            });
-        },
+        // getRoleData() {
+        //     getRoleData({roleName: this.roleName})
+        // },
         deleteRole(params) {
-            console.log("deleteRole params", params)
-            axios.post("/u/api/roles/delete-role", {
-                ...params,
-            } ,{
-                withCredentials: true,
-            })
+            deleteRole(params)
             .then((results)=> {
                 console.log("deleteRole", results.data)
             })

@@ -1,10 +1,11 @@
 import axios from 'axios'
 
-const getTasksReq = (url) => {
-
+const makePostReq = (url, args) => {
     return axios.get(url, {
+        params: args
+    }, {
         withCredentials: true,
     })
 }
 
-export default getTasksReq
+export default makePostReq

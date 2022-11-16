@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import {createUser, editUser, getRoles, getUserData} from '@/api/index.js'
 import { mapActions } from 'vuex'
     export default {
         name: 'CreateUser',
@@ -90,79 +90,71 @@ import { mapActions } from 'vuex'
             if (this.editUserId != undefined) {
                 this.proceedBtn = 'save'
                 this.formHead = 'edit user'
-                axios.get('/u/api/users/edit', {
-                    withCredentials: true,
-                    params: {
-                        editUserId: this.editUserId,
-                    }
+                getUserData({
+                    editUserId: this.editUserId
                 })
                 .then((userData) => {
                     console.log("userData: ", userData.data)
-                    const editUserData = userData.data
-                    this.userFirstName = editUserData.first_name
-                    this.userLastName = editUserData.last_name
-                    this.userGender = editUserData.gender
-                    this.userBithdate = new Date(editUserData.birth_date)
-                    this.userEmail = editUserData.email
-                    this.userRole = editUserData.role
-                    this.userPassword = editUserData.password
-                    this.userId = editUserData.id
+                    const {firstName, lastName, gender, birthdate, email, role, password, id} = userData.data
+                    this.userFirstName = firstName
+                    this.userLastName = lastName
+                    this.userGender = gender
+                    this.userBithdate = new Date(birthdate)
+                    this.userEmail = email
+                    this.userRole = role
+                    this.userPassword = password
+                    this.userId = id
                 })
             } 
-
-                axios.get('/u/api/roles', {
-                    withCredentials: true,
-                    params: {
-                        from: 0,
-                        records_per_page: 100,
-                    },
-                })
-                .then((roles) => {
-                    console.log("all roles: ", roles)
-                    this.dbRoles = roles.data
-                })
+            getRoles({
+                from: 0,
+                recordsPerPage: 100,
+            }) 
+            .then((roles) => {
+                console.log("all roles: ", roles)
+                this.dbRoles = roles.data
+            })
             
         },
         methods: {
             ...mapActions(['promptMessage']),
             proceed() {
-                this.$router.push('/u/users/list')
-                this.promptMessage({
-                    title: 'User Created',
-                    msg: 'successfully'
-                })
-                if (!this.userId) this.createUser()
-                else this.editUser()
-            },
-            createUser() {
-                axios.post('/u/api/users/create-user',{
-                    params: {
-                        first_name: this.userFirstName,
-                        last_name: this.userLastName,
+                if (!this.userId) {
+                    createUser({
+                        firstName: this.userFirstName,
+                        lastName: this.userLastName,
                         gender: this.userGender,
                         birthdate: this.userBithdate,
                         email: this.userEmail,
                         role: this.userRole,
                         password: this.userPassword,
-                    },
-                },{
-                    withCredentials: true,
-                })
-            },
-            editUser() {
-                axios.post('/u/api/users/edit-user',{
-                    params: {
-                        user_id: this.userId,
-                        first_name: this.userFirstName,
-                        last_name: this.userLastName,
+                    })
+                    .then(()=>{
+                        this.$router.push('/u/users/list')
+                        this.promptMessage({
+                            title: 'User Created',
+                            msg: 'successfully'
+                        })
+                    })
+                }
+                else {
+                    editUser({
+                        userId: this.userId,
+                        firstName: this.firstName,
+                        lastName: this.userLastName,
                         gender: this.userGender,
-                        birthdate: '2003/10/19',
+                        birthdate: this.userBithdate,
                         email: this.userEmail,
                         role: this.userRole,
-                    },
-                },{
-                    withCredentials: true,
-                })
+                    })
+                    .then(()=>{
+                        this.$router.push('/u/users/list')
+                        this.promptMessage({
+                            title: 'User Created',
+                            msg: 'successfully'
+                        })
+                    })
+                }
             },
             clear() {
                 this.userFirstName = ''
