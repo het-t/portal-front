@@ -52,7 +52,7 @@
 </template>
 
 <script>
-    import {deleteUser} from '../api/index.js'
+    import {users} from '../api/index.js'
     import AlertC from './AlertC.vue'
     import TablePagination from './TablePagination.vue'
     import TableFilter from './TableFilter.vue';
@@ -85,7 +85,7 @@
             }
         },
         deleteUser(params) {
-            deleteUser(params)
+            users.delete(params)
             .then((results) => {
                 console.log("deleteUser", results.data)
             })

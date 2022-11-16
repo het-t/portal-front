@@ -31,9 +31,8 @@
 </template>
 
 <script>
-import { editRole, createRole } from '@/api'
+import { roles, getAllRights } from '@/api'
 import { mapActions } from 'vuex'
-import { getRoleData, getAllRights } from '../api'
 
     export default {
         name: 'CreateRole',
@@ -59,10 +58,10 @@ import { getRoleData, getAllRights } from '../api'
                 else this.createRole()
             },
             createRole() {
-                createRole({roleName: this.roleName, roleRights: this.roleRights})
+                roles.create({roleName: this.roleName, roleRights: this.roleRights})
             },
             editRole() {
-                editRole({roleName: this.roleName, roleRight: this.roleRights})
+                roles.edit({roleName: this.roleName, roleRight: this.roleRights})
             },
             clear() {
                 this.roleName = ''
@@ -74,7 +73,7 @@ import { getRoleData, getAllRights } from '../api'
                 this.formHead = 'edit role'
                 this.proceedBtn = 'save'
                 console.log("editing role", this.editRoleName)
-                getRoleData({editRoleName: this.editRoleName})
+                roles.getData({editRoleName: this.editRoleName})
                 .then((roleData) => {
                     const editRoleData = roleData.data
                     this.roleName = editRoleData.name

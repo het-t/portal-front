@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import {deleteRole} from '@/api/index.js'
+import {roles} from '@/api/index.js'
 import AlertC from './AlertC.vue'
 import TablePagination from './TablePagination.vue'
 import TableSort from './TableSort.vue'
@@ -99,7 +99,7 @@ import TableActionPlus from './TableActionPlus.vue'
         //     getRoleData({roleName: this.roleName})
         // },
         deleteRole(params) {
-            deleteRole(params)
+            roles.delete(params)
             .then((results)=> {
                 console.log("deleteRole", results.data)
             })

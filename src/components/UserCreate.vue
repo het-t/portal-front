@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import {createUser, editUser, getRoles, getUserData} from '@/api/index.js'
+import {users, roles} from '@/api/index.js'
 import { mapActions } from 'vuex'
     export default {
         name: 'CreateUser',
@@ -90,7 +90,7 @@ import { mapActions } from 'vuex'
             if (this.editUserId != undefined) {
                 this.proceedBtn = 'save'
                 this.formHead = 'edit user'
-                getUserData({
+                users.getData({
                     editUserId: this.editUserId
                 })
                 .then((userData) => {
@@ -106,7 +106,7 @@ import { mapActions } from 'vuex'
                     this.userId = id
                 })
             } 
-            getRoles({
+            roles.get({
                 from: 0,
                 recordsPerPage: 100,
             }) 
@@ -120,7 +120,7 @@ import { mapActions } from 'vuex'
             ...mapActions(['promptMessage']),
             proceed() {
                 if (!this.userId) {
-                    createUser({
+                    users.create({
                         firstName: this.userFirstName,
                         lastName: this.userLastName,
                         gender: this.userGender,
@@ -138,7 +138,7 @@ import { mapActions } from 'vuex'
                     })
                 }
                 else {
-                    editUser({
+                    users.edit({
                         userId: this.userId,
                         firstName: this.firstName,
                         lastName: this.userLastName,

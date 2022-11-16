@@ -73,7 +73,7 @@
 <script>
     // import TableFilter from './TableFilter.vue'
     // import TableSort from './TableSort.vue';
-    import {getClients, editClient} from '@/api/index.js'
+    import {clients} from '@/api/index.js'
     import TableActionPlus from './TableActionPlus.vue'
 
     export default {
@@ -86,12 +86,12 @@
         },
         methods: {
             editClient() {
-                editClient()
+                clients.edit()
             }
         },
         // components: { TableFilter, TableSort },
         created() {
-            getClients()
+            clients.get()
             .then(results => {
                 console.log(results.data)
                 this.clientList = results.data
@@ -107,7 +107,6 @@
     .tr, .table-heading {
         display: grid;
         align-items: initial;
-        /* justify-content: ; */
         grid-template-columns: 36px 1fr 1fr 1fr 2fr 2fr;
     }
     td {

@@ -46,7 +46,7 @@
 
                             <div class="row mt8">
                                 <label :for="'task-tasks'+uk" class="labels c1">task</label>
-                                <select v-model="taskTasks" :id='"task-tasks"+uk'>
+                                <select v-model="taskMaster" :id='"task-tasks"+uk'>
                                     <option value="">existing tasks</option>
                                 </select>
                             </div>
@@ -167,7 +167,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import { getUsers, getClients, createTask, getSubTasks, getTaskData } from '@/api/index.js'
+import { users, clients, tasks } from '@/api/index.js'
 
     export default {
         name: 'TasksCreate',
@@ -186,7 +186,7 @@ import { getUsers, getClients, createTask, getSubTasks, getTaskData } from '@/ap
                 taskStatus: '',
                 taskTitle: '',
                 taskClient: '',
-                taskTasks: '',
+                taskMaster: '',
                 taskCost: '',
                 taskCoordinator: '',
                 save: false,
@@ -235,7 +235,8 @@ import { getUsers, getClients, createTask, getSubTasks, getTaskData } from '@/ap
                 this.$router.push('/u/tasks/list')
 
                 if (this.editing == false) {
-                    createTask({
+                    tasks.create({
+                        taskMasterId: this.taskMasterId,
                         title: this.taskTitle,
                         cost: this.taskCost,
                         saved: new Number(this.save),
@@ -276,11 +277,11 @@ import { getUsers, getClients, createTask, getSubTasks, getTaskData } from '@/ap
             }
         },
         created() {
-            getClients()
+            clients.get()
             .then((allClients) => {
                 this.allClients = allClients.data.map(o => { return {client: o.name, id: o.id} })
             })
-            getUsers({from: null, recordsPerPage: null})
+            users.get({from: null, recordsPerPage: null})
             .then(allUsers => {
                 this.allUsers = allUsers.data
             })
@@ -300,11 +301,11 @@ import { getUsers, getClients, createTask, getSubTasks, getTaskData } from '@/ap
 
             if (this.editing == true) {
                 console.log("getting sub tasks of taskId ", this.taskId)
-                getSubTasks({taskId: this.taskId})
+                tasks.getSubTasks({taskId: this.taskId})
                 .then((subTasks) => {
                     this.subTasks = subTasks.data
                 })
-                getTaskData({taskId: this.taskId})
+                tasks.getData({taskId: this.taskId})
                 .then((taskData) => {
                     console.log("editing task", taskData.data)
                     const {title, cost, coordinatorId, clientId } = taskData.data[0]

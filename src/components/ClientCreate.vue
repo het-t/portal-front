@@ -87,7 +87,7 @@
 <script>
 import axios from 'axios'
 import { mapActions } from 'vuex'
-import {createClient} from '@/api/index.js'
+import {clients} from '@/api/index.js'
 
 export default {
     name: 'ClientCreate',
@@ -133,7 +133,7 @@ export default {
                 con_email: this.conEmail,
                 con_phone: this.conPhone
             }
-            createClient(args)
+            clients.create(args)
             .then(() => {
                 this.$router.push('/u/clients/list')        
                 this.promptMessage({

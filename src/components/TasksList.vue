@@ -48,7 +48,7 @@
 import TasksCreate from './TasksCreate.vue';
 import TasksProgress from './TasksProgress.vue';
 import TableMain from './TableMain.vue';
-import { getTasks } from '@/api/index.js';
+import { tasks } from '@/api/index.js';
 import TableActionPlus from './TableActionPlus.vue';
 
     export default {
@@ -59,7 +59,7 @@ import TableActionPlus from './TableActionPlus.vue';
         };
     },
     created() {
-        getTasks()
+        tasks.get()
         .then(tasks => {
             this.tasksList = tasks.data
         })
