@@ -33,7 +33,7 @@ import { mapActions } from 'vuex'
                     withCredentials: true,
                 })
                 .then((results) => {
-                    if (results?.data == 1) {
+                    if (results?.data?.login == 1) {
                         this.$router.push({name: 'u'})
                         this.promptMessage({
                             title: 'login',
@@ -42,11 +42,10 @@ import { mapActions } from 'vuex'
                         })
                     }
                     else {
-                        console.log("invalid")
                         this.$router.push({name: 'login'})
                         this.promptMessage({
                             title: 'login',
-                            msg: 'invalid',
+                            msg: results.data.login,
                             bgcolor: 'red'
                         })
                     }
