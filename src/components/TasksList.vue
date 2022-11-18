@@ -60,8 +60,8 @@ import TableActionPlus from './TableActionPlus.vue';
     },
     created() {
         tasks.get()
-        .then(tasks => {
-            this.tasksList = tasks.data
+        .then(res => {
+            this.tasksList = res.data.tasksList
         })
     },
     methods: {

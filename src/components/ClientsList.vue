@@ -93,8 +93,7 @@
         created() {
             clients.get()
             .then(results => {
-                console.log(results.data)
-                this.clientList = results.data
+                this.clientList = results.data.clientsList
             })
         }
     }

@@ -15,9 +15,11 @@
             <div class="row mt8">
                 <label class="labels c1">rights</label>
                 <div>
-                    <div class="mt16" v-for="right in dbRights" :key="right">
-                        <input v-model="roleRights" :id="right.name" :value="right.name" class="m0 mr16" type="checkbox" :name="right.name" :title="right?.description">
-                        <label :for="right.name">{{right.name}}</label>
+                    <!-- {{rightsList}} -->
+                    {{roleRights}}
+                    <div class="mt16" v-for="right in rightsList" :key="right">
+                        <input v-model="roleRights" :id="right.id" :value="right.id" class="m0 mr16" type="checkbox" :name="right.name" :title="right?.description">
+                        <label :for="right.id">{{right.name}}</label>
                     </div>
                 </div>
             </div>
@@ -41,7 +43,7 @@ import { mapActions } from 'vuex'
             return {
                 roleName: '',
                 roleRights: [],
-                dbRights: [],
+                rightsList: [],
                 formHead: 'create role',
                 proceedBtn: 'create',
             }
@@ -85,9 +87,8 @@ import { mapActions } from 'vuex'
             getAllRights()
                 .then((rights) => {
                     console.log("rights => ", rights.data)
-                    this.dbRights = rights.data
+                    this.rightsList = rights.data.rightsMasterList
                 })
-
         }
     }
 </script>

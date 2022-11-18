@@ -14,7 +14,7 @@
             }
         },
         props: {
-            tableData: String
+            tableData: JSON
         },
         methods: {
             filter() {

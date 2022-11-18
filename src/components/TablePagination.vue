@@ -2,7 +2,7 @@
     <div class="flex">
         <div class="recordsPerPage">
             <label for="recordsPerPage">entries</label>
-            <select @change="getPageData()" id="recordsPerPage" v-model="recordsPerPage" type="number" class="ml8"> 
+            <select @change="getPageData()" id="recordsPerPage" v-model="recordsPerPage" class="ml8"> 
                 <option value="10">10</option>
                 <option value="20">20</option>
                 <option value="50">50</option>
@@ -65,8 +65,9 @@
                     withCredentials: true
                 })
                 .then((activities) => {
-                    this.$emit("tableData", activities.data)
-                    console.log("table data", activities.data)
+                    console.log("table name", this.tableName)
+                    this.$emit("tableData", activities.data[this.tableName+'List'])
+                    console.log("table data", activities.data[this.tableName+'List'])
                 });
             },
         },
@@ -75,7 +76,8 @@
                 withCredentials: true
             })
             .then((count) => {
-                this.totalRecords = count.data[0].count
+                console.log("table pagination", count)
+                this.totalRecords = count.data.count
                 this.pageCount = Math.ceil(this.totalRecords / this.recordsPerPage)
                 console.log("total records: ", this.totalRecords)
                 console.log("page count:", this.pageCount)

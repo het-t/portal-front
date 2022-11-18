@@ -48,7 +48,7 @@
             }
         },
         props: {
-            tableData: String,
+            tableData: JSON,
             dataFields: JSON,
             clear: Boolean
         },

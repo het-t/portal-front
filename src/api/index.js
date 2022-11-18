@@ -31,9 +31,10 @@ const tasks = {
 }
 
 const getAllRights = (args) => makeGetReq(endpoints.getAllRights, args)
-
+const getUserRights = () => makeGetReq(endpoints.getUserRights)
 export {
     getAllRights,
+    getUserRights,
     clients,
     users,
     roles,

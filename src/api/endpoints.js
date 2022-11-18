@@ -16,6 +16,7 @@ const endpoints = {
     deleteRole: '/u/api/roles/delete-role',
     createRole: '/u/api/roles/create-role',
     getAllRights: '/u/api/roles/get-rights',
+    getUserRights: '/u/api/rights',
     // editClient: '/u/api/roles/'
 }
 

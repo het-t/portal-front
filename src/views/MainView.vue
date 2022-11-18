@@ -86,8 +86,8 @@
 
 <script>
 import LogOut from '@/components/LogOut.vue'
-import axios from 'axios'
 import { mapActions, mapGetters } from 'vuex'
+import { getUserRights } from '../api'
   
   export default {
     name: "MainView",
@@ -111,12 +111,9 @@ import { mapActions, mapGetters } from 'vuex'
       }
     },
     created() {
-      axios.get('/u/api/rights', {
-        withCredentials: true
-      })
+      getUserRights()
       .then((results) => {
-        console.log("MainView created results ", results.data)
-        this.rights(results.data)
+        this.rights(results.data.userRights)
       })
     }
   }
