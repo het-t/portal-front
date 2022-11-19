@@ -240,7 +240,7 @@ import { users, clients, tasks } from '@/api/index.js'
                         title: this.taskTitle,
                         cost: this.taskCost,
                         saved: new Number(this.save),
-                        subTasks: this.subTasks,
+                        subTasks: JSON.stringify(this.subTasks),
                         clientId: this.taskClient,
                         coordinatorId: this.taskCoordinator,
                     })
@@ -279,11 +279,11 @@ import { users, clients, tasks } from '@/api/index.js'
         created() {
             clients.get()
             .then((allClients) => {
-                this.allClients = allClients.data.map(o => { return {client: o.name, id: o.id} })
+                this.allClients = allClients.data.clientsList.map(o => { return {client: o.name, id: o.id} })
             })
             users.get({from: null, recordsPerPage: null})
             .then(allUsers => {
-                this.allUsers = allUsers.data
+                this.allUsers = allUsers.data.usersList
             })
             if (window.history.state.taskId != undefined){ 
                 this.editing = true  
@@ -303,12 +303,12 @@ import { users, clients, tasks } from '@/api/index.js'
                 console.log("getting sub tasks of taskId ", this.taskId)
                 tasks.getSubTasks({taskId: this.taskId})
                 .then((subTasks) => {
-                    this.subTasks = subTasks.data
+                    this.subTasks = subTasks.data.subTasksList
                 })
                 tasks.getData({taskId: this.taskId})
                 .then((taskData) => {
-                    console.log("editing task", taskData.data)
-                    const {title, cost, coordinatorId, clientId } = taskData.data[0]
+                    console.log("editing task", taskData.data.taskData)
+                    const {title, cost, coordinatorId, clientId } = taskData.data.taskData[0]
                     this.taskTitle = title
                     this.taskCost = cost
                     this.taskCoordinator = coordinatorId
