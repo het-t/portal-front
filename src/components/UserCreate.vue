@@ -93,9 +93,9 @@ import { mapActions } from 'vuex'
                 users.getData({
                     editUserId: this.editUserId
                 })
-                .then((userData) => {
-                    console.log("userData: ", userData.data)
-                    const {firstName, lastName, gender, birthdate, email, role, password, id} = userData.data
+                .then((response) => {
+                    console.log(response.data.userData)
+                    const {firstName, lastName, gender, birthdate, email, role, password, id} = response.data.userData
                     this.userFirstName = firstName
                     this.userLastName = lastName
                     this.userGender = gender
@@ -110,9 +110,9 @@ import { mapActions } from 'vuex'
                 from: 0,
                 recordsPerPage: 100,
             }) 
-            .then((roles) => {
+            .then((response) => {
                 console.log("all roles: ", roles)
-                this.dbRoles = roles.data
+                this.dbRoles = response.data.rolesList
             })
             
         },
