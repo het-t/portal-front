@@ -21,7 +21,7 @@
 
             <template #tbody>
                 <div v-for="(task, index) of tasksList" :key="task.taskId">
-                    <tr class="tr">
+                    <tr class="tr edit-task-tr" @click="editTask('row'+index)">
                         <div class="dots">
                             <img @click="editTask('row'+index)" src="../assets/icons/dots-icon.png" alt="" class="dots">
                         </div>
@@ -100,5 +100,8 @@ import TableActionPlus from './TableActionPlus.vue';
         padding: 0;
         border-top: 0;
         margin-bottom: 58px !important;
+    }
+    .edit-task-tr {
+        cursor: pointer;
     }
 </style>
