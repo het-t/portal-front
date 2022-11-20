@@ -1,6 +1,6 @@
 <template>
         <div class="card">
-            <div class="card-head m0 pb16 pt16 pr16 pl16">
+            <div v-if="displayHead != 'false'" class="card-head m0 pb16 pt16 pr16 pl16">
                 <h5 class="table-head m0">create client</h5>
             </div>
 
@@ -90,6 +90,7 @@ import {clients} from '@/api/index.js'
 
 export default {
     name: 'ClientCreate',
+    props: ['displayHead', 'clientData'],
     data() {
         return {
             cin: '',
@@ -103,6 +104,8 @@ export default {
             conEmail: '',
             conPhone: '',
             clientTypes: '',
+
+            editing: false,
         }
     },
     methods: {
@@ -156,6 +159,27 @@ export default {
         .then((response) => {
             this.clientTypes = response.data.clientsMasterTypes
         })
+        if (this.clientData != undefined) {
+            this.editing = true
+            console.log("editing client", this.editing)
+        }
+    },
+    mounted() {
+        if (this.editing != false) {
+            const {id, typeId, name, cin, caFirmName, caAddress, caPan, caEmail, conName, conEmail, conPhone} = JSON.parse(this.clientData)
+
+            console.log("editing client id ", id)
+            this.clientName = name
+            this.cin = cin
+            this.clientTypeId = typeId
+            this.firmName = caFirmName
+            this.firmAddress = caAddress
+            this.caPan = caPan
+            this.caEmail = caEmail
+            this.conName = conName
+            this.conEmail = conEmail
+            this.conPhone = conPhone
+        }
     }
 }
 </script>

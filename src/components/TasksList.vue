@@ -22,9 +22,9 @@
 
             <template #tbody>
                 <div v-for="(task, index) of tasksList" :key="task.taskId">
-                    <tr class="tr edit-task-tr" @click="editTask('row'+index)">
+                    <tr class="tr edit-task-tr" @click.prevent="editTask('row'+index)">
                         <div class="dots">
-                            <img @click="editTask('row'+index)" src="../assets/icons/dots-icon.png" alt="" class="dots-img">
+                            <img @click.stop="editTask('row'+index)" src="../assets/icons/dots-icon.png" alt="" class="dots-img">
                         </div>
                         <td>
                             {{task.title}}
