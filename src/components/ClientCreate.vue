@@ -19,7 +19,7 @@
 
                         <div id="i3" class="row mt8">
                             <label for="client-type" class="labels c1">type</label>
-                            <select v-model="clientType" id="client-type">
+                            <select v-model="clientTypeId" id="client-type">
                                 <option v-for="(clientType, index) of clientTypes" :key="index" :value="clientType.id">
                                     {{clientType.type}}
                                 </option>
@@ -43,7 +43,7 @@
 
                         <div id="i7" class="row mt8">
                             <label for="PAN" class="labels c1">PAN</label>
-                            <input v-model="caPanDetail" type="text" id="PAN">
+                            <input v-model="caPan" type="text" id="PAN">
                         </div>
 
                         <div id="i8" class="row mt8">
@@ -94,10 +94,10 @@ export default {
         return {
             cin: '',
             clientName: '',
-            clientType: '',
+            clientTypeId: '',
             firmName: '',
             firmAddress: '',
-            caPanDetail: '',
+            caPan: '',
             caEmail: '',
             conName: '',
             conEmail: '',
@@ -109,31 +109,32 @@ export default {
         ...mapActions(['promptMessage']),
         clear() {
             this.clientName = ''
-            this.clientType = ''
+            this.clientTypeId = ''
             this.cin = ''
             this.firmAddress = ''
             this.firmName = ''
             this.caEmail = ''
-            this.caPanDetail = ''
+            this.caPan = ''
             this.conName = ''
             this.conEmail = ''
             this.conPhone = ''
         },
         proceed() {
             const args = {
-                client_name: this.clientName,
-                client_type: this.clientType,
+                clientName: this.clientName,
+                clientTypeId: this.clientTypeId,
                 cin: this.cin,
-                firm_name: this.firmName,
-                firm_address: this.firmAddress,
-                ca_email: this.caEmail,
-                ca_pan_detail: this.caPanDetail,
-                con_name: this.conName,
-                con_email: this.conEmail,
-                con_phone: this.conPhone
+                firmName: this.firmName,
+                firmAddress: this.firmAddress,
+                caEmail: this.caEmail,
+                caPan: this.caPan,
+                conName: this.conName,
+                conEmail: this.conEmail,
+                conPhone: this.conPhone
             }
             clients.create(args)
-            .then(() => {
+            .then((response) => {
+                if (response.data.clientCreated == 'fail') throw new Error();
                 this.$router.push('/u/clients/list')        
                 this.promptMessage({
                     title: 'Client Created',
@@ -141,19 +142,16 @@ export default {
                     bgcolor: 'green'
                 })
             })
-            .catch((e) => {
+            .catch(() => {
                 this.promptMessage({
                     title: 'Error',
-                    msg: 'client cannot be created' + e,
+                    msg: 'client cannot be created',
                     bgcolor: 'red'
                 })
             })
         }
     },
     created() {
-        // axios.get('/api/clients/types', {
-        //     withCredentials: true
-        // })
         clients.getTypes()
         .then((response) => {
             this.clientTypes = response.data.clientsMasterTypes
