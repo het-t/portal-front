@@ -68,11 +68,18 @@ a, button {
 .dots {
     width: 13px;
     height: 13px;
-    /* filter: invert(0.5); */
     cursor: pointer;
 }
-.dots img {
+.dots-img {
+    width: 13px;
+    height: 13px;
+    /* padding: 8px; */
     visibility: hidden;
+    /* background-color: whitesmoke; */
+    /* border: solid 1px #e7eaec; */
+}
+.dots-clicked {
+    visibility: visible !important;
 }
 
 .button {
@@ -275,6 +282,9 @@ input:focus, select:focus, textarea:focus {
 .neutral:focus, .neutral:hover {
     border: solid 1px #d2d2d2;
 }
+.hide {
+    display: none;
+}
 
 @media screen and (max-width : 769px) {
     html, body {
@@ -422,6 +432,9 @@ input:focus, select:focus, textarea:focus {
 
 .p12 {
     padding: 12px;
+}
+.p6 {
+    padding: 6px;
 }
 
 h5 {

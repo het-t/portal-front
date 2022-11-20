@@ -46,8 +46,10 @@
 
                             <div class="row mt8">
                                 <label :for="'task-tasks'+uk" class="labels c1">task</label>
-                                <select v-model="taskMaster" :id='"task-tasks"+uk'>
-                                    <option value="">existing tasks</option>
+                                <select @change="taskMasterSelected" v-model="taskMasterId" :id='"task-tasks"+uk'>
+                                    <option v-for="taskMaster of tasksMasterList" :key="taskMaster.id" :value="taskMaster.id">
+                                        {{taskMaster.title}}
+                                    </option>
                                 </select>
                             </div>
 
@@ -98,7 +100,7 @@
                         <div v-for="(task, index) in subTasks" :key="index" class="mb8">
                             <div class="grid">
                                 <div class="dots">
-                                    <img @click.prevent="toggleDisplaySubTask(index)" class="dots" src="../assets/icons/dots-icon.png" alt="">
+                                    <img @click.prevent="toggleDisplaySubTask(index)" class="dots-img" src="../assets/icons/dots-icon.png" alt="">
                                 </div>
                                 <div>{{index+1}})</div>
                                 <div>{{task.description}}</div>
@@ -167,7 +169,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import { users, clients, tasks } from '@/api/index.js'
+import { users, clients, tasks, tasksMaster, subTasksMaster } from '@/api/index.js'
 
     export default {
         name: 'TasksCreate',
@@ -180,13 +182,13 @@ import { users, clients, tasks } from '@/api/index.js'
                 subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "pending with signed documents"}, {id: 9, status: "pending with DSC"}],
                 tableHead: 'create task',
                 
+                taskMasterId: '',
                 subTasks: [], 
                 repeat: false,
                 newSubTask: '',
                 taskStatus: '',
                 taskTitle: '',
                 taskClient: '',
-                taskMaster: '',
                 taskCost: '',
                 taskCoordinator: '',
                 save: false,
@@ -196,6 +198,14 @@ import { users, clients, tasks } from '@/api/index.js'
         },
         methods: {
             ...mapActions(['promptMessage']),
+            taskMasterSelected() {
+                const selectedTaskMaster = this.tasksMasterList.find((o) => o.id == this.taskMasterId)
+                subTasksMaster.get({taskMasterId: this.taskMasterId})
+                .then((results) => {
+                    this.subTasks = results.data.subTasksMasterList
+                    this.taskCost = selectedTaskMaster.cost
+                })
+            },
             openTab(e, newTab) {
                  var tabs = e.target.parentElement.getElementsByClassName('tab')
                 let curTab = [...tabs].find(tab => tab?.classList?.contains('tab-open') == true)
@@ -281,10 +291,17 @@ import { users, clients, tasks } from '@/api/index.js'
             .then((allClients) => {
                 this.allClients = allClients.data.clientsList.map(o => { return {client: o.name, id: o.id} })
             })
+
+            tasksMaster.get()
+            .then(res => {
+                this.tasksMasterList = res.data.tasksMasterList
+            })
+
             users.get({from: null, recordsPerPage: null})
             .then(allUsers => {
                 this.allUsers = allUsers.data.usersList
             })
+
             if (window.history.state.taskId != undefined){ 
                 this.editing = true  
                 this.tableHead = 'edit task'         
@@ -301,6 +318,7 @@ import { users, clients, tasks } from '@/api/index.js'
 
             if (this.editing == true) {
                 console.log("getting sub tasks of taskId ", this.taskId)
+                
                 tasks.getSubTasks({taskId: this.taskId})
                 .then((subTasks) => {
                     this.subTasks = subTasks.data.subTasksList
@@ -379,7 +397,7 @@ input, select {
     padding: 0;
     border: none;
 }
-.grid:hover .dots img {
+.grid:hover .dots-img {
     visibility: visible !important;
 }
 .flex {

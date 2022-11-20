@@ -1,5 +1,19 @@
 <template>
     <div>
+        <div ref="menu">
+            <dots-menu v-if="menuVisibisility == true">
+                <template #links>
+                    <li>
+                        <router-link :to="{name: 'edit_role', params: {editRoleName: editRoleName}}">
+                            <img src="../assets/icons/edit-icon.png">
+                        </router-link>
+                    </li>
+                    <li>
+                        <img src="../assets/icons/delete-cross-icon.png" alt="">
+                    </li>
+                </template>
+            </dots-menu>
+        </div>
 
         <AlertC v-show="displayAlert" 
             :msg="alertData.msg"
@@ -19,6 +33,7 @@
             <div class="mr16 ml16 mt16">
                 <table>
                     <tr>
+                        <th></th>
                         <th>
                             <div class="tr-th">
                                 id
@@ -27,33 +42,26 @@
                         </th>
                         <th>name</th>
                         <th>rights</th>
-                        <th>actions</th>
+                        <!-- <th>actions</th> -->
                     </tr>
 
-                    <tr class="tr" v-for="role in roleListToDisplay()" :key="role?.name" >
-                        <td>
-                            {{role?.id}}
-                        </td>
-                        <td>
-                            {{role?.name}}
-                        </td>
+                    <!-- <router-link :to="{name: 'edit_role', params: {editRoleName: role?.name}}"> -->
+                        <tr class="tr" v-for="role in roleListToDisplay()" :key="role?.name">
+                            
+                            <DotsImg @dotsClicked="showMenu($event, role.name)"/>
+                            
+                            <td>
+                                {{role?.id}}
+                            </td>
+                            <td>
+                                {{role?.name}}
+                            </td>
 
-                        <td>
-                            {{role?.rights}}
-                        </td>
-
-                        <td class="actions">
-                            <router-link :to="{
-                                name: 'edit_role', 
-                                params: {
-                                    editRoleName: role?.name
-                                }
-                            }">
-                                edit
-                            </router-link>
-                            <p class="delete m0 ml8" @click="alert(`do you want to delete ${role?.name} role`, role?.id)">delete</p>
-                        </td>
-                    </tr>
+                            <td>
+                                {{role?.rights}}
+                            </td>
+                        </tr>
+                    <!-- </router-link> -->
                 </table>
                 <TablePagination @tableData="rolesList = $event"
                     tableName="roles"
@@ -70,6 +78,8 @@ import TablePagination from './TablePagination.vue'
 import TableSort from './TableSort.vue'
 import TableFilter from './TableFilter.vue'
 import TableActionPlus from './TableActionPlus.vue'
+import DotsMenu from './DotsMenu.vue'
+import DotsImg from './DotsImg.vue'
 
     export default {
     name: "EditRoleList",
@@ -81,7 +91,9 @@ import TableActionPlus from './TableActionPlus.vue'
                 }],
                 msg: '',
             },
+            menuVisibisility: '',
             rolesList: '',
+            editRoleName: '',
             filteredRolesList: undefined,
             displayAlert: false,
         };
@@ -98,6 +110,11 @@ import TableActionPlus from './TableActionPlus.vue'
         // getRoleData() {
         //     getRoleData({roleName: this.roleName})
         // },
+        showMenu(e, roleName) {
+            this.menuVisibisility = true
+            this.editRoleName = roleName
+            e.target.parentElement.appendChild(this.$refs['menu'])
+        },
         deleteRole(params) {
             roles.delete(params)
             .then((results)=> {
@@ -113,7 +130,7 @@ import TableActionPlus from './TableActionPlus.vue'
             this.roleName = "";
         }
     },
-    components: { AlertC, TablePagination, TableSort, TableFilter, TableActionPlus }
+    components: { AlertC, TablePagination, TableSort, TableFilter, TableActionPlus, DotsMenu, DotsImg }
 }
 </script>
 
@@ -124,7 +141,7 @@ input {
 .delete {
     cursor: pointer;
 }
-.tr-th:hover img {
-    display: inline;
+.tr:hover .dots-img {
+    visibility: visible;
 }
 </style>

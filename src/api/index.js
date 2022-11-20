@@ -30,13 +30,24 @@ const tasks = {
     getSubTasks: (args) => makeGetReq(endpoints.getSubTasks, args),
 }
 
+const tasksMaster = {
+    get: () => makeGetReq(endpoints.getTasksMaster)
+}
+
+const subTasksMaster = {
+    get: (args) => makeGetReq(endpoints.getSubTasksMaster, args)
+}
+
 const getAllRights = (args) => makeGetReq(endpoints.getAllRights, args)
 const getUserRights = () => makeGetReq(endpoints.getUserRights)
+
 export {
     getAllRights,
     getUserRights,
     clients,
     users,
     roles,
-    tasks
+    tasks,
+    tasksMaster,
+    subTasksMaster
 }
