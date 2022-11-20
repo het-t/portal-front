@@ -5,6 +5,7 @@ import makePostReq from './makePostReq.js'
 const clients = {
     get: () => makeGetReq(endpoints.getClients),
     create: (args) => makeGetReq(endpoints.createClient, args),
+    getTypes: () => makeGetReq(endpoints.getClientsMasterTypes)
 }
 
 const users = {

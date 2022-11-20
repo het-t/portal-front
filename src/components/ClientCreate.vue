@@ -85,7 +85,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { mapActions } from 'vuex'
 import {clients} from '@/api/index.js'
 
@@ -152,12 +151,12 @@ export default {
         }
     },
     created() {
-        axios.get('/api/clients/types', {
-            withCredentials: true
-        })
-        .then((types) => {
-            this.clientTypes = types.data
-            console.log(this.clientTypes)
+        // axios.get('/api/clients/types', {
+        //     withCredentials: true
+        // })
+        clients.getTypes()
+        .then((response) => {
+            this.clientTypes = response.data.clientsMasterTypes
         })
     }
 }
