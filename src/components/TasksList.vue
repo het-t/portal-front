@@ -13,6 +13,7 @@
                 <tr class="table-heading">
                     <div></div>
                     <th>title</th>
+                    <th>description</th>
                     <th>client</th>
                     <th>progress</th>
                     <th>status</th>
@@ -27,6 +28,9 @@
                         </div>
                         <td>
                             {{task.title}}
+                        </td>
+                        <td>
+                            {{task.description}}
                         </td>
                         <td>{{task.client}}</td>
                         <td>
@@ -83,7 +87,7 @@ import TableActionPlus from './TableActionPlus.vue';
         padding: 0;
         display: grid;
         align-items: center;
-        grid-template-columns: 8px 2fr 1fr 1fr 1fr 1fr;    
+        grid-template-columns: 8px 2fr 2fr 1fr 1fr 1fr;    
     }
     .tr-hidden {
         grid-template-columns: auto;

@@ -59,6 +59,11 @@
                                 <input type="number" v-model="taskCost" :id="'task-cost'+uk">
                             </div>
 
+                            <div class="row mt8">
+                                <label :for="'task-description'+uk" class="labels c1">description</label>
+                                <textarea v-model="taskDescription" name="task-description" :id="'task-description'+uk" cols="30" rows="10" placeholder="description"></textarea>
+                            </div>
+
                         </div>
 
                         <div class="flex mt16">
@@ -188,6 +193,7 @@ import { users, clients, tasks, tasksMaster, subTasksMaster } from '@/api/index.
                 newSubTask: '',
                 taskStatus: '',
                 taskTitle: '',
+                taskDescription: '',
                 taskClient: '',
                 taskCost: '',
                 taskCoordinator: '',
@@ -248,6 +254,7 @@ import { users, clients, tasks, tasksMaster, subTasksMaster } from '@/api/index.
                     tasks.create({
                         taskMasterId: this.taskMasterId,
                         title: this.taskTitle,
+                        taskDescription: this.taskDescription,
                         cost: this.taskCost,
                         saved: new Number(this.save),
                         subTasks: JSON.stringify(this.subTasks),
@@ -284,6 +291,7 @@ import { users, clients, tasks, tasksMaster, subTasksMaster } from '@/api/index.
                 this.taskRepeat = ''
                 this.taskRepeatOn = ''
                 this.taskSubTasks = ''
+                this.taskDescription = ''
             }
         },
         created() {
@@ -326,11 +334,13 @@ import { users, clients, tasks, tasksMaster, subTasksMaster } from '@/api/index.
                 tasks.getData({taskId: this.taskId})
                 .then((taskData) => {
                     console.log("editing task", taskData.data.taskData)
-                    const {title, cost, coordinatorId, clientId } = taskData.data.taskData[0]
+                    const {title, taskMasterId, cost, coordinatorId, clientId, description } = taskData.data.taskData[0]
                     this.taskTitle = title
+                    this.taskDescription = description
                     this.taskCost = cost
                     this.taskCoordinator = coordinatorId
                     this.taskClient = clientId
+                    this.taskMasterId = taskMasterId
                 })
             } else {
                 console.log("not editing")
