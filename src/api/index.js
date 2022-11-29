@@ -26,6 +26,7 @@ const roles = {
 
 const tasks = {
     get: () => makeGetReq(endpoints.getTasks),
+    getMyTasks: () => makeGetReq(endpoints.getMyTasks),
     getData: (args) => makeGetReq(endpoints.getTaskData, args),
     create: (args) => makeGetReq(endpoints.createTask, args),
     getSubTasks: (args) => makeGetReq(endpoints.getSubTasks, args),

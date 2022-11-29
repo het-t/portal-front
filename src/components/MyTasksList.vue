@@ -11,9 +11,9 @@
                 <table>
                     <tr>
                         <th>
-                            description
+                            task
                         </th>
-                        <th>task</th>
+                        <th>description</th>
                         <th>deadline</th>
                         <th>status</th>
                     </tr>
@@ -21,21 +21,13 @@
                         <td>
                             {{task.title}}
                         </td>
-                        <td>{{task.task}}</td>
+                        <td>{{task.description}}</td>
                         <td>
                             {{task.deadline}}
                         </td>
                         <td>
-                            <select v-model="task.status" name="" id="">
-                                <option value="hold">hold</option>
-                                <option value="to do">to do</option>
-                                <option value="in progress">in progress</option>
-                                <option value="pending for approval">pending for approval</option>
-                                <option value="done">done</option>
-                                <option value="cancel">cancel</option>
-                                <option value="pending with client">pending with client</option>
-                                <option value="pending with signed documents">pending with signed documents</option>
-                                <option value="pending with DSC">pending with DSC</option>
+                            <select v-model="task.statusId" name="" id="">
+                                <option v-for="status in subTaskStatuses" :value="status.id" :key="status.id">{{status.status}}</option>
                             </select>
                         </td>
                     </tr>                
@@ -46,24 +38,33 @@
 </template>
 
 <script>
+import { tasks } from '../api'
 // import TableSort from './TableSort.vue';
 // import TableFilter from './TableFilter.vue';
     export default {
     name: "MyTasksList",
     data() {
         return {
+            subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "pending with signed documents"}, {id: 9, status: "pending with DSC"}],
             myTaskList: [{
                 title: 'Incorporation of Company',
                 task: 'Check Name of Company',
                 deadline: 'none',
-                status: 'done',
+                status: '5',
             }, {
                 title: 'Income Tax return',
                 task: 'Collect Documents',
                 deadline: 'none',
-                status: 'to do'
+                status: '2'
             }]
         }
+    },
+    created() {
+        tasks.getMyTasks()
+        .then(response => {
+            console.log(response.data.myTasksList)
+            this.myTaskList = response.data.myTasksList
+        })
     }
     // components: { TableSort, TableFilter }
 }
@@ -77,5 +78,7 @@
     }
     select, option {
         text-transform: capitalize;
+        padding-right: 0;
+        padding-left: 0;
     }
 </style>
