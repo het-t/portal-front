@@ -24,7 +24,8 @@
                 <div v-for="(task, index) of tasksList" :key="task.taskId">
                     <tr class="tr edit-task-tr" @click.prevent="editTask('row'+index)">
                         <div class="dots">
-                            <img @click.stop="editTask('row'+index)" src="../assets/icons/dots-icon.png" alt="" class="dots-img">
+                            <dots-img @dotsClicked.stop="editTask('row'+index)"/>
+                            <!-- <img @click.stop="" src="../assets/icons/dots-icon.png" alt="" class="dots-img"> -->
                         </div>
                         <td>
                             {{task.title}}
@@ -54,6 +55,7 @@ import TasksProgress from './TasksProgress.vue';
 import TableMain from './TableMain.vue';
 import { tasks } from '@/api/index.js';
 import TableActionPlus from './TableActionPlus.vue';
+import DotsImg from './DotsImg.vue';
 
     export default {
     name: "TasksList",
@@ -75,7 +77,7 @@ import TableActionPlus from './TableActionPlus.vue';
             else this.$refs[rowIndex][0].classList.add('hide')
         }
     },
-    components: { TasksProgress, TasksCreate, TableMain, TableActionPlus }
+    components: { TasksProgress, TasksCreate, TableMain, TableActionPlus, DotsImg }
 }
 </script>
 

@@ -28,9 +28,9 @@
 
             <template #tbody>
                 <div v-for="(client, index) in clientList" :key="index">
-                    <tr class="tr" @click.prevent="editClient('row'+index)">
+                    <tr class="tr hidden-tr-parent" @click.prevent="editClient('row'+index)">
                         <div class="dots p12">
-                            <img @click.stop="editClient('row'+index)" src="../assets/icons/dots-icon.png" alt="" class="dots-img">
+                            <dots-img @click.stop="editClient('row'+index)" />
                         </div>
                         <td class="flex">
                             {{client.name}}
@@ -84,9 +84,10 @@
     import TableActionPlus from './TableActionPlus.vue'
     import ClientCreate from './ClientCreate.vue'
     import TableMain from './TableMain.vue'
+import DotsImg from './DotsImg.vue'
 
     export default {
-  components: { TableActionPlus, ClientCreate, TableMain },
+  components: { TableActionPlus, ClientCreate, TableMain, DotsImg },
         name: 'ClientList',
         data() {
             return {
