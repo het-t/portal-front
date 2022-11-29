@@ -26,8 +26,8 @@
 
             <div class="hr"></div>
 
-            <button @click.prevent="clear()" class="neutral button">cancel</button>
-            <button @click.prevent="proceed(), clear()" class="green ml8 button">{{proceedBtn}}</button>
+            <button @click.prevent="proceed(), clear()" class="green button">{{proceedBtn}}</button>
+            <button @click.prevent="clear()" class="neutral ml8 button">cancel</button>
         </form>
     </div>
 </template>

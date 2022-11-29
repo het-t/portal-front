@@ -82,8 +82,8 @@
                             <label :for="'save-task-template'+uk">save task template for future use </label>
                         </div>
 
-                        <button @click.prevent="clear()" class="neutral mt16 button">cancel</button>
-                        <button @click.prevent="proceed(), clear()" class="green ml8 mt16 button">save</button>
+                        <button @click.prevent="proceed(), clear()" class="green mt16 button">save</button>
+                        <button @click.prevent="clear()" class="neutral ml8 mt16 button">cancel</button>
                     </form>
                 </div>
                 <div class="vr"></div>

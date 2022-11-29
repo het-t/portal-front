@@ -77,8 +77,8 @@
                     <div class="fg"></div>
                 </div>
 
-                <button @click.prevent="clear()" class="neutral mt16 button">cancel</button>
-                <button @click.prevent="proceed(), clear()" class="green ml8 mt16 button">create</button>
+                <button @click.prevent="proceed(), clear()" class="green mt16 button">create</button>
+                <button @click.prevent="clear()" class="neutral ml8 mt16 button">cancel</button>
 
             </form>
         </div>
