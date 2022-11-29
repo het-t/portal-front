@@ -5,11 +5,12 @@
                 <template #links>
                     <li>
                         <router-link :to="{name: 'edit_role', params: {editRoleName: editRoleName}}">
-                            <img src="../assets/icons/edit-icon.png">
+                            <font-awesome-icon class="menu-icons" :icon="['fas', 'pencil']"></font-awesome-icon>
                         </router-link>
                     </li>
                     <li>
-                        <img src="../assets/icons/delete-cross-icon.png" alt="">
+                        <font-awesome-icon class="menu-icons" :icon="['fas', 'trash']"></font-awesome-icon>
+                        <!-- <img src="../assets/icons/delete-cross-icon.png" alt=""> -->
                     </li>
                 </template>
             </dots-menu>
@@ -138,9 +139,12 @@ import DotsImg from './DotsImg.vue'
 input {
     width: 50%;
 }
-.delete {
-    cursor: pointer;
-}
+/* .menu-icons {
+    color: black;
+    padding: auto;
+    width: 18px;
+    height: 18px;
+} */
 .tr:hover .dots-img {
     visibility: visible;
 }
