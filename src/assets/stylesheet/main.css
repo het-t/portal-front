@@ -33,13 +33,18 @@ body, #app {
 .pa-icon {
     width: 12px;
     height: 12px;
-    filter: invert(70%);
+    color: grey !important;
+    transform: scale(1.5);
+    /* filter: invert(70%); */
 }
+.top-nav-icons {
+    width: 26px;
+    height: 26px;
+    color: #2f4050;
+}
+
 a, button {
     cursor: pointer;
-}
-#users-icon {
-    transform: scale(2);
 }
 
 .link-list span {
@@ -47,7 +52,8 @@ a, button {
 }
 .router-link-active .pa-icon, 
 .router-link-exact-active .pa-icon{
-    filter: invert(100%) !important;
+    color: white !important;
+    /* filter: invert(100%) !important; */
 }
 .router-link-active, 
 .router-link-exact-active,
@@ -61,8 +67,8 @@ a, button {
     color: white !important;
     background-color: #293846;
 }
-.link:hover>img {
-    filter: invert(100%) opacity(1);
+.link:hover .pa-icon {
+    color: white !important;
 }
 
 .dots {
@@ -73,6 +79,7 @@ a, button {
 .dots-img {
     width: 13px;
     height: 13px;
+    color: black !important;
     /* padding: 8px; */
     visibility: hidden;
     /* background-color: whitesmoke; */
@@ -98,6 +105,7 @@ a, button {
     margin-bottom: 32px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 .top-nav-right {
     display: flex;
@@ -106,10 +114,6 @@ a, button {
 .logout {
     align-items: flex-end;
     display: inline;
-}
-.header img {
-    width: 30px;
-    height: 30px;
 }
 .header button {
     border: solid 1px white;
@@ -163,10 +167,13 @@ th:hover .tr-th img, .tr-th button:focus img {
 }
 .head-tr, .table-head, .table-actions {
     font-size: 14px;
-    color: #676a6c;
+    /* color: #676a6c; */
 }
 .head-tr, .table-head, .table-actions, th, label {
     text-transform: capitalize;
+}
+.head-tr {
+    border-bottom: solid 1px black;
 }
 .labels {
     align-self: center;
@@ -443,6 +450,16 @@ h5 {
     font-weight: 600;
 }
 
+tr .child-row
+{
+    padding-left: 25px;
+    margin-left: 20px;
+    border-left: solid #ddd 3px;
+    background-color: #f7f7f7;
+}
+.hidden-tr-parent {
+    cursor: pointer;
+}
 /* 
     pa #141c3d -> #2F4050
     pa new #2F4050

@@ -1,6 +1,6 @@
 <template>
         <router-link :to="url" class="table-action">
-            <img src="../assets/icons/plus-icon.png" alt="">
+            <font-awesome-icon :icon="['fas', 'circle-plus']" class="table-action-plus"></font-awesome-icon>
         </router-link>
 </template>
 
@@ -12,9 +12,9 @@ export default {
 </script>
 
 <style>
-.table-action img {
+.table-action-plus {
     width: 24px;
     height: 24px;
-    filter: invert(0.2);
+    color: #2f4050;
 }
 </style>

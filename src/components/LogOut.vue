@@ -1,9 +1,7 @@
 <template>
-  <div class="header">
     <button @click.prevent="logout()" class="mt8 mb8 neutral">
-      <img src="../assets/icons/logout-icon.png" alt="">
+      <font-awesome-icon :icon="['fas', 'power-off']" class="top-nav-icons"></font-awesome-icon>
     </button>
-  </div>
 </template>
 
 <script>
@@ -38,9 +36,5 @@ button {
   border: none;
   background-color: white;
   border: solid 1px white;
-}
-img {
-  filter: invert(0.1);
-  scale: 1.25;  
 }
 </style>

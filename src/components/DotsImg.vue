@@ -3,7 +3,9 @@
         <div class="dots-parent"
             @click.prevent="[$emit('dotsClicked', $event), showDots()]" 
         >
-            <font-awesome-icon :class="dotsVisibility" class="dots-img"  icon="fa-solid fa-ellipsis-vertical" />
+            <font-awesome-icon :class="dotsVisibility" class="dots-img"  
+                :icon="['fas', 'ellipsis-vertical']" 
+            />
             <!-- <img src="../assets/icons/dots-icon.png" alt=""> -->
         </div>
     </td>

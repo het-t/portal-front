@@ -5,14 +5,14 @@
 
         <div class="link-list">
           <router-link to="/u/users/list" class="pt16 pb16 link">
-            <img src="../assets/icons/users-icon.png" alt="" id="users-icon" class="pa-icon ml24 mr24">
+            <font-awesome-icon :icon="['fas', 'user-group']" id="users-icon" class="pa-icon ml24 mr24"></font-awesome-icon>
             <span v-if="showLabels">users</span>
           </router-link>
         </div>
 
         <div class="link-list">
           <router-link to="/u/roles/list" class="pt16 pb16 link">
-            <img src="../assets/icons/role-icon.png" alt="" id="roles-icon" class="pa-icon ml24 mr24">
+            <font-awesome-icon :icon="['fas', 'user-gear']" class="pa-icon ml24 mr24"></font-awesome-icon>
             <span v-if="showLabels">roles</span>
           </router-link>
         </div>
@@ -26,7 +26,7 @@
         
         <div class="link-list">
           <router-link to="/u/clients/list" class="pt16 pb16 link">
-            <img src="../assets/icons/client-icon.png" id="client-icon" class="pa-icon ml24 mr24" alt="">
+            <font-awesome-icon :icon="['fas', 'address-book']" class="pa-icon ml24 mr24"></font-awesome-icon>
             <span v-if="showLabels">clients</span>
           </router-link>
         </div>
@@ -34,21 +34,21 @@
         
         <div class="link-list">
           <router-link to="/u/tasks/list" class="pt16 pb16 link">
-            <img src="../assets/icons/tasks-icon.png" id="tasks-icon" class="pa-icon ml24 mr24" alt="">
+            <font-awesome-icon :icon="['fas', 'list-check']" class="pa-icon ml24 mr24"></font-awesome-icon>
             <span v-if="showLabels">tasks</span>
           </router-link>
         </div>
 
         <div class="link-list">
           <router-link to="/u/my-tasks/list" class="pt16 pb16 link">
-            <img src="../assets/icons/my-day-icon.png" id="my-day-icon" class="pa-icon ml24 mr24" alt="">
+            <font-awesome-icon :icon="['fas', 'sun']" class="pa-icon ml24 mr24"></font-awesome-icon>
             <span v-if="showLabels">my tasks</span>
           </router-link>
         </div>
 
         <div class="link-list">
           <router-link to="/u/activity" class="pt16 pb16 link">
-            <img src="../assets/icons/activity-icon.png" alt="" id="activity-icon" class="pa-icon ml24 mr24">
+            <font-awesome-icon :icon="['fas', 'wave-square']" class="pa-icon ml24 mr24"></font-awesome-icon>
             <span v-if="showLabels">activity</span>
           </router-link>
         </div>
@@ -60,14 +60,14 @@
       <div id="top-nav" class="mb16 pr24 pl24">
         <div class="header mt8 mb8">
           <button @click="menuToggle()" class="neutral">
-            <img src="../assets/icons/ham-icon.png" alt="" id="ham">
+            <font-awesome-icon :icon="['fas', 'bars']" class="top-nav-icons"></font-awesome-icon>
           </button>
         </div>
 
         <div class="top-nav-right">
           <div class="header mt8 mb8">
             <button class="neutral mr16">
-              <img src="../assets/icons/profile.png" alt="" srcset="">
+              <font-awesome-icon :icon="['fas', 'user']" class="top-nav-icons"></font-awesome-icon>
             </button>
           </div>
 
