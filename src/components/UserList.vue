@@ -58,7 +58,7 @@
     import TableFilter from './TableFilter.vue';
     import TableActionPlus from './TableActionPlus.vue';
 
-    export default {
+export default {
     name: "UserList",
     data() {
         return {
@@ -76,11 +76,9 @@
     methods: {
         usersListToDisplay() {
             if (this.filteredUsersList != undefined) {
-                console.log("filtered")
                 return this.filteredUsersList
             } 
             else {
-                console.log("original")
                 return this.usersList
             }
         },

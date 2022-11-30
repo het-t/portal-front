@@ -24,7 +24,7 @@ import { mapActions } from 'vuex'
             }
         },
         methods: {
-            ...mapActions(['rights', 'promptMessage']),
+            ...mapActions(['promptMessage']),
             login() {
                 axios.post('api/login', {
                     email: this.email,

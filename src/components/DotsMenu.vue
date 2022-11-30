@@ -36,8 +36,8 @@
     padding: 0;
     margin: 0;
 }
-.dots-menu img {
-    padding: 4px 4px; 
+.dots-menu .menu-icons {
+    padding: 8px 8px; 
 }
 .dots-menu {
     position: absolute;
@@ -50,9 +50,10 @@
     filter: none;
     text-transform: capitalize;
 }
-.dots-menu ul li img {
-    width: 24px;
-    height: 24px;
+.dots-menu .menu-icons {
+    color: black;
+    width: 18px;
+    height: 18px;
     border-bottom: solid 1px #e7eaec;
 }
 .dots-menu li {

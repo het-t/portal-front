@@ -79,7 +79,6 @@
 
                 <button @click.prevent="proceed(), clear()" class="green mt16 button">create</button>
                 <button @click.prevent="clear()" class="neutral ml8 mt16 button">cancel</button>
-                <button-main></button-main>
 
             </form>
         </div>
@@ -88,10 +87,8 @@
 <script>
 import { mapActions } from 'vuex'
 import {clients} from '@/api/index.js'
-import ButtonMain from './ButtonMain.vue'
 
 export default {
-  components: { ButtonMain },
     name: 'ClientCreate',
     props: ['displayHead', 'clientData'],
     data() {
