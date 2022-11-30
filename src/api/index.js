@@ -40,7 +40,8 @@ const subTasksMaster = {
     get: (args) => makeGetReq(endpoints.getSubTasksMaster, args)
 }
 
-const getAllRights = (args) => makeGetReq(endpoints.getAllRights, args)
+const getAllRights = () => makeGetReq(endpoints.getAllRights)
+
 const getUserRights = () => makeGetReq(endpoints.getUserRights)
 
 export {
