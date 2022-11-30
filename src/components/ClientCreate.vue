@@ -79,6 +79,7 @@
 
                 <button @click.prevent="proceed(), clear()" class="green mt16 button">create</button>
                 <button @click.prevent="clear()" class="neutral ml8 mt16 button">cancel</button>
+                <button-main></button-main>
 
             </form>
         </div>
@@ -87,8 +88,10 @@
 <script>
 import { mapActions } from 'vuex'
 import {clients} from '@/api/index.js'
+import ButtonMain from './ButtonMain.vue'
 
 export default {
+  components: { ButtonMain },
     name: 'ClientCreate',
     props: ['displayHead', 'clientData'],
     data() {
@@ -103,9 +106,14 @@ export default {
             conName: '',
             conEmail: '',
             conPhone: '',
-            clientTypes: '',
-
+            
             editing: false,
+            editClientId: '',
+        }
+    },
+    computed: {
+        clientTypes() {
+            return this.$store.getters['clients/getAllTypesList']
         }
     },
     methods: {
@@ -154,21 +162,16 @@ export default {
             })
         }
     },
-    created() {
-        clients.getTypes()
-        .then((response) => {
-            this.clientTypes = response.data.clientsMasterTypes
-        })
+    mounted() {
+        
         if (this.clientData != undefined) {
             this.editing = true
-            console.log("editing client", this.editing)
         }
-    },
-    mounted() {
+
         if (this.editing != false) {
             const {id, typeId, name, cin, caFirmName, caAddress, caPan, caEmail, conName, conEmail, conPhone} = JSON.parse(this.clientData)
 
-            console.log("editing client id ", id)
+            this.editClientId = id
             this.clientName = name
             this.cin = cin
             this.clientTypeId = typeId
@@ -179,6 +182,7 @@ export default {
             this.conName = conName
             this.conEmail = conEmail
             this.conPhone = conPhone
+            
         }
     }
 }

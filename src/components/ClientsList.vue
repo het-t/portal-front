@@ -73,6 +73,12 @@
                     </tr>
                 </div>
             </template>
+
+            <template #pagination>
+                <table-pagination @tableData="clientList = $event"
+                    tableName="clients"
+                />
+            </template>
         </table-main>
    </div>
 </template>
@@ -80,14 +86,14 @@
 <script>
     // import TableFilter from './TableFilter.vue'
     // import TableSort from './TableSort.vue';
-    import {clients} from '@/api/index.js'
     import TableActionPlus from './TableActionPlus.vue'
     import ClientCreate from './ClientCreate.vue'
     import TableMain from './TableMain.vue'
-import DotsImg from './DotsImg.vue'
+    import DotsImg from './DotsImg.vue'
+    import TablePagination from './TablePagination.vue'
 
     export default {
-  components: { TableActionPlus, ClientCreate, TableMain, DotsImg },
+        components: { TableActionPlus, ClientCreate, TableMain, DotsImg, TablePagination },
         name: 'ClientList',
         data() {
             return {
@@ -96,19 +102,14 @@ import DotsImg from './DotsImg.vue'
         },
         methods: {
             editClient(rowIndex) {
-                console.log(this.$refs)
                 const show = this.$refs[rowIndex][0].classList.contains('hide')
                 if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
                 else this.$refs[rowIndex][0].classList.add('hide')
+
+                this.$store.dispatch('clients/getTypes')
             }
         },
         // components: { TableFilter, TableSort },
-        created() {
-            clients.get()
-            .then(results => {
-                this.clientList = results.data.clientsList
-            })
-        }
     }
 </script>
 
