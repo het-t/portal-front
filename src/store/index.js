@@ -1,9 +1,10 @@
 import { createStore } from 'vuex'
+import users from './modules/users.js'
+import rights from './modules/rights.js'
+import clients from './modules/clients'
 
 export default createStore({
   state: {
-    rights: [],
-    persistant: false,
     message: {
       display: false,
       msg: '',
@@ -12,9 +13,6 @@ export default createStore({
     }
   },
   getters: {
-    getRights(state) {
-      return state.rights
-    },
     getMessageVisiblity(state) {
       return state.message.display
     },
@@ -27,14 +25,6 @@ export default createStore({
     }
   },
   mutations: {
-    setRights(state, rights) {
-      var r = []
-      rights.forEach(o => {
-        r.push(o.code_name)
-      });
-      console.log("mutaions setRights ", r)
-      state.rights = r
-    },
     showMessage(state, {msg, title, bgcolor}) {
       state.message.display = true
       state.message.msg = msg
@@ -49,11 +39,6 @@ export default createStore({
     }
   },
   actions: {      
-    rights(context, rights) {
-      console.log("actions rights ", rights)
-      context.commit('setRights', rights)
-      this.state.persistant = true
-    },
     promptMessage(context, {msg, title, bgcolor}) {
       new Promise((resolve) => {
         context.commit('showMessage', {msg, title, bgcolor})
@@ -67,5 +52,8 @@ export default createStore({
     }
   },
   modules: {
+    users,
+    rights,
+    clients
   }
 })
