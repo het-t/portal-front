@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import InitialView from '../views/InitialView.vue'
-import store from '@/store'
+import store from '@/store/index.js'
 
 const routes = [{
     path: '/',
@@ -146,12 +146,9 @@ const router = createRouter({
 
 router.beforeEach((to)=>{
   if (to?.meta.protected) {
-    console.log(to?.name, to?.meta)
-    console.log(to?.meta.protected, store.state.rights)
-    const allow = store.state.rights.some((right) => right == to.name)
-    if (!allow) {
-      return { name: 'no_access'}
-    }
+    const userRights = store.getters['rights/getUserRights']
+    const allow = userRights.some((right) => right.code_name == to.name)
+    if (!allow) return { name: 'no_access'}
   }
 })
 

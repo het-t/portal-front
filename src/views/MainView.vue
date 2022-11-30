@@ -86,9 +86,9 @@
 
 <script>
 import LogOut from '@/components/LogOut.vue'
-import { mapActions, mapGetters } from 'vuex'
 import { getUserRights } from '../api'
-  
+import { mapGetters } from 'vuex'
+
   export default {
     name: "MainView",
     data() {
@@ -103,7 +103,6 @@ import { getUserRights } from '../api'
       LogOut,
     },
     methods: {
-      ...mapActions(['rights']),
       menuToggle() {
         this.showLabels = !this.showLabels
         if (!this.showLabels) this.$refs.menu.classList.add('lessWidth')
@@ -111,10 +110,12 @@ import { getUserRights } from '../api'
       }
     },
     created() {
-      getUserRights()
-      .then((results) => {
-        this.rights(results.data.userRights)
-      })
+      if (this.$store.getters['rights/getUserRights'] == '') {
+        getUserRights()
+        .then((res) => {
+          this.$store.commit('rights/setUserRights', res?.data?.userRights)
+        })
+      }
     }
   }
 </script>
