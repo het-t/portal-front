@@ -25,7 +25,7 @@
                                 <select v-model="taskClient" :id='"task-client"+uk'>
                                     <option value="/u/clients/create-client">create new client</option>
                                     <option v-for="(client, index) in allClients" :value="client.id" :key="index.toString()+uk">
-                                        {{client.client}}
+                                        {{client.name}}
                                     </option>
                                 </select>
                             </div>
@@ -173,8 +173,8 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import { users, clients, tasks, tasksMaster, subTasksMaster } from '@/api/index.js'
+    import { mapActions } from 'vuex'
+    import { tasks, subTasksMaster } from '@/api/index.js'
 
     export default {
         name: 'TasksCreate',
@@ -182,8 +182,6 @@ import { users, clients, tasks, tasksMaster, subTasksMaster } from '@/api/index.
         data() {
             return {
                 editing: false,
-                allUsers: '',
-                allClients: '',
                 subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "pending with signed documents"}, {id: 9, status: "pending with DSC"}],
                 tableHead: 'create task',
                 
@@ -200,6 +198,17 @@ import { users, clients, tasks, tasksMaster, subTasksMaster } from '@/api/index.
                 save: false,
                 taskRepeat: '',
                 taskRepeatOn: '',
+            }
+        },
+        computed: {
+            allUsers() {
+                return this.$store.getters['users/allUsers']
+            },
+            allClients() {
+                return this.$store.getters['clients/allClients']
+            },
+            tasksMasterList() {
+                return this.$store.getters['tasks/tasksMasterListGet']
             }
         },
         methods: {
@@ -295,20 +304,6 @@ import { users, clients, tasks, tasksMaster, subTasksMaster } from '@/api/index.
             }
         },
         created() {
-            clients.get()
-            .then((allClients) => {
-                this.allClients = allClients.data.clientsList.map(o => { return {client: o.name, id: o.id} })
-            })
-
-            tasksMaster.get()
-            .then(res => {
-                this.tasksMasterList = res.data.tasksMasterList
-            })
-
-            users.get({from: null, recordsPerPage: null})
-            .then(allUsers => {
-                this.allUsers = allUsers.data.usersList
-            })
 
             if (window.history.state.taskId != undefined){ 
                 this.editing = true  
@@ -322,25 +317,34 @@ import { users, clients, tasks, tasksMaster, subTasksMaster } from '@/api/index.
             }
         },
         mounted() {
-            this.$refs['defaultTab'+this.uk].click()
-
-            if (this.editing == true) {
-                console.log("getting sub tasks of taskId ", this.taskId)
-                
-                tasks.getSubTasks({taskId: this.taskId})
-                .then((subTasks) => {
-                    this.subTasks = subTasks.data.subTasksList
-                })
-                tasks.getData({taskId: this.taskId})
-                .then((taskData) => {
-                    console.log("editing task", taskData.data.taskData)
-                    const {title, taskMasterId, cost, coordinatorId, clientId, description } = taskData.data.taskData[0]
+            this.$store.subscribe((mutation, state) => {
+                if (mutation.type == 'tasks/tasksDataSet' && mutation.payload.taskId == this.taskId) {
+                    console.log(state.tasks.tasksData[this.taskId][0].taskMasterId)
+                    const {
+                        taskMasterId,
+                        title,
+                        description,
+                        cost,
+                        coordinatorId,
+                        clientId
+                    } = state.tasks.tasksData?.[this.taskId][0]
+                    
                     this.taskTitle = title
                     this.taskDescription = description
                     this.taskCost = cost
                     this.taskCoordinator = coordinatorId
                     this.taskClient = clientId
                     this.taskMasterId = taskMasterId
+                }
+            })
+
+            this.$refs['defaultTab'+this.uk].click()
+
+            if (this.editing == true) {
+                
+                tasks.getSubTasks({taskId: this.taskId})
+                .then((subTasks) => {
+                    this.subTasks = subTasks.data.subTasksList
                 })
             } else {
                 console.log("not editing")

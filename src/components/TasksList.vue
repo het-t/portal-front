@@ -21,11 +21,10 @@
             </template>
 
             <template #tbody>
-                <div v-for="(task, index) of tasksList" :key="task.taskId">
-                    <tr class="tr edit-task-tr" @click.prevent="editTask('row'+index)">
+                <div v-for="(task, index) of tasksList" :key="task.id">
+                    <tr class="tr edit-task-tr" @click.prevent="editTask('row'+index, task.id)">
                         <div class="dots">
-                            <dots-img @dotsClicked.stop="editTask('row'+index)"/>
-                            <!-- <img @click.stop="" src="../assets/icons/dots-icon.png" alt="" class="dots-img"> -->
+                            <dots-img @dotsClicked.stop="editTask('row'+index, task.id)"/>
                         </div>
                         <td>
                             {{task.title}}
@@ -41,9 +40,21 @@
                     </tr>
 
                     <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
-                        <tasks-create :taskId="task.id" displayHead='false' :uk="index" class="tasks-create" editing="true" />
+                        <tasks-create 
+                            :taskId="task.id" 
+                            displayHead='false' 
+                            :uk="index" 
+                            class="tasks-create" 
+                            editing="true" 
+                        />
                     </tr>
                 </div>
+            </template>
+
+            <template #pagination>
+                <table-pagination @tableData="tasksList = $event"
+                    tableName="tasks"
+                />
             </template>
         </table-main>
     </div>
@@ -53,9 +64,10 @@
 import TasksCreate from './TasksCreate.vue';
 import TasksProgress from './TasksProgress.vue';
 import TableMain from './TableMain.vue';
-import { tasks } from '@/api/index.js';
 import TableActionPlus from './TableActionPlus.vue';
 import DotsImg from './DotsImg.vue';
+import TablePagination from './TablePagination.vue';
+import { users, tasks, clients, tasksMaster } from '../api';
 
     export default {
     name: "TasksList",
@@ -71,13 +83,51 @@ import DotsImg from './DotsImg.vue';
         })
     },
     methods: {
-        editTask(rowIndex) {
+        editTask(rowIndex, taskId) {
+            console.log("editing taskid", taskId)
             const show = this.$refs[rowIndex][0].classList.contains('hide')
             if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
             else this.$refs[rowIndex][0].classList.add('hide')
+
+            if (Object.keys(this.$store.getters['users/allUsers']).length == 0) {
+                users.get({
+                    from: null,
+                    recordsPerPage: null,
+                })
+                .then((res) => {
+                    this.$store.commit('users/usersAll', res?.data?.usersList)
+                })
+            }
+
+            if (Object.keys(this.$store.getters['clients/allClients']).length == 0) {
+                clients.get({
+                    from: null,
+                    recordsPerPage: null,
+                })
+                .then((res) => {
+                    this.$store.commit('clients/clientsAll', res?.data?.clientsList)
+                })
+            }
+
+            if (Object.keys(this.$store.getters['tasks/tasksMasterListGet']).length == 0) {
+                tasksMaster.get()
+                .then((res) => {
+                    this.$store.commit('tasks/tasksMasterListSet', res?.data?.tasksMasterList)
+                })
+            }
+
+            if (this.$store.getters['tasks/taskData']?.(taskId) == undefined || this.$store.getters['tasks/taskData']?.(taskId) == '') {
+                tasks.getData({taskId})
+                .then((res) => {
+                    this.$store.commit('tasks/tasksDataSet',{
+                        taskId: taskId,
+                        taskData: res?.data?.taskData
+                    })
+                })
+            }
         }
     },
-    components: { TasksProgress, TasksCreate, TableMain, TableActionPlus, DotsImg }
+    components: { TasksProgress, TasksCreate, TableMain, TableActionPlus, DotsImg, TablePagination }
 }
 </script>
 
