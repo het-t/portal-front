@@ -19,9 +19,8 @@
                         <slot name="tbody"></slot>
                     </tbody>
                 </table>
-                <!-- <TablePagination @tableData="rolesList = $event"
-                    tableName="roles"
-                /> -->
+                
+                <slot name="pagination"></slot>
             </div>
         </div>
 

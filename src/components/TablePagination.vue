@@ -13,7 +13,7 @@
             <li class="neutral">
                 <a href="#" @click="pageChange(1)">&lt;&lt;</a>
             </li>
-            <li class="neutral" v-for="n in showPage" :key="n">
+            <li class="neutral" v-for="n in showPage()" :key="n">
                 <a href="#" :class="(n == currentPage) ? 'green' : ''" @click="pageChange(n)">{{n}}</a>
             </li>
             <li class="neutral">
@@ -31,58 +31,78 @@
         data() {
             return {
                 pageData: '',
-                totalRecords: '',
                 currentPage: 1,
                 recordsPerPage: 10,
-                pageCount: '',
+                pageCount: ''
             }
         },
         computed: {
-            showPage() {
-                let numShown = 5;
-                numShown = Math.min(numShown, this.pageCount)
-                let first = this.currentPage - Math.floor(numShown / 2)
-                first = Math.max(first, 1)
-                first = Math.min(first, this.pageCount - numShown + 1)
-                return [...Array(numShown)].map((k,i) => i + first)
-            }
+            totalRecords() {
+                return this.$store.getters[`${this.tableName}/${this.tableName}CountGet`]
+            },
         },
         props: {
             tableName: String,
         },
         methods: {
+            showPage() {
+                if (!isNaN(this.pageCount)) {
+                    let numShown = 5;
+                    numShown = Math.min(numShown, this.pageCount)
+                    let first = this.currentPage - Math.floor(numShown / 2)
+                    first = Math.max(first, 1)
+                    first = Math.min(first, this.pageCount - numShown + 1)
+                    return [...Array(numShown)].map((k,i) => i + first)
+                }
+                else {
+                    return 0
+                }
+            },
             pageChange(page) {
                 this.currentPage = page
                 this.getPageData()
             },
             getPageData() {
                 this.pageCount = Math.ceil(this.totalRecords / this.recordsPerPage)
-                axios.get(`/u/api/${this.tableName}`, {
-                    params: {
-                        from: (this.currentPage-1)*this.recordsPerPage,
-                        recordsPerPage: this.recordsPerPage,
-                    },
-                    withCredentials: true
-                })
-                .then((activities) => {
-                    console.log("table name", this.tableName)
-                    this.$emit("tableData", activities.data[this.tableName+'List'])
-                    console.log("table data", activities.data[this.tableName+'List'])
-                });
+                
+                let pageDataStore = this.$store.getters[`${this.tableName}/${this.tableName}ListGet`]?.(this.currentPage)
+
+                if ((pageDataStore == undefined) || (pageDataStore?.length == 0)) {
+
+                    axios.get(`/u/api/${this.tableName}`, {
+                        params: {
+                            from: (this.currentPage-1)*this.recordsPerPage,
+                            recordsPerPage: this.recordsPerPage,
+                        },
+                        withCredentials: true
+                    })
+                    .then((res) => {
+                        this.$emit("tableData", res.data[this.tableName+'List'])
+                        this.$store.commit(`${this.tableName}/${this.tableName}List`, {index: this.currentPage, data: res.data[this.tableName+'List']})
+                    })
+                } 
+                else {
+                    this.$emit("tableData", pageDataStore)
+                }
+                
+
             },
         },
         created() {
-            axios.get(`/u/api/${this.tableName}/count`, {
-                withCredentials: true
-            })
-            .then((count) => {
-                console.log("table pagination", count)
-                this.totalRecords = count.data.count
-                this.pageCount = Math.ceil(this.totalRecords / this.recordsPerPage)
-                console.log("total records: ", this.totalRecords)
-                console.log("page count:", this.pageCount)
-            })
-            this.getPageData()
+            if (this.totalRecords == '') {
+                axios.get(`/u/api/${this.tableName}/count`, {
+                    withCredentials: true
+                })
+                .then((res) => {
+                    this.$store.commit(`${this.tableName}/${this.tableName}CountSet`, res?.data?.count)
+                })
+                .then(() => {
+                    this.getPageData()
+                })
+            }
+            else {
+                this.getPageData()
+            }            
         }
     }
 </script>
