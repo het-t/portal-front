@@ -222,7 +222,7 @@
                 })
             },
             openTab(e, newTab) {
-                 var tabs = e.target.parentElement.getElementsByClassName('tab')
+                var tabs = e.target.parentElement.getElementsByClassName('tab')
                 let curTab = [...tabs].find(tab => tab?.classList?.contains('tab-open') == true)
                 curTab?.classList?.remove('tab-open')
                 e?.target?.classList?.add('tab-open')

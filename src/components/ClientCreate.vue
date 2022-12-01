@@ -4,10 +4,15 @@
                 <h5 class="table-head m0">create client</h5>
             </div>
 
-            <form class="mr16 ml16 mt16 mb16 pr12 pl12">
+            <div class="table-tabs">
+                <button @click="openTab($event, 'client')" :ref='"defaultTab"+uk' class="button neutral tab">client detail</button>
+                <button @click="openTab($event, 'ca')" class="button neutral tab">ca details</button>
+                <button @click="openTab($event, 'contact')" class="button neutral tab">contact</button>
+            </div>
+
+            <form class="mr16 ml16 mt16 mb16 pr16 pl16">
                 <div class="fg-wrapper">
-                    <div class="fg">
-                        <p class="head-tr">client</p>
+                    <div class="hide fg" :ref="('client'+uk)">
                         <div class="row mt8">
                             <label for="client-cli-llpin" class="labels c1">CIN/LLPIN</label>
                             <input v-model="cin" type="text" id="client-cli-llpin">
@@ -27,10 +32,8 @@
                         </div>
                     </div>
 
-                    <div class="vr"></div>
 
-                    <div class="fg">
-                        <p class="head-tr">CA details</p>
+                    <div class="hide fg" :ref="('ca'+uk)">
                         <div id="i5" class="row mt8">
                             <label for="firm-name" class="labels c1">firm-name</label>
                             <input v-model="firmName" type="text" id="firm-name">
@@ -53,9 +56,8 @@
                     </div>
                 </div>
 
-                <div class="fg-wrapper mt16">
-                    <div class="fg">
-                        <p class="head-tr">contact</p>
+                <div class="fg-wrapper">
+                    <div class="hide fg" :ref="('contact'+uk)">
                         <div class="row mt8">
                             <label for="contact-name" class="labels c1">name</label>
                             <input v-model="conName" type="text" id="contact-name">
@@ -71,13 +73,9 @@
                             <input v-model="conPhone" type="text" id="contact-phone">
                         </div>
                     </div>
-
-                    <div class="vr"></div>
-
-                    <div class="fg"></div>
                 </div>
 
-                <button @click.prevent="proceed(), clear()" class="green mt16 button">create</button>
+                <button @click.prevent="proceed(), clear()" class="green mt16 button">save</button>
                 <button @click.prevent="clear()" class="neutral ml8 mt16 button">cancel</button>
 
             </form>
@@ -90,7 +88,7 @@ import {clients} from '@/api/index.js'
 
 export default {
     name: 'ClientCreate',
-    props: ['displayHead', 'clientData'],
+    props: ['displayHead', 'clientData', 'uk'],
     data() {
         return {
             cin: '',
@@ -115,6 +113,16 @@ export default {
     },
     methods: {
         ...mapActions(['promptMessage']),
+        openTab(e, newTab) {
+                var tabs = e.target.parentElement.getElementsByClassName('tab')
+                let curTab = [...tabs].find(tab => tab?.classList?.contains('tab-open') == true)
+                curTab?.classList?.remove('tab-open')
+                e?.target?.classList?.add('tab-open')
+                this.$refs['client'+this.uk]?.classList?.add('hide')
+                this.$refs['ca'+this.uk]?.classList?.add('hide')
+                this.$refs['contact'+this.uk]?.classList?.add('hide')
+                this.$refs[newTab+this.uk]?.classList?.remove('hide')
+            },
         clear() {
             this.clientName = ''
             this.clientTypeId = ''
@@ -160,6 +168,7 @@ export default {
         }
     },
     mounted() {
+        this.$refs['defaultTab'+this.uk].click()
         
         if (this.clientData != undefined) {
             this.editing = true
@@ -186,6 +195,23 @@ export default {
 </script>
 
 <style scoped>
+.hide {display: none;}
+.table-tabs {
+    display: flex;
+}
+.tab {
+    padding: auto;
+    width: 50%;
+    background-color: white;
+    border-radius: 0;
+}
+.tab-open {
+    border: solid 1px #d2d2d2;
+    color:  #e7eaec;
+    background-color: #2F4050;
+}
+
+
     .head-tr {
         display: block !important;
     }

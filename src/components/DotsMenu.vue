@@ -46,7 +46,7 @@
     height: 18px;
     border-bottom: solid 2px #e7eaec;
 }
-li {
+.dots-menu li {
     width: 34px;
     height: 34px;
     cursor: pointer;

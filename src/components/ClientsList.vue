@@ -82,7 +82,11 @@
                     </tr>
 
                     <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
-                        <client-create :clientData="JSON.stringify(client)" displayHead="false"></client-create>
+                        <client-create 
+                            :uk="index"
+                            :clientData="JSON.stringify(client)" 
+                            displayHead="false"
+                        ></client-create>
                     </tr>
                 </div>
             </template>
