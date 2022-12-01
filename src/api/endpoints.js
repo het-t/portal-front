@@ -20,7 +20,7 @@ const endpoints = {
     getTasksMaster: '/u/api/tasks/get-tasks-master',
     getSubTasksMaster: '/u/api/tasks/get-sub-tasks-master',
     getClientsMasterTypes: '/u/api/clients/types',
-    getMyTasks: '/u/api/tasks/get-my-tasks'
+    getMyTasks: '/u/api/my-tasks/'
     // editClient: '/u/api/roles/'
 }
 

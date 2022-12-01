@@ -26,7 +26,6 @@ const roles = {
 
 const tasks = {
     get: () => makeGetReq(endpoints.getTasks),
-    getMyTasks: () => makeGetReq(endpoints.getMyTasks),
     getData: (args) => makeGetReq(endpoints.getTaskData, args),
     create: (args) => makeGetReq(endpoints.createTask, args),
     getSubTasks: (args) => makeGetReq(endpoints.getSubTasks, args),
@@ -40,6 +39,9 @@ const subTasksMaster = {
     get: (args) => makeGetReq(endpoints.getSubTasksMaster, args)
 }
 
+const myTasks = {
+    get: () => makeGetReq(endpoints.getMyTasks),
+}
 const getAllRights = () => makeGetReq(endpoints.getAllRights)
 
 const getUserRights = () => makeGetReq(endpoints.getUserRights)
@@ -50,6 +52,7 @@ export {
     clients,
     users,
     roles,
+    myTasks,
     tasks,
     tasksMaster,
     subTasksMaster
