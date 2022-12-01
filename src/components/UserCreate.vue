@@ -58,7 +58,7 @@
 
             </div>
 
-            <button @click.prevent="proceed(), clear()" class="green mt16 button">{{proceedBtn}}</button>
+            <button @click.prevent="proceed(), clear()" class="green mt16 button">save</button>
             <button @click.prevent="clear()" class="neutral ml8 mt16 button">cancel</button>
         </form>
 
@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import {users, roles} from '@/api/index.js'
+import {users} from '@/api/index.js'
 import { mapActions } from 'vuex'
     export default {
         name: 'CreateUser',
@@ -82,40 +82,37 @@ import { mapActions } from 'vuex'
                 userPassword: '',
                 dbRoles: [],
                 userId: '',
-                proceedBtn: 'create',
                 formHead: 'create user',
             }
         },
         created() {
             console.log("editing user ",this.editUserId)
             if (this.editUserId != undefined) {
-                this.proceedBtn = 'save'
                 this.formHead = 'edit user'
-                users.getData({
-                    editUserId: this.editUserId
-                })
-                .then((response) => {
-                    console.log(response.data.userData)
-                    const {firstName, lastName, gender, birthdate, email, role, password, id} = response.data.userData
-                    this.userFirstName = firstName
-                    this.userLastName = lastName
-                    this.userGender = gender
-                    this.userBithdate = new Date(birthdate)
-                    this.userEmail = email
-                    this.userRole = role
-                    this.userPassword = password
-                    this.userId = id
-                })
+
+                this.$store.dispatch('roles/rolesAll')
+                this.$store.dispatch('users/usersDataSet', {userId: this.editUserId})
             } 
-            roles.get({
-                from: 0,
-                recordsPerPage: 100,
-            }) 
-            .then((response) => {
-                console.log("all roles: ", roles)
-                this.dbRoles = response.data.rolesList
-            })
+        },
+        mounted() {
+            const userData = this.$store.getters['users/usersDataGet'](this.editUserId)
+            const rolesList = this.$store.getters['roles/allRoles']
             
+            if (rolesList != undefined && rolesList != '') {
+                this.dbRoles = rolesList
+            }
+            if (userData != undefined && userData != '') {
+                this.populateDataProperties(userData)
+            }
+            else this.$store.subscribe((mutation, state) => {
+                if (mutation.type == 'users/usersDataSet' && mutation.payload.index == this.editUserId) {
+                    this.populateDataProperties(state.users.usersData[this.editUserId])
+                }
+                else if (mutation.type == 'roles/rolesAll') {
+                    this.dbRoles = state.roles.allRoles
+                }
+            })
+
         },
         methods: {
             ...mapActions(['promptMessage']),
@@ -157,15 +154,28 @@ import { mapActions } from 'vuex'
                     })
                 }
             },
-            clear() {
-                this.userFirstName = ''
-                this.userLastName = ''
-                this.userGender = ''
-                this.userBithdate = ''
-                this.userEmail = ''
-                this.userRole = ''
-                this.userPassword = ''
-            },
+            populateDataProperties(o) {
+                const {
+                    firstName, 
+                    lastName, 
+                    gender, 
+                    birthdate, 
+                    email, 
+                    role, 
+                    password, 
+                    id
+                } = o
+
+                this.userFirstName = firstName
+                this.userLastName = lastName
+                this.userGender = gender
+                this.userBithdate = new Date(birthdate)
+                this.userEmail = email
+                this.userRole = role
+                console.log("userrole", this.userRole)
+                this.userPassword = password
+                this.userId = id
+            }
         }
     }
 </script>

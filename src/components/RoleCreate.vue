@@ -15,9 +15,15 @@
             <div class="row mt8">
                 <label class="labels c1">rights</label>
                 <div>
-                    <!-- {{roleRights}} -->
                     <div class="mt16" v-for="right in rightsList" :key="right">
-                        <input v-model="roleRights" :id="right.id" :value="right.id" class="m0 mr16" type="checkbox" :name="right.name" :title="right?.description">
+                        <input v-model="roleRights" 
+                            :id="right.id" 
+                            :value="right.id" 
+                            class="m0 mr16" 
+                            type="checkbox" 
+                            :name="right.name" 
+                            :title="right?.description"
+                        >
                         <label :for="right.id">{{right.name}}</label>
                     </div>
                 </div>
@@ -25,14 +31,14 @@
 
             <div class="hr"></div>
 
-            <button @click.prevent="proceed(), clear()" class="green button">{{proceedBtn}}</button>
+            <button @click.prevent="proceed(), clear()" class="green button">save</button>
             <button @click.prevent="clear()" class="neutral ml8 button">cancel</button>
         </form>
     </div>
 </template>
 
 <script>
-import { roles, getAllRights } from '@/api'
+import { roles } from '@/api'
 import { mapActions } from 'vuex'
 
     export default {
@@ -44,7 +50,6 @@ import { mapActions } from 'vuex'
                 roleRights: [],
                 rightsList: [],
                 formHead: 'create role',
-                proceedBtn: 'create',
             }
         },
         methods: {
@@ -69,22 +74,28 @@ import { mapActions } from 'vuex'
                 this.roleRights = []
             }
         },
-        created() {            
+        created() {           
+            this.rightsList = this.$store.getters['rights/getAllRightsList']    //actin invoked in rolesview.js
+            
+            const roleDataStore = this.$store.getters['roles/rolesDataGet'](this.editRoleName)
+            
             if (this.editRoleName != undefined) {
                 this.formHead = 'edit role'
-                this.proceedBtn = 'save'
-                console.log("editing role", this.editRoleName)
-                roles.getData({editRoleName: this.editRoleName})
-                .then((res) => {
-                    const editRoleData = res.data.roleData
-                    this.roleName = editRoleData.name
-                    this.roleRights = editRoleData.rights
-                    console.log(this.roleRights)
-                })
+                this.$store.dispatch('roles/rolesDataSet', {roleId: this.editRoleName})
             }
             
-            getAllRights()
-
+            if (roleDataStore != undefined && roleDataStore != '') {
+                this.roleName = this.editRoleName
+                this.roleRights = roleDataStore.map(o => o.rightId)
+            }
+            else this.$store.subscribe((mutation, state) => {
+                if (mutation.type == "roles/rolesDataSet" && mutation.payload.index == this.editRoleName) {
+                    let roleData = state.roles.rolesData[this.editRoleName]
+                    console.log(roleData)
+                    this.roleName = this.editRoleName
+                    this.roleRights = roleData.map(o => o.rightId)
+                }
+            })
         }
     }
 </script>

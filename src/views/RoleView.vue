@@ -5,11 +5,11 @@
 </template>
 
 <script>
-    import { mapGetters } from 'vuex'
     export default {
         name: "RoleView",
-        computed: {
-            ...mapGetters(['getRights'])
-        },
+        created() {
+            //get all rights if not available in store
+            this.$store.dispatch('rights/setAllRightsList')
+        }
     }
 </script>

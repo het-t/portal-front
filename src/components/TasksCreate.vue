@@ -335,7 +335,7 @@
                 this.populateDataProperties(taskData[0])
                 this.subTasks = subTasksData 
             }
-            this.$store.subscribe((mutation, state) => {
+            else this.$store.subscribe((mutation, state) => {
                 if (mutation.type == 'tasks/tasksDataSet' && mutation.payload.taskId == this.taskId) {
                     this.populateDataProperties(state.tasks.tasksData[this.taskId][0])
                 }

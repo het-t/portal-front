@@ -4,6 +4,7 @@ const state = {
     usersCount: '', //no. of users for table pagination
     users: {},  //data of all visited users table pages 
     allUsers: [],   //list of all users
+    usersData: {},  //list of data of users selected to edit
 }
 
 const getters = {
@@ -15,6 +16,9 @@ const getters = {
     },
     usersCountGet(state) {
         return state.usersCount
+    },
+    usersDataGet: (state) => (index) => {
+        return state.usersData[index]
     }
 }
 
@@ -31,6 +35,13 @@ const mutations = {
     },
     usersAll(state, usersList) {
         state.allUsers = usersList
+    },
+    usersDataSet(state, {index, data}) {
+        Object.defineProperty(state.usersData, index, {
+            value: data,
+            writable: true,
+            enumerable: true,
+        })
     }
 }
 
@@ -43,6 +54,17 @@ const actions = {
             })
             .then((res) => {
                 commit('usersAll', res?.data?.usersList)
+            })
+        }
+    },
+    usersDataSet({getters, commit}, {userId}) {
+        const res = getters['usersDataGet']?.(userId)
+        if (res == undefined || res == '') {
+            users.getData({
+                editUserId: userId
+            })
+            .then((res) => {
+                commit('usersDataSet', {index: userId, data: res.data.userData})
             })
         }
     }
