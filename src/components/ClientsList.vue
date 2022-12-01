@@ -17,21 +17,18 @@
                             <TableSort :tableData="''" keyToSort="''" />
                         </div>
                     </th> -->
-                    <div class="p12"></div>
                     <th>name</th>
                     <th>CIN/LLPIN</th>
                     <th>type</th>
                     <th>CA</th>
                     <th>contact</th>
+                    <div class="p12"></div>
                 </tr>
             </template>
 
             <template #tbody>
                 <div v-for="(client, index) in clientList" :key="index">
                     <tr class="tr hidden-tr-parent" @click.prevent="editClient('row'+index)">
-                        <div class="dots p12">
-                            <dots-img @click.stop="editClient('row'+index)" />
-                        </div>
                         <td class="flex">
                             {{client.name}}
                         </td>
@@ -66,6 +63,9 @@
                                 E-Mail: {{client.conEmail}}
                             </p>
                         </td>
+                        <div class="dots p12">
+                            <dots-img @click.stop="editClient('row'+index)" />
+                        </div>
                     </tr>
 
                     <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
@@ -120,7 +120,7 @@
         padding: 0;
         display: grid;
         align-items: initial;
-        grid-template-columns: 36px 1fr 1fr 1fr 2fr 2fr;
+        grid-template-columns: 1fr 1fr 1fr 2fr 2fr 36px;
     }
     .tr-hidden {
         grid-template-columns: auto;

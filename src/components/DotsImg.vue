@@ -1,12 +1,9 @@
 <template>
-    <td v-click-away="hide" class="dots p0">
-        <div class="dots-parent"
-            @click.prevent="[$emit('dotsClicked', $event), showDots()]" 
-        >
+    <td v-click-away="hide" @click.capture="[$emit('dotsClicked', $event), showDots()]" class="dots p0">
+        <div class="dots-parent">
             <font-awesome-icon :class="dotsVisibility" class="dots-img"  
                 :icon="['fas', 'ellipsis-vertical']" 
             />
-            <!-- <img src="../assets/icons/dots-icon.png" alt=""> -->
         </div>
     </td>
 </template>
@@ -33,6 +30,9 @@ import {mixin as VueClickAway} from 'vue3-click-away'
 </script>
 
 <style scoped>
+    td {
+        padding: 0 !important;
+    }
     .dots-img{
         cursor: pointer;
         color: black !important;

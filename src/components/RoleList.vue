@@ -33,7 +33,6 @@
             <div class="mr16 ml16 mt16">
                 <table>
                     <tr>
-                        <th></th>
                         <!-- <th>
                             <div class="tr-th">
                                 id
@@ -42,13 +41,11 @@
                         </th> -->
                         <th>name</th>
                         <th>rights</th>
+                        <th></th>
                         <!-- <th>actions</th> -->
                     </tr>
 
-                    <tr class="tr" v-for="role in roleListToDisplay()" :key="role?.name">
-                        
-                        <DotsImg @dotsClicked="showMenu($event, role.name)"/>
-                        
+                    <tr class="tr" v-for="role in roleListToDisplay()" :key="role?.name">                        
                         <!-- <td>
                             {{role?.id}}
                         </td> -->
@@ -59,6 +56,8 @@
                         <td>
                             {{role?.rights}}
                         </td>
+
+                        <DotsImg @dotsClicked="showMenu($event, role.name)"/>
                     </tr>
                 </table>
                 <TablePagination @tableData="rolesList = $event"

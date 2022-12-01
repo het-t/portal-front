@@ -13,6 +13,7 @@
                 <tr>
                     <th>name</th>
                     <th>rights</th>
+                    <th></th>
                     <!-- <th>actions</th> -->
                 </tr>
             </template>
@@ -24,6 +25,9 @@
                     </td>
                     <td>
                         {{user.rights}}
+                    </td>
+                    <td>
+                        <dots-img></dots-img>
                     </td>
                     <!-- <td class="actions">
                         <router-link :to="{
@@ -63,6 +67,7 @@
     import AlertC from './AlertC.vue'
     import TablePagination from './TablePagination.vue'
     import TableMain from './TableMain.vue';
+    import DotsImg from './DotsImg.vue';
     // import TableFilter from './TableFilter.vue';
     import TableActionPlus from './TableActionPlus.vue';
 
@@ -102,7 +107,7 @@ export default {
             this.alertData.msg = msg
         }
     },
-    components: { AlertC, TablePagination, TableActionPlus, TableMain }
+    components: { AlertC, TablePagination, TableActionPlus, TableMain, DotsImg }
 }
 </script>
 

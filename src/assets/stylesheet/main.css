@@ -187,6 +187,7 @@ th:hover .tr-th img, .tr-th button:focus img {
 }
 .tr {
     border-top: solid 1px #e7eaec;
+    vertical-align: initial;
 }
 .table-actions {
     display: inline;

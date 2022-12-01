@@ -11,21 +11,18 @@
 
             <template #thead>
                 <tr class="table-heading">
-                    <div></div>
                     <th>title</th>
                     <th>description</th>
                     <th>client</th>
                     <th>progress</th>
                     <th>status</th>
+                    <div></div>
                 </tr>
             </template>
 
             <template #tbody>
                 <div v-for="(task, index) of tasksList" :key="task.id">
                     <tr class="tr edit-task-tr" @click.prevent="editTask('row'+index, task.id)">
-                        <div class="dots">
-                            <dots-img @dotsClicked.stop="editTask('row'+index, task.id)"/>
-                        </div>
                         <td>
                             {{task.title}}
                         </td>
@@ -37,6 +34,9 @@
                             <tasks-progress/>
                         </td>
                         <td>{{task.status}}</td>
+                        <div class="dots">
+                            <dots-img @dotsClicked.stop="editTask('row'+index, task.id)"/>
+                        </div>
                     </tr>
 
                     <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
@@ -143,7 +143,7 @@ import { users, tasks, clients, tasksMaster } from '../api';
         padding: 0;
         display: grid;
         align-items: center;
-        grid-template-columns: 8px 2fr 2fr 1fr 1fr 1fr;    
+        grid-template-columns: 2fr 2fr 1fr 1fr 1fr 8px;    
     }
     .tr-hidden {
         grid-template-columns: auto;
