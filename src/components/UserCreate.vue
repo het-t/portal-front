@@ -43,7 +43,7 @@
                 
                     <div id="i6" class="row mt8">
                         <label for="user-role" class="labels c1">role</label>
-                        <select v-model="userRole" type="text" id="user-role">
+                        <select v-model="userRole" id="user-role">
                             <option v-for="(role) in dbRoles" :key="role.id" :value="role.name">
                             {{role.name}}
                             </option>

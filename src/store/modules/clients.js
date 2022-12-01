@@ -44,7 +44,6 @@ const mutations = {
 
 const actions = {
     getTypes({commit, getters}) {
-        //add else block to return value using getter
         if (getters['getAllTypesList'] == '') {
             clients.getTypes()
             .then(res => {

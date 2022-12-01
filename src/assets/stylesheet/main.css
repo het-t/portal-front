@@ -182,7 +182,7 @@ th:hover .tr-th img, .tr-th button:focus img {
 }
 
 /* for hidden tr */
-input, select, textarea {
+.tr-hidden input, .tr-hidden select, .tr-hidden textarea {
     background-color: inherit;
 }
 .tr.tr-hidden {
