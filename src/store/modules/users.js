@@ -1,26 +1,37 @@
 const state = {
     usersCount: '', //no. of users for table pagination
-    usersList: {},  //list of all users
+    users: {},  //data of all visited users table pages 
+    allUsers: [],   //list of all users
 }
 
 const getters = {
-    getUsersList(state) {
-        return state.usersList
+    allUsers(state) {
+        return state.allUsers
     },
-    getUsersCount(state) {
+    usersListGet: (state) => (index) => {
+        return state.users[index]
+    },
+    usersCountGet(state) {
         return state.usersCount
     }
 }
 
 const mutations = {
-    setUsersList(state, {index, usersList}) {
-        state.usersList[index] = usersList
+    usersList(state, {index, data}) {
+        Object.defineProperty(state.users, index, {
+            value: data,
+            writable: true,
+            enumerable: true,
+        })    
     },
-    setUserCount(state, usersCount) {
-        state.getUsersCount = usersCount
+    usersCountSet(state, usersCount) {
+        state.usersCount = usersCount
+    },
+    usersAll(state, usersList) {
+        state.allUsers = usersList
     }
 }
-
+ 
 export default {
     namespaced: true,
     state,

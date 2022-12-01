@@ -5,6 +5,7 @@ import rights from './modules/rights.js'
 import clients from './modules/clients'
 import tasks from './modules/tasks.js'
 import myTasks from './modules/myTasks.js'
+import roles from './modules/roles.js'
 
 export default createStore({
   state: {
@@ -59,6 +60,7 @@ export default createStore({
     rights,
     clients,
     tasks,
-    myTasks
+    myTasks,
+    roles
   }
 })
