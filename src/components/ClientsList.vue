@@ -124,8 +124,6 @@
                 const show = this.$refs[rowIndex][0].classList.contains('hide')
                 if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
                 else this.$refs[rowIndex][0].classList.add('hide')
-
-                this.$store.dispatch('clients/getTypes')
             },
             menu(e, {clientId, visibility}) {
                 this.menuVisibisility = visibility
