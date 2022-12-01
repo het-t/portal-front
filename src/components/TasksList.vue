@@ -84,7 +84,6 @@ import TableActionPlus from './TableActionPlus.vue';
 import DotsImg from './DotsImg.vue';
 import DotsMenu from './DotsMenu.vue'
 import TablePagination from './TablePagination.vue';
-import { users, tasks, clients, tasksMaster } from '../api';
 
     export default {
     name: "TasksList",
@@ -102,57 +101,15 @@ import { users, tasks, clients, tasksMaster } from '../api';
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
         },
         editTask(rowIndex, taskId) {
-            console.log("editing taskid", taskId)
             const show = this.$refs[rowIndex][0].classList.contains('hide')
             if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
             else this.$refs[rowIndex][0].classList.add('hide')
 
-            if (this.$store.getters['tasks/subTasksData']?.(taskId) == undefined || this.$store.getters['tasks/subTasksData']?.(taskId) == '') {
-                tasks.getSubTasks({taskId})
-                .then((subTasks) => {
-                    this.$store.commit('tasks/subTasksDataSet', {
-                        taskId, 
-                        data: subTasks.data.subTasksList
-                    })
-                })
-            }
+            //get data of task to edit if not available in store
+            this.$store.dispatch('tasks/tasksDataSet', {taskId})
 
-            if (Object.keys(this.$store.getters['users/allUsers']).length == 0) {
-                users.get({
-                    from: null,
-                    recordsPerPage: null,
-                })
-                .then((res) => {
-                    this.$store.commit('users/usersAll', res?.data?.usersList)
-                })
-            }
-
-            if (Object.keys(this.$store.getters['clients/allClients']).length == 0) {
-                clients.get({
-                    from: null,
-                    recordsPerPage: null,
-                })
-                .then((res) => {
-                    this.$store.commit('clients/clientsAll', res?.data?.clientsList)
-                })
-            }
-
-            if (Object.keys(this.$store.getters['tasks/tasksMasterListGet']).length == 0) {
-                tasksMaster.get()
-                .then((res) => {
-                    this.$store.commit('tasks/tasksMasterListSet', res?.data?.tasksMasterList)
-                })
-            }
-
-            if (this.$store.getters['tasks/taskData']?.(taskId) == undefined || this.$store.getters['tasks/taskData']?.(taskId) == '') {
-                tasks.getData({taskId})
-                .then((res) => {
-                    this.$store.commit('tasks/tasksDataSet',{
-                        taskId: taskId,
-                        taskData: res?.data?.taskData
-                    })
-                })
-            }
+            //get subTasks of task to edit if not available in store
+            this.$store.dispatch('tasks/subTasksDataSet', {taskId})
         }
     },
     components: { DotsMenu, TasksProgress, TasksCreate, TableMain, TableActionPlus, DotsImg, TablePagination }

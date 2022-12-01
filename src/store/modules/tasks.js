@@ -1,3 +1,5 @@
+import { tasks, tasksMaster } from "@/api"
+
 const state = {
     tasksCount: '', //no. of total tasks
     tasks: {},      //list of all data of tasks table
@@ -54,9 +56,45 @@ const mutations = {
     }
 }
 
+const actions = {
+    tasksDataSet({getters, commit}, {taskId}) {
+        const res = getters['taskData']?.(taskId)
+        if (res == undefined || res == '') {
+            tasks.getData({taskId})
+            .then((res) => {
+                commit('tasksDataSet',{
+                    taskId: taskId,
+                    taskData: res?.data?.taskData
+                })
+            })
+        }
+    },
+    tasksMasterListSet({getters, commit}) {
+        if ((getters['tasksMasterListGet']).length == 0) {
+            tasksMaster.get()
+            .then((res) => {
+                commit('tasksMasterListSet', res?.data?.tasksMasterList)
+            })
+        }
+    },
+    subTasksDataSet({getters, commit}, {taskId}) {
+        const res = getters['subTasksData']?.(taskId)
+        if ( res == undefined || res == '') {
+            tasks.getSubTasks({taskId})
+            .then((res) => {
+                commit('subTasksDataSet', {
+                    taskId, 
+                    data: res.data.subTasksList
+                })
+            })
+        } 
+    }
+}
+
 export default {
     namespaced: true,
     state,
     getters,
-    mutations
+    mutations,
+    actions
 }

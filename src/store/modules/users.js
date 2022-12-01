@@ -1,3 +1,5 @@
+import { users } from "@/api"
+
 const state = {
     usersCount: '', //no. of users for table pagination
     users: {},  //data of all visited users table pages 
@@ -31,10 +33,25 @@ const mutations = {
         state.allUsers = usersList
     }
 }
+
+const actions = {
+    usersAll({getters, commit}) {
+        if (getters['allUsers'].length == 0) {
+            users.get({
+                from: null,
+                recordsPerPage: null,
+            })
+            .then((res) => {
+                commit('usersAll', res?.data?.usersList)
+            })
+        }
+    }
+}
  
 export default {
     namespaced: true,
     state,
     getters,
-    mutations
+    mutations,
+    actions
 }

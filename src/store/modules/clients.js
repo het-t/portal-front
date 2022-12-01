@@ -4,7 +4,7 @@ const state = {
     clientTypes: [],    //list of client's types
     clients: {},        //list of all data of visited pages of clients table
     clientsCount: '',
-    allClients: '',     //list of all clients
+    allClients: [],     //list of all clients
 }
 
 const getters = {
@@ -44,6 +44,7 @@ const mutations = {
 
 const actions = {
     getTypes({commit, getters}) {
+        //add else block to return value using getter
         if (getters['getAllTypesList'] == '') {
             clients.getTypes()
             .then(res => {
@@ -51,6 +52,17 @@ const actions = {
             })
         }
     },
+    clientsAll({commit, getters}) {
+        if (getters['allClients'].length == 0) {
+            clients.get({
+                from: null,
+                recordsPerPage: null,
+            })
+            .then((res) => {
+                commit('clientsAll', res?.data?.clientsList)
+            })
+        }
+    }
 }
 
 export default {

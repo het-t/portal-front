@@ -317,7 +317,6 @@
             }
         },
         created() {
-
             if (window.history.state.taskId != undefined){ 
                 this.editing = true  
                 this.tableHead = 'edit task'         
