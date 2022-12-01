@@ -185,8 +185,8 @@
                 subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "pending with signed documents"}, {id: 9, status: "pending with DSC"}],
                 tableHead: 'create task',
                 
+                subTasks: [],
                 taskMasterId: '',
-                subTasks: [], 
                 repeat: false,
                 newSubTask: '',
                 taskStatus: '',
@@ -256,6 +256,23 @@
                 this.$refs['sub-task'+index][0].classList.remove('show') :
                 this.$refs['sub-task'+index][0].classList.add('show')
             },
+            populateDataProperties(data) {
+                const {
+                    taskMasterId,
+                    title,
+                    description,
+                    cost,
+                    coordinatorId,
+                    clientId
+                } = data
+
+                this.taskTitle = title
+                this.taskDescription = description
+                this.taskCost = cost
+                this.taskCoordinator = coordinatorId
+                this.taskClient = clientId
+                this.taskMasterId = taskMasterId
+            },
             proceed() {
                 this.$router.push('/u/tasks/list')
 
@@ -287,20 +304,16 @@
                 }
             },
             clear() {
+                this.populateDataProperties({})
                 this.subTasks = [] 
                 this.repeat = false
                 this.newSubTask =  ''
                 this.taskStatus = ''
-                this.taskTitle = ''
-                this.taskClient = ''
                 this.taskTasks = ''
-                this.taskCost = ''
-                this.taskCoordinator = ''
                 this.save = false
                 this.taskRepeat = ''
                 this.taskRepeatOn = ''
                 this.taskSubTasks = ''
-                this.taskDescription = ''
             }
         },
         created() {
@@ -317,38 +330,23 @@
             }
         },
         mounted() {
+            const taskData = this.$store.getters['tasks/taskData'](this.taskId)
+            const subTasksData = this.$store.getters['tasks/subTasksData'](this.taskId)
+            if (taskData != undefined && taskData != '' && subTasksData != undefined && subTasksData != '') {
+                this.populateDataProperties(taskData[0])
+                this.subTasks = subTasksData 
+            }
             this.$store.subscribe((mutation, state) => {
                 if (mutation.type == 'tasks/tasksDataSet' && mutation.payload.taskId == this.taskId) {
-                    console.log(state.tasks.tasksData[this.taskId][0].taskMasterId)
-                    const {
-                        taskMasterId,
-                        title,
-                        description,
-                        cost,
-                        coordinatorId,
-                        clientId
-                    } = state.tasks.tasksData?.[this.taskId][0]
-                    
-                    this.taskTitle = title
-                    this.taskDescription = description
-                    this.taskCost = cost
-                    this.taskCoordinator = coordinatorId
-                    this.taskClient = clientId
-                    this.taskMasterId = taskMasterId
+                    this.populateDataProperties(state.tasks.tasksData[this.taskId][0])
+                }
+                else if (mutation.type == 'tasks/subTasksDataSet' && mutation.payload.taskId == this.taskId) {
+                    this.subTasks = state.tasks.subTasksData?.[this.taskId]
                 }
             })
 
             this.$refs['defaultTab'+this.uk].click()
 
-            if (this.editing == true) {
-                
-                tasks.getSubTasks({taskId: this.taskId})
-                .then((subTasks) => {
-                    this.subTasks = subTasks.data.subTasksList
-                })
-            } else {
-                console.log("not editing")
-            }
         }
     }
 </script>

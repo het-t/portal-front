@@ -2,6 +2,7 @@ const state = {
     tasksCount: '', //no. of total tasks
     tasks: {},      //list of all data of tasks table
     tasksData: {},   //data of all tasks opened to edit
+    subTasksData: {},    //data of all sub tasks opened to edit
     tasksMaster: [],    //list of all tasks master
 }
 
@@ -17,6 +18,9 @@ const getters = {
     },
     tasksMasterListGet(state) {
         return state.tasksMaster
+    },
+    subTasksData: (state) => (taskId) => {
+        return state.subTasksData[taskId]
     }
 }
 
@@ -40,6 +44,13 @@ const mutations = {
     },
     tasksMasterListSet(state, tasksMasterList) {
         state.tasksMaster = tasksMasterList
+    },
+    subTasksDataSet(state, {taskId, data}) {
+        Object.defineProperty(state.subTasksData, taskId, {
+            value: data,
+            writable: true,
+            enumerable: true,
+        })    
     }
 }
 

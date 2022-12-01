@@ -76,18 +76,22 @@ import { users, tasks, clients, tasksMaster } from '../api';
             tasksList: []
         };
     },
-    created() {
-        tasks.get()
-        .then(res => {
-            this.tasksList = res.data.tasksList
-        })
-    },
     methods: {
         editTask(rowIndex, taskId) {
             console.log("editing taskid", taskId)
             const show = this.$refs[rowIndex][0].classList.contains('hide')
             if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
             else this.$refs[rowIndex][0].classList.add('hide')
+
+            if (this.$store.getters['tasks/subTasksData']?.(taskId) == undefined || this.$store.getters['tasks/subTasksData']?.(taskId) == '') {
+                tasks.getSubTasks({taskId})
+                .then((subTasks) => {
+                    this.$store.commit('tasks/subTasksDataSet', {
+                        taskId, 
+                        data: subTasks.data.subTasksList
+                    })
+                })
+            }
 
             if (Object.keys(this.$store.getters['users/allUsers']).length == 0) {
                 users.get({

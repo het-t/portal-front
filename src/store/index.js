@@ -2,6 +2,7 @@ import { createStore } from 'vuex'
 import users from './modules/users.js'
 import rights from './modules/rights.js'
 import clients from './modules/clients'
+import tasks from './modules/tasks.js'
 
 export default createStore({
   state: {
@@ -54,6 +55,7 @@ export default createStore({
   modules: {
     users,
     rights,
-    clients
+    clients,
+    tasks
   }
 })
