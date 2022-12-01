@@ -352,14 +352,6 @@
 </script>
 
 <style scoped>
-
-/* .tr-hidden .card{
-    background-color: #f5f5f5 !important;
-} */
-
-/* .tasks-create .card {
-    border: none !important;
-} */
 .table-tabs {
     display: flex;
 }
