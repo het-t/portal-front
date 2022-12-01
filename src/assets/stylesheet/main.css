@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap');
-
+textarea, select, input {    
+    font-family: 'Open Sans', sans-serif;
+}
 html {
     height: 100%;
     margin: -8px;
@@ -179,6 +181,23 @@ th:hover .tr-th img, .tr-th button:focus img {
     border: solid 1px #d2d2d2;
 }
 
+/* for hidden tr */
+input, select, textarea {
+    background-color: inherit;
+}
+.tr.tr-hidden {
+    padding: 0;
+    border-top: 0;
+    margin-bottom: 58px !important;
+    border-left: solid 3px rgba(47, 64, 80, 0.5);
+}
+.tr-hidden div {
+    background-color: #f5f5f5 !important;
+}
+.tr-hidden .card {
+    border: none;
+}
+
 .head-tr {
     border-bottom: solid 1px black;
 }
@@ -235,6 +254,7 @@ form {
     width: 50%;
 }
 .row {
+    vertical-align: initial;
     display: flex;
     padding: 12px 0;
 }

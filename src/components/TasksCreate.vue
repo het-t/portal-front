@@ -61,7 +61,7 @@
 
                             <div class="row mt8">
                                 <label :for="'task-description'+uk" class="labels c1">description</label>
-                                <textarea v-model="taskDescription" name="task-description" :id="'task-description'+uk" cols="30" rows="10" placeholder="description"></textarea>
+                                <textarea v-model="taskDescription" name="task-description" :id="'task-description'+uk" cols="30" rows="5" placeholder="description"></textarea>
                             </div>
 
                         </div>
@@ -352,9 +352,14 @@
 </script>
 
 <style scoped>
-.tasks-create .card {
+
+/* .tr-hidden .card{
+    background-color: #f5f5f5 !important;
+} */
+
+/* .tasks-create .card {
     border: none !important;
-}
+} */
 .table-tabs {
     display: flex;
 }

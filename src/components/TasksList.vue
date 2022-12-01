@@ -180,11 +180,6 @@ import { users, tasks, clients, tasksMaster } from '../api';
         display: flex;
         column-gap: 12px;
     }
-    .tr.tr-hidden {
-        padding: 0;
-        border-top: 0;
-        margin-bottom: 58px !important;
-    }
     .edit-task-tr {
         cursor: pointer;
     }
