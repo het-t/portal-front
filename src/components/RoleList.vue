@@ -10,7 +10,6 @@
                     </li>
                     <li>
                         <font-awesome-icon class="menu-icons" :icon="['fas', 'trash']"></font-awesome-icon>
-                        <!-- <img src="../assets/icons/delete-cross-icon.png" alt=""> -->
                     </li>
                 </template>
             </dots-menu>
