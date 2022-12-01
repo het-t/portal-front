@@ -2,8 +2,9 @@ import { clients } from "@/api/index.js"
 
 const state = {
     clientTypes: [],    //list of client's types
-    clients: {},        //list of all data of clients 
+    clients: {},        //list of all data of visited pages of clients table
     clientsCount: '',
+    allClients: '',     //list of all clients
 }
 
 const getters = {
@@ -11,12 +12,14 @@ const getters = {
         return state.clientTypes
     },
     clientsListGet: (state) => (index) => {
-        console.log("index in getters", index)
-        let res = state.clients["1"]
+        let res = state.clients[index]
         return res
     },
     clientsCountGet(state) {
         return state.clientsCount
+    },
+    allClients(state) {
+        return state.allClients
     }
 }
 
@@ -33,6 +36,9 @@ const mutations = {
             writable: true,
             enumerable: true,
         })
+    },
+    clientsAll(state, clientsList) {
+        state.allClients = clientsList
     }
 }
 
