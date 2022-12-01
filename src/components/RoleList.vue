@@ -34,34 +34,32 @@
                 <table>
                     <tr>
                         <th></th>
-                        <th>
+                        <!-- <th>
                             <div class="tr-th">
                                 id
                                 <TableSort @sorted="filteredRolesList = $event" :tableData="roleListToDisplay()" keyToSort="id"/>
                             </div>
-                        </th>
+                        </th> -->
                         <th>name</th>
                         <th>rights</th>
                         <!-- <th>actions</th> -->
                     </tr>
 
-                    <!-- <router-link :to="{name: 'edit_role', params: {editRoleName: role?.name}}"> -->
-                        <tr class="tr" v-for="role in roleListToDisplay()" :key="role?.name">
-                            
-                            <DotsImg @dotsClicked="showMenu($event, role.name)"/>
-                            
-                            <td>
-                                {{role?.id}}
-                            </td>
-                            <td>
-                                {{role?.name}}
-                            </td>
+                    <tr class="tr" v-for="role in roleListToDisplay()" :key="role?.name">
+                        
+                        <DotsImg @dotsClicked="showMenu($event, role.name)"/>
+                        
+                        <!-- <td>
+                            {{role?.id}}
+                        </td> -->
+                        <td>
+                            {{role?.name}}
+                        </td>
 
-                            <td>
-                                {{role?.rights}}
-                            </td>
-                        </tr>
-                    <!-- </router-link> -->
+                        <td>
+                            {{role?.rights}}
+                        </td>
+                    </tr>
                 </table>
                 <TablePagination @tableData="rolesList = $event"
                     tableName="roles"
@@ -75,7 +73,7 @@
 import {roles} from '@/api/index.js'
 import AlertC from './AlertC.vue'
 import TablePagination from './TablePagination.vue'
-import TableSort from './TableSort.vue'
+// import TableSort from './TableSort.vue'
 import TableFilter from './TableFilter.vue'
 import TableActionPlus from './TableActionPlus.vue'
 import DotsMenu from './DotsMenu.vue'
@@ -130,7 +128,7 @@ import DotsImg from './DotsImg.vue'
             this.roleName = "";
         }
     },
-    components: { AlertC, TablePagination, TableSort, TableFilter, TableActionPlus, DotsMenu, DotsImg }
+    components: { AlertC, TablePagination, TableFilter, TableActionPlus, DotsMenu, DotsImg }
 }
 </script>
 
@@ -138,12 +136,6 @@ import DotsImg from './DotsImg.vue'
 input {
     width: 50%;
 }
-/* .menu-icons {
-    color: black;
-    padding: auto;
-    width: 18px;
-    height: 18px;
-} */
 .tr:hover .dots-img {
     visibility: visible;
 }

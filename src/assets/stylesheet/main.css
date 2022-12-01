@@ -172,6 +172,13 @@ th:hover .tr-th img, .tr-th button:focus img {
 .head-tr, .table-head, .table-actions, th, label {
     text-transform: capitalize;
 }
+.table-action {
+    border: solid 1px white;
+}
+.table-action:hover, .table-action:focus {
+    border: solid 1px #d2d2d2;
+}
+
 .head-tr {
     border-bottom: solid 1px black;
 }

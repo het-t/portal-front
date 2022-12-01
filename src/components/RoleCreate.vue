@@ -15,8 +15,7 @@
             <div class="row mt8">
                 <label class="labels c1">rights</label>
                 <div>
-                    <!-- {{rightsList}} -->
-                    {{roleRights}}
+                    <!-- {{roleRights}} -->
                     <div class="mt16" v-for="right in rightsList" :key="right">
                         <input v-model="roleRights" :id="right.id" :value="right.id" class="m0 mr16" type="checkbox" :name="right.name" :title="right?.description">
                         <label :for="right.id">{{right.name}}</label>
@@ -76,19 +75,16 @@ import { mapActions } from 'vuex'
                 this.proceedBtn = 'save'
                 console.log("editing role", this.editRoleName)
                 roles.getData({editRoleName: this.editRoleName})
-                .then((roleData) => {
-                    const editRoleData = roleData.data
+                .then((res) => {
+                    const editRoleData = res.data.roleData
                     this.roleName = editRoleData.name
-                    this.roleRights = editRoleData.rights.split(',')
+                    this.roleRights = editRoleData.rights
                     console.log(this.roleRights)
                 })
             }
             
             getAllRights()
-                .then((rights) => {
-                    console.log("rights => ", rights.data)
-                    this.rightsList = rights.data.rightsMasterList
-                })
+
         }
     }
 </script>

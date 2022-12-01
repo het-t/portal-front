@@ -109,7 +109,6 @@
                 this.$store.dispatch('clients/getTypes')
             }
         },
-        // components: { TableFilter, TableSort },
     }
 </script>
 
