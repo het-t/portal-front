@@ -1,5 +1,25 @@
 <template>
     <div>
+        <div ref="menu">
+            <dots-menu v-if="menuVisibisility == true">
+                <template #links>
+                    <li>
+                        <router-link :to="{
+                            name: 'edit_user', 
+                            params : {
+                                editUserId: selectedUserId
+                            }
+                        }">
+                            <font-awesome-icon class="menu-icons" :icon="['fas', 'pencil']"></font-awesome-icon> 
+                        </router-link>
+                    </li>
+                    <li>
+                        <font-awesome-icon class="menu-icons" :icon="['fas', 'trash']"></font-awesome-icon>
+                    </li>
+                </template>
+            </dots-menu>
+        </div>
+
         <table-main>
             <template #table-heading>
                 Users
@@ -27,7 +47,10 @@
                         {{user.rights}}
                     </td>
                     <td>
-                        <dots-img></dots-img>
+                        <dots-img
+                            @openMenu="menu($event, {userId: user.id, visibility: true})"
+                            @hideMenu="menu($event, {userId: '', visibility: false})" 
+                        ></dots-img>
                     </td>
                     <!-- <td class="actions">
                         <router-link :to="{
@@ -68,6 +91,7 @@
     import TablePagination from './TablePagination.vue'
     import TableMain from './TableMain.vue';
     import DotsImg from './DotsImg.vue';
+    import DotsMenu from './DotsMenu.vue'
     // import TableFilter from './TableFilter.vue';
     import TableActionPlus from './TableActionPlus.vue';
 
@@ -82,8 +106,10 @@ export default {
                 msg: '',
             },
             usersList: "",
+            selectedUserId: '',
             filteredUsersList: undefined,
             displayAlert: false,
+            menuVisibisility: ''
         };
     },
     methods: {
@@ -105,9 +131,14 @@ export default {
             this.displayAlert = true
             this.alertData.params[0].userId = userId
             this.alertData.msg = msg
+        },
+        menu(e, {userId, visibility}) {
+            this.menuVisibisility = visibility
+            this.selectedUserId = userId
+            if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
         }
     },
-    components: { AlertC, TablePagination, TableActionPlus, TableMain, DotsImg }
+    components: { AlertC, TablePagination, TableActionPlus, TableMain, DotsImg, DotsMenu }
 }
 </script>
 

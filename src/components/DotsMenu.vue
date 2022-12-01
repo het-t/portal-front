@@ -1,6 +1,6 @@
 <template>
-    <div v-click-away="hideMenu" class="dots-menu" ref="dotsMenu">
-        <ul>
+    <div class="dots-menu">
+        <ul @click.stop="(true)">
             <slot name="links"></slot>
         </ul>
     </div>
@@ -17,16 +17,6 @@
             }
         },
         mixins: [VueClickAway],
-        methods: {
-            hideMenu() {
-                this.$refs['dotsMenu'].classList.add('hide')
-            },
-        }
-        // data() {
-        //     return {
-
-        //     }
-        // }
     }
 </script>
 
@@ -51,13 +41,14 @@
     text-transform: capitalize;
 }
 .dots-menu .menu-icons {
-    color: black;
+    color: rgb(56, 56, 56);
     width: 18px;
     height: 18px;
-    border-bottom: solid 1px #e7eaec;
+    border-bottom: solid 2px #e7eaec;
 }
-.dots-menu li {
-    width: 32px;
-    height: 32px;
+li {
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
 }
 </style>

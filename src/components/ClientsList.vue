@@ -1,5 +1,15 @@
 <template>
    <div>
+        <div ref="menu">
+            <dots-menu v-if="menuVisibisility == true">
+                <template #links>
+                    <li>
+                        <font-awesome-icon class="menu-icons" :icon="['fas', 'trash']"></font-awesome-icon>
+                    </li>
+                </template>
+            </dots-menu>
+        </div>
+
         <table-main>
             <template #table-heading>
                 clients
@@ -28,7 +38,7 @@
 
             <template #tbody>
                 <div v-for="(client, index) in clientList" :key="index">
-                    <tr class="tr hidden-tr-parent" @click.prevent="editClient('row'+index)">
+                    <tr class="tr hidden-tr-parent" @click.stop="editClient('row'+index)">
                         <td class="flex">
                             {{client.name}}
                         </td>
@@ -64,7 +74,10 @@
                             </p>
                         </td>
                         <div class="dots p12">
-                            <dots-img @click.stop="editClient('row'+index)" />
+                            <dots-img 
+                                @openMenu="menu($event, {clientId: client.id, visibility: true})" 
+                                @hideMenu="menu($event, {clientId: '', visibility: false})" 
+                            />
                         </div>
                     </tr>
 
@@ -91,13 +104,15 @@
     import TableMain from './TableMain.vue'
     import DotsImg from './DotsImg.vue'
     import TablePagination from './TablePagination.vue'
-
+    import DotsMenu from './DotsMenu.vue'
     export default {
-        components: { TableActionPlus, ClientCreate, TableMain, DotsImg, TablePagination },
+        components: { TableActionPlus, ClientCreate, TableMain, DotsImg, TablePagination, DotsMenu },
         name: 'ClientList',
         data() {
             return {
-                clientList: ''
+                clientList: '',
+                selectedClientId: '',
+                menuVisibisility: '',
             }
         },
         methods: {
@@ -107,8 +122,13 @@
                 else this.$refs[rowIndex][0].classList.add('hide')
 
                 this.$store.dispatch('clients/getTypes')
+            },
+            menu(e, {clientId, visibility}) {
+                this.menuVisibisility = visibility
+                this.selectedClientId = clientId
+                if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
             }
-        },
+        }
     }
 </script>
 

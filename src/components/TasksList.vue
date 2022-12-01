@@ -1,5 +1,15 @@
 <template>
     <div>
+        <div ref="menu">
+            <dots-menu v-if="menuVisibisility == true">
+                <template #links>
+                    <li>
+                        <font-awesome-icon class="menu-icons" :icon="['fas', 'trash']"></font-awesome-icon>
+                    </li>
+                </template>
+            </dots-menu>
+        </div>
+        
         <table-main>
             <template #table-heading>
                 Tasks
@@ -22,7 +32,10 @@
 
             <template #tbody>
                 <div v-for="(task, index) of tasksList" :key="task.id">
-                    <tr class="tr edit-task-tr" @click.prevent="editTask('row'+index, task.id)">
+                    <tr
+                        class="tr edit-task-tr" 
+                        @click.prevent="editTask('row'+index, task.id)"
+                    >
                         <td>
                             {{task.title}}
                         </td>
@@ -35,7 +48,10 @@
                         </td>
                         <td>{{task.status}}</td>
                         <div class="dots">
-                            <dots-img @dotsClicked.stop="editTask('row'+index, task.id)"/>
+                            <dots-img 
+                                @openMenu="menu($event, {taskId: task.id, visibility: true})" 
+                                @hideMenu="menu($event, {taskId: '', visibility: false})" 
+                            />
                         </div>
                     </tr>
 
@@ -66,6 +82,7 @@ import TasksProgress from './TasksProgress.vue';
 import TableMain from './TableMain.vue';
 import TableActionPlus from './TableActionPlus.vue';
 import DotsImg from './DotsImg.vue';
+import DotsMenu from './DotsMenu.vue'
 import TablePagination from './TablePagination.vue';
 import { users, tasks, clients, tasksMaster } from '../api';
 
@@ -73,10 +90,17 @@ import { users, tasks, clients, tasksMaster } from '../api';
     name: "TasksList",
     data() {
         return {
-            tasksList: []
+            tasksList: [],
+            menuVisibisility: '',
+            selectedTask: ''
         };
     },
     methods: {
+        menu(e, {taskId, visibility}) {
+            this.menuVisibisility = visibility
+            this.selectedTask = taskId
+            if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
+        },
         editTask(rowIndex, taskId) {
             console.log("editing taskid", taskId)
             const show = this.$refs[rowIndex][0].classList.contains('hide')
@@ -131,7 +155,7 @@ import { users, tasks, clients, tasksMaster } from '../api';
             }
         }
     },
-    components: { TasksProgress, TasksCreate, TableMain, TableActionPlus, DotsImg, TablePagination }
+    components: { DotsMenu, TasksProgress, TasksCreate, TableMain, TableActionPlus, DotsImg, TablePagination }
 }
 </script>
 
@@ -143,7 +167,7 @@ import { users, tasks, clients, tasksMaster } from '../api';
         padding: 0;
         display: grid;
         align-items: center;
-        grid-template-columns: 2fr 2fr 1fr 1fr 1fr 8px;    
+        grid-template-columns: 2fr 2fr 1fr 1fr 1fr 40px;    
     }
     .tr-hidden {
         grid-template-columns: auto;

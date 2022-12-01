@@ -1,5 +1,5 @@
 <template>
-    <td v-click-away="hide" @click.capture="[$emit('dotsClicked', $event), showDots()]" class="dots p0">
+    <td v-click-away="hide" @click.stop="showDots($event)" class="dots-parent p0">
         <div class="dots-parent">
             <font-awesome-icon :class="dotsVisibility" class="dots-img"  
                 :icon="['fas', 'ellipsis-vertical']" 
@@ -19,11 +19,13 @@ import {mixin as VueClickAway} from 'vue3-click-away'
             }
         },
         methods: {
-            showDots() {
+            showDots(e) {
                 this.dotsVisibility = 'dots-clicked'
+                this.$emit('openMenu', e)
             },
-            hide() {
+            hide(e) {
                 this.dotsVisibility = ''
+                this.$emit('hideMenu', e)
             }
         }
     }
@@ -35,6 +37,9 @@ import {mixin as VueClickAway} from 'vue3-click-away'
     }
     .dots-img{
         cursor: pointer;
+        padding: 4px;
+        background-color: rgba(192, 192, 192, 0.587);
+        border: solid 1px white;
         color: black !important;
     }
     .dots-clicked {
@@ -43,5 +48,6 @@ import {mixin as VueClickAway} from 'vue3-click-away'
 
     .tr:hover .dots-img {
         visibility: visible;
+        /* border: solid 1px rgb(198, 198, 198); */
     }
 </style>

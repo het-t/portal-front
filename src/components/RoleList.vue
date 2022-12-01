@@ -57,7 +57,10 @@
                             {{role?.rights}}
                         </td>
 
-                        <DotsImg @dotsClicked="showMenu($event, role.name)"/>
+                        <DotsImg 
+                            @openMenu="menu($event, {roleName: role.name, visibility: true})"
+                            @hideMenu="menu($event, {roleName: '', visibility: false})"    
+                        />
                     </tr>
                 </table>
                 <TablePagination @tableData="rolesList = $event"
@@ -107,10 +110,10 @@ import DotsImg from './DotsImg.vue'
         // getRoleData() {
         //     getRoleData({roleName: this.roleName})
         // },
-        showMenu(e, roleName) {
-            this.menuVisibisility = true
+        menu(e, {roleName, visibility}) {
+            this.menuVisibisility = visibility
             this.editRoleName = roleName
-            e.target.parentElement.appendChild(this.$refs['menu'])
+            if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
         },
         deleteRole(params) {
             roles.delete(params)
