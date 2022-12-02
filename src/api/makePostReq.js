@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const makePostReq = (url, args) => {
-    return axios.get(url, {
+    return axios.post(url, {
         params: args
     }, {
         withCredentials: true,
