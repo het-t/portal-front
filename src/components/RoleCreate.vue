@@ -1,6 +1,5 @@
 <template>
     <div class="card">
-
         <div class="card-head m0 pb16 pt16 pr16 pl16">
             <h5 class="table-head m0">{{formHead}}</h5>
         </div>
@@ -65,6 +64,11 @@ import { mapActions } from 'vuex'
             },
             createRole() {
                 roles.create({roleName: this.roleName, roleRights: this.roleRights})
+                .then((res) => {
+                    if (res.data.roleCreated == 'success') {
+                        this.$store.dispatch('roles/rolesAll', {force: true})
+                    }
+                })
             },
             editRole() {
                 roles.edit({roleName: this.roleName, roleRight: this.roleRights})
@@ -75,7 +79,7 @@ import { mapActions } from 'vuex'
             }
         },
         created() {           
-            this.rightsList = this.$store.getters['rights/getAllRightsList']    //actin invoked in rolesview.js
+            this.rightsList = this.$store.getters['rights/getAllRightsList']    //action invoked in rolesview.js
             
             const roleDataStore = this.$store.getters['roles/rolesDataGet'](this.editRoleId)
             

@@ -9,7 +9,9 @@
                         </router-link>
                     </li>
                     <li>
-                        <font-awesome-icon class="menu-icons" :icon="['fas', 'trash']"></font-awesome-icon>
+                        <font-awesome-icon @click.stop="deleteRole"
+                            class="menu-icons" 
+                            :icon="['fas', 'trash']"></font-awesome-icon>
                     </li>
                 </template>
             </dots-menu>
@@ -92,13 +94,19 @@ import DotsImg from './DotsImg.vue'
                 msg: '',
             },
             menuVisibisility: '',
-            rolesList: '',
+            rolesList: [],
             editRoleId: '',
             filteredRolesList: undefined,
             displayAlert: false,
         };
     },
     methods: {
+        deleteRole() {
+            roles.delete(this.editRoleId)
+            .then(() => {
+                console.log("role deleted")
+            })
+        },
         roleListToDisplay() {
             if (this.filteredRolesList != undefined) {
                 return this.filteredRolesList
@@ -107,19 +115,10 @@ import DotsImg from './DotsImg.vue'
                 return this.rolesList
             }
         },
-        // getRoleData() {
-        //     getRoleData({roleName: this.roleName})
-        // },
         menu(e, {roleId, visibility}) {
             this.menuVisibisility = visibility
             this.editRoleId = roleId
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
-        },
-        deleteRole(params) {
-            roles.delete(params)
-            .then((results)=> {
-                console.log("deleteRole", results.data)
-            })
         },
         alert(msg, roleId) {
             this.displayAlert = true;
