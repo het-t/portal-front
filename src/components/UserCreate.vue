@@ -1,68 +1,75 @@
 <template>
     <div class="card">
-        <div class="card-head m0 pb16 pt16 pr16 pl16">
+        <div v-if="(displayHead != 'false')"
+            class="card-head m0 pb16 pt16 pr16 pl16"
+        >
             <h5 class="table-head m0">{{formHead}}</h5>
         </div>
-        <form class="mr16 ml16 mt16 mb16 pr12 pl12">
-            <div class="fg-wrapper">
-                <div class="fg">
-                    <p class="head-tr">general</p>
-                    <div id="i1" class="row mt8">
-                        <label for="user-firstname" class="labels c1">firstname</label>
-                        <input v-model="userFirstName" id="user-firstname" type="text">
+
+        <div class="table-tabs">
+            <button @click="openTab($event, 'general')" :ref="('defaultTab'+uk)" class="button nutral tab">general</button>
+            <button @click="openTab($event, 'credentials')" class="button nutral tab">credentials</button>
+        </div>
+
+        <div>
+            <form class="mt16 pb16 pr16 pl16">
+                <div class="pl16 pb16">
+                    <div class="fg hide" :ref="('general'+uk)">
+                        <div :id="('i1'+uk)" class="row mt8">
+                            <label :for="('user-firstname'+uk)" class="labels c1">firstname</label>
+                            <input v-model="userFirstName" :id="('user-firstname'+uk)" type="text">
+                        </div>
+
+                        <div :id="('i2'+uk)" class="row mt8">
+                            <label for="user-lastname" class="labels c1">lastname</label>
+                            <input v-model="userLastName" type="text" id="user-lastname">
+                        </div>
+
+                        <div :id="('i3'+uk)" class="row mt8">
+                            <label :for="('user-gender'+uk)" class="labels c1">gender</label>
+                            <select v-model="userGender" :id="('user-gender'+uk)">
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="others">Others</option>
+                            </select>
+                        </div>
+
+                        <div :id="('i4'+uk)" class="row mt8">
+                            <label :for="('user-birthdate'+uk)" class="labels c1">birthdate</label>
+                            <input v-model="userBithdate" type="date" :id="('user-birthdate'+uk)">
+                        </div>
                     </div>
 
-                    <div id="i2" class="row mt8">
-                        <label for="user-lastname" class="labels c1">lastname</label>
-                        <input v-model="userLastName" type="text" id="user-lastname">
+                    <div class="fg hide" :ref="('credentials'+uk)">
+                        <div :id="('i5'+uk)" class="row mt8">
+                            <label :for="('user-email'+uk)" class="labels c1">email</label>
+                            <input v-model="userEmail" type="text" :id="('user-email'+uk)">
+                        </div>
+                    
+                        <div :id="('i6'+uk)" class="row mt8">
+                            <label :for="('user-role'+uk)" class="labels c1">role</label>
+                            <select v-model="userRole" :id="('user-role'+uk)">
+                                <option v-for="(role) in dbRoles" :key="role.id" :value="role.name">
+                                    {{role.name}}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div :id="('i7'+uk)" class="row mt8">
+                            <label :for="('user-pwd'+uk)" class="labels c1">password</label>
+                            <input v-model="userPassword" type="password" :id="('user-pwd'+uk)">
+                        </div>
                     </div>
 
-                    <div id="i3" class="row mt8">
-                        <label for="user-gender" class="labels c1">gender</label>
-                        <select v-model="userGender" id="user-gender">
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="others">Others</option>
-                        </select>
-                    </div>
+                    <button @click.prevent="proceed(), clear()" class="green mt16 button">save</button>
+                    <button @click.prevent="clear()" class="neutral ml8 mt16 button">cancel</button>
 
-                    <div id="i4" class="row mt8">
-                        <label for="user-birthdate" class="labels c1">birthdate</label>
-                        <input v-model="userBithdate" type="date" id="user-birthdate">
-                    </div>
                 </div>
-
-                <div class="vr"></div>
-
-                <div class="fg">
-                    <p class="head-tr">credentials</p>
-                    <div id="i5" class="row mt8">
-                        <label for="user-email" class="labels c1">email</label>
-                        <input v-model="userEmail" type="text" id="user-email">
-                    </div>
-                
-                    <div id="i6" class="row mt8">
-                        <label for="user-role" class="labels c1">role</label>
-                        <select v-model="userRole" id="user-role">
-                            <option v-for="(role) in dbRoles" :key="role.id" :value="role.name">
-                            {{role.name}}
-                            </option>
-                        </select>
-                    </div>
-
-                    <div id="i7" class="row mt8">
-                        <label for="user-pwd" class="labels c1">password</label>
-                        <input v-model="userPassword" type="password" id="user-pwd">
-                    </div>
-                </div>
-
-            </div>
-
-            <button @click.prevent="proceed(), clear()" class="green mt16 button">save</button>
-            <button @click.prevent="clear()" class="neutral ml8 mt16 button">cancel</button>
-        </form>
-
+            </form>
+        </div>
     </div>
+
+
 </template>
 
 <script>
@@ -70,7 +77,7 @@ import {users} from '@/api/index.js'
 import { mapActions } from 'vuex'
     export default {
         name: 'CreateUser',
-        props: ['editUserId'],
+        props: ['editUserId', 'displayHead', 'uk'],
         data() {
             return {
                 userFirstName: '',
@@ -113,9 +120,20 @@ import { mapActions } from 'vuex'
                 }
             })
 
+            this.$refs['defaultTab'+this.uk].click()
+
         },
         methods: {
             ...mapActions(['promptMessage']),
+            openTab(e, newTab) {
+                var tabs = e.target.parentElement.getElementsByClassName('tab')
+                let curTab = [...tabs].find(tab => tab?.classList?.contains('tab-open') == true)
+                curTab?.classList?.remove('tab-open')
+                e?.target?.classList?.add('tab-open')
+                this.$refs['general'+this.uk]?.classList?.add('hide')
+                this.$refs['credentials'+this.uk]?.classList?.add('hide')
+                this.$refs[newTab+this.uk]?.classList?.remove('hide')
+            },
             proceed() {
                 if (!this.userId) {
                     users.create({
@@ -181,6 +199,23 @@ import { mapActions } from 'vuex'
 </script>
 
 <style scoped>
+.table-tabs {
+    display: flex;
+}
+.tab {
+    padding: auto;
+    width: 50%;
+    background-color: white;
+    border-radius: 0;
+}
+.tab-open {
+    border: solid 1px #d2d2d2;
+    color:  #e7eaec;
+    background-color: #2F4050;
+}
+
+
+
     input, select {
         width: 100%;
     }

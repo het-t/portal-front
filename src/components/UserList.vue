@@ -39,32 +39,49 @@
             </template>
 
             <template #tbody>
-                <tr class="tr" v-for="user in usersListToDisplay()" :key="user?.id">
-                    <td>
-                        {{user.firstName + ' ' + user.lastName}}
-                    </td>
-                    <td>
-                        {{user.rights}}
-                    </td>
-                    <td>
-                        <dots-img
-                            @openMenu="menu($event, {userId: user.id, visibility: true})"
-                            @hideMenu="menu($event, {userId: '', visibility: false})" 
-                        ></dots-img>
-                    </td>
-                    <!-- <td class="actions">
-                        <router-link :to="{
-                            name: 'edit_user', 
-                            params : {
-                                editUserId: user.id
-                            }
-                        }">
-                            edit
-                        </router-link>
-                        <p class="delete m0 ml8" @click="alert(`do you want to delete ${user.id} user`, user.id)">
-                        delete</p>
-                    </td> -->
-                </tr>
+                <template v-for="(user, index) in usersListToDisplay()" :key="user?.id">
+                    <tr 
+                        class="tr edit-user-tr"
+                        @click.prevent="editUser('row'+index, user.id)"    
+                    >
+                        <td>
+                            {{user.firstName + ' ' + user.lastName}}
+                        </td>
+                        <td>
+                            {{user.rights}}
+                        </td>
+                        <td>
+                            <dots-img
+                                @openMenu="menu($event, {userId: user.id, visibility: true})"
+                                @hideMenu="menu($event, {userId: '', visibility: false})" 
+                            ></dots-img>
+                        </td>
+                        <!-- <td class="actions">
+                            <router-link :to="{
+                                name: 'edit_user', 
+                                params : {
+                                    editUserId: user.id
+                                }
+                            }">
+                                edit
+                            </router-link>
+                            <p class="delete m0 ml8" @click="alert(`do you want to delete ${user.id} user`, user.id)">
+                            delete</p>
+                        </td> -->
+                    </tr>
+                    <tr class="tr tr-hidden hide" :ref="('row'+index)">
+                        <td colspan="3" class="p0 m0">
+                            <user-create
+                                v-if="allow[user.id]"
+                                :editUserId="user.id"
+                                displayHead="false"
+                                :uk="index"
+                                class="user-create"
+                                editing="true"
+                            ></user-create>
+                        </td>
+                    </tr>
+                </template>
             </template>
             
             <template #pagination>
@@ -87,6 +104,7 @@
 
 <script>
     import {users} from '../api/index.js'
+    import UserCreate from './UserCreate.vue';
     import AlertC from './AlertC.vue'
     import TablePagination from './TablePagination.vue'
     import TableMain from './TableMain.vue';
@@ -109,10 +127,18 @@ export default {
             selectedUserId: '',
             filteredUsersList: undefined,
             displayAlert: false,
-            menuVisibisility: ''
+            menuVisibisility: '',
+            allow: {},
         };
     },
     methods: {
+        editUser(rowIndex, userId) {
+            const show = this.$refs[rowIndex][0].classList.contains('hide')
+            if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
+            else this.$refs[rowIndex][0].classList.add('hide')
+
+            this.allow[userId] = true
+        },
         usersListToDisplay() {
             if (this.filteredUsersList != undefined) {
                 return this.filteredUsersList
@@ -138,19 +164,21 @@ export default {
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
         }
     },
-    components: { AlertC, TablePagination, TableActionPlus, TableMain, DotsImg, DotsMenu }
+    components: { AlertC, TablePagination, TableActionPlus, TableMain, DotsImg, DotsMenu, UserCreate }
 }
 </script>
 
 <style scoped>  
+    .edit-user-tr {
+        cursor: pointer;
+    }
+    .hide {
+        display: none !important;
+    }
     table {
         width: 100%;
     }
     th, tr, td {
         padding: 12px;
-    }
-    .actions {
-        display: flex;
-        flex-direction: horizontal;
     }
 </style>
