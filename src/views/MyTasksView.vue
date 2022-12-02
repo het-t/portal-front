@@ -5,11 +5,7 @@
 </template>
 
 <script>
-    import { mapGetters } from 'vuex'
     export default {
         name: "MyTasksView",
-        computed: {
-            ...mapGetters(['getRights'])
-        },
     }
 </script>

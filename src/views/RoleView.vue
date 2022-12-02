@@ -7,9 +7,19 @@
 <script>
     export default {
         name: "RoleView",
+        data() {
+            return {
+                allow: false,
+            }
+        },
         created() {
             //get all rights if not available in store
-            this.$store.dispatch('rights/setAllRightsList')
+            Promise.all([
+                this.$store.dispatch('rights/setAllRightsList')
+            ])
+            .then(() => {
+                this.allow = true
+            })
         }
     }
 </script>

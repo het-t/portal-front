@@ -78,7 +78,7 @@
       </div>
       <!-- <MessageC v-if="getMessageVisiblity"/> -->
 
-      <router-view>
+      <router-view v-if="allow">
       </router-view>
     </div>
   </div>
@@ -93,6 +93,7 @@ import { mapGetters } from 'vuex'
     name: "MainView",
     data() {
       return {
+        allow: true,
         showLabels: true,
       }
     },
@@ -117,6 +118,7 @@ import { mapGetters } from 'vuex'
         getUserRights()
         .then((res) => {
           this.$store.commit('rights/setUserRights', res?.data?.userRights)
+          this.allow = true
         })
       }
     }
