@@ -137,7 +137,6 @@ export default {
             else this.$refs[rowIndex][0].classList.add('hide')
 
             Promise.all([
-                this.$store.dispatch('roles/rolesAll'),
                 this.$store.dispatch('users/usersDataSet', {userId})
             ])
             .then(() => {
