@@ -57,6 +57,7 @@
 
                     <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
                         <tasks-create 
+                            v-if="(allow[task.id] == true)"
                             :taskId="task.id" 
                             displayHead='false' 
                             :uk="index" 
@@ -85,10 +86,11 @@ import DotsImg from './DotsImg.vue';
 import DotsMenu from './DotsMenu.vue'
 import TablePagination from './TablePagination.vue';
 
-    export default {
+export default {
     name: "TasksList",
     data() {
         return {
+            allow: {},
             tasksList: [],
             menuVisibisility: '',
             selectedTask: ''
@@ -105,11 +107,19 @@ import TablePagination from './TablePagination.vue';
             if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
             else this.$refs[rowIndex][0].classList.add('hide')
 
-            //get data of task to edit if not available in store
-            this.$store.dispatch('tasks/tasksDataSet', {taskId})
+                //get taskData and subTask to edit if not available in store
+                //and after getting data render corresponding taskcreate component
+                Promise.all([
+                    this.$store.dispatch('tasks/tasksDataSet', {taskId}),
+                    this.$store.dispatch('tasks/subTasksDataSet', {taskId})
+                ])
+                .then(() => {
+                    console.log("allowed")
+                    this.allow[taskId] = true
+                })
+
 
             //get subTasks of task to edit if not available in store
-            this.$store.dispatch('tasks/subTasksDataSet', {taskId})
         }
     },
     components: { DotsMenu, TasksProgress, TasksCreate, TableMain, TableActionPlus, DotsImg, TablePagination }

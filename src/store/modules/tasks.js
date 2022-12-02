@@ -2,7 +2,7 @@ import { tasks, tasksMaster } from "@/api"
 
 const state = {
     tasksCount: '', //no. of total tasks
-    tasks: {},      //list of all data of tasks table
+    tasks: {},      //page data of tasks table
     tasksData: {},   //data of all tasks opened to edit
     subTasksData: {},    //data of all sub tasks opened to edit
     tasksMaster: [],    //list of all tasks master
@@ -59,35 +59,56 @@ const mutations = {
 const actions = {
     tasksDataSet({getters, commit}, {taskId}) {
         const res = getters['taskData']?.(taskId)
-        if (res == undefined || res == '') {
-            tasks.getData({taskId})
-            .then((res) => {
-                commit('tasksDataSet',{
-                    taskId: taskId,
-                    taskData: res?.data?.taskData
+        return new Promise((resolve, reject) => {
+            if (res == undefined || res == '') {
+                tasks.getData({taskId})
+                .then((res) => {
+                    commit('tasksDataSet',{
+                        taskId: taskId,
+                        taskData: res?.data?.taskData
+                    })
+                    resolve()
                 })
-            })
-        }
+                .catch(() => {
+                    reject()
+                })
+            }
+            else resolve()
+        })
     },
     tasksMasterListSet({getters, commit}) {
-        if ((getters['tasksMasterListGet']).length == 0) {
-            tasksMaster.get()
-            .then((res) => {
-                commit('tasksMasterListSet', res?.data?.tasksMasterList)
-            })
-        }
+        return new Promise((resolve, reject) => {
+            if ((getters['tasksMasterListGet']).length == 0) {
+                tasksMaster.get()
+                .then((res) => {
+                    commit('tasksMasterListSet', res?.data?.tasksMasterList)
+                    resolve()
+                })
+                .catch(() => {
+                    reject()
+                })
+            }
+            else resolve()
+        })
     },
     subTasksDataSet({getters, commit}, {taskId}) {
         const res = getters['subTasksData']?.(taskId)
-        if ( res == undefined || res == '') {
-            tasks.getSubTasks({taskId})
-            .then((res) => {
-                commit('subTasksDataSet', {
-                    taskId, 
-                    data: res.data.subTasksList
+        return new Promise((resolve, reject) => {
+            if (res == undefined || res == '') {
+                tasks.getSubTasks({taskId})
+                .then((res) => {
+                    commit('subTasksDataSet', {
+                        taskId, 
+                        data: res.data.subTasksList
+                    })
+                    resolve()
                 })
-            })
-        } 
+                .catch(() => {
+                    reject()
+                })
+            } 
+            else resolve()
+        })
     }
 }
 

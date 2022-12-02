@@ -110,6 +110,9 @@ import { mapGetters } from 'vuex'
       }
     },
     created() {
+      this.$store.subscribe((mutations, state) => {
+        console.log(mutations, state)
+      })
       if (this.$store.getters['rights/getUserRights'] == '') {
         getUserRights()
         .then((res) => {

@@ -47,7 +47,7 @@
                             <div class="row mt8">
                                 <label :for="'task-tasks'+uk" class="labels c1">task</label>
                                 <select @change="taskMasterSelected" v-model="taskMasterId" :id='"task-tasks"+uk'>
-                                    <option v-for="taskMaster of tasksMasterList" :key="taskMaster.id" :value="taskMaster.id">
+                                    <option v-for="taskMaster of tasksMasterListGet" :key="taskMaster.id" :value="taskMaster.id">
                                         {{taskMaster.title}}
                                     </option>
                                 </select>
@@ -173,7 +173,7 @@
 </template>
 
 <script>
-    import { mapActions } from 'vuex'
+    import { mapActions, mapGetters } from 'vuex'
     import { tasks, subTasksMaster } from '@/api/index.js'
 
     export default {
@@ -201,15 +201,20 @@
             }
         },
         computed: {
-            allUsers() {
-                return this.$store.getters['users/allUsers']
-            },
-            allClients() {
-                return this.$store.getters['clients/allClients']
-            },
-            tasksMasterList() {
-                return this.$store.getters['tasks/tasksMasterListGet']
-            }
+            ...mapGetters([
+                'tasks/taskData',
+                'tasks/subTasksData',
+                'tasks/tasksMasterListGet'
+            ]),
+            ...mapGetters('users', [
+                'allUsers'
+            ]),
+            ...mapGetters('clients', [
+                'allClients'
+            ]),
+            ...mapGetters('tasks', [
+                'tasksMasterListGet'
+            ])
         },
         methods: {
             ...mapActions(['promptMessage']),
@@ -329,24 +334,20 @@
             }
         },
         mounted() {
-            const taskData = this.$store.getters['tasks/taskData'](this.taskId)
-            const subTasksData = this.$store.getters['tasks/subTasksData'](this.taskId)
-            if (taskData != undefined && taskData != '' && subTasksData != undefined && subTasksData != '') {
-                this.populateDataProperties(taskData[0])
-                this.subTasks = subTasksData 
+            if (this.editing == true) {
+                const taskData = (this['tasks/taskData'])(this.taskId)[0]
+                const subTasksData = this['tasks/subTasksData'](this.taskId)
+                if (taskData != undefined && taskData != '') {
+                    this.populateDataProperties(taskData)
+                }
+                if (subTasksData != undefined && subTasksData != '') {
+                    console.log(subTasksData)
+                    this.subTasks = subTasksData 
+                }
             }
-            else this.$store.subscribe((mutation, state) => {
-                if (mutation.type == 'tasks/tasksDataSet' && mutation.payload.taskId == this.taskId) {
-                    this.populateDataProperties(state.tasks.tasksData[this.taskId][0])
-                }
-                else if (mutation.type == 'tasks/subTasksDataSet' && mutation.payload.taskId == this.taskId) {
-                    this.subTasks = state.tasks.subTasksData?.[this.taskId]
-                }
-            })
 
             this.$refs['defaultTab'+this.uk].click()
-
-        }
+        },
     }
 </script>
 
