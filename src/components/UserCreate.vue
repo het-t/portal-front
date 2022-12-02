@@ -99,15 +99,18 @@ import { mapActions } from 'vuex'
         },
         mounted() {
             console.log("editUserId", this.editUserId)
+
+            const rolesList = this.$store.getters['roles/allRoles']
+            
+            if (rolesList != undefined && rolesList != '') {
+                this.dbRoles = rolesList
+            }
+
             if (this.editUserId != undefined) {
                 const userData = this.$store.getters['users/usersDataGet'](this.editUserId)
-                const rolesList = this.$store.getters['roles/allRoles']
 
                 if (userData != undefined && userData != '') {
                     this.populateDataProperties(userData)
-                }
-                if (rolesList != undefined && rolesList != '') {
-                    this.dbRoles = rolesList
                 }
             }
 
@@ -142,6 +145,11 @@ import { mapActions } from 'vuex'
                             msg: 'successfully'
                         })
                     })
+                    .then(() => {
+                        this.$store.commit('users/RESET_STATE')
+                    })
+                    // error handling 
+                    //.catch((err) => {})
                 }
                 else {
                     users.edit({
