@@ -62,7 +62,7 @@ const routes = [{
         name: 'roles_list',
         component: () => import('../components/RoleList.vue'),
       }, {
-        path: 'edit/:editRoleName',
+        path: 'edit/:editRoleId',
         name: 'edit_role',
         meta: {protected: true},
         component: () => import('../components/RoleCreate.vue'),

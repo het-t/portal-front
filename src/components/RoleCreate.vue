@@ -43,7 +43,7 @@ import { mapActions } from 'vuex'
 
     export default {
         name: 'CreateRole',
-        props: ['editRoleName'],
+        props: ['editRoleId'],
         data() {
             return {
                 roleName: '',
@@ -77,22 +77,21 @@ import { mapActions } from 'vuex'
         created() {           
             this.rightsList = this.$store.getters['rights/getAllRightsList']    //actin invoked in rolesview.js
             
-            const roleDataStore = this.$store.getters['roles/rolesDataGet'](this.editRoleName)
+            const roleDataStore = this.$store.getters['roles/rolesDataGet'](this.editRoleId)
             
-            if (this.editRoleName != undefined) {
+            if (this.editRoleId != undefined) {
                 this.formHead = 'edit role'
-                this.$store.dispatch('roles/rolesDataSet', {roleId: this.editRoleName})
+                this.$store.dispatch('roles/rolesDataSet', {roleId: this.editRoleId})
             }
             
             if (roleDataStore != undefined && roleDataStore != '') {
-                this.roleName = this.editRoleName
+                this.roleName = roleDataStore[0].roleName
                 this.roleRights = roleDataStore.map(o => o.rightId)
             }
             else this.$store.subscribe((mutation, state) => {
-                if (mutation.type == "roles/rolesDataSet" && mutation.payload.index == this.editRoleName) {
-                    let roleData = state.roles.rolesData[this.editRoleName]
-                    console.log(roleData)
-                    this.roleName = this.editRoleName
+                if (mutation.type == "roles/rolesDataSet" && mutation.payload.index == this.editRoleId) {
+                    let roleData = state.roles.rolesData[this.editRoleId]
+                    this.roleName = roleData[0].roleName
                     this.roleRights = roleData.map(o => o.rightId)
                 }
             })

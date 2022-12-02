@@ -4,7 +4,7 @@
             <dots-menu v-if="menuVisibisility == true">
                 <template #links>
                     <li>
-                        <router-link :to="{name: 'edit_role', params: {editRoleName: editRoleName}}">
+                        <router-link :to="{name: 'edit_role', params: {editRoleId: editRoleId}}">
                             <font-awesome-icon class="menu-icons" :icon="['fas', 'pencil']"></font-awesome-icon>
                         </router-link>
                     </li>
@@ -45,7 +45,7 @@
                         <!-- <th>actions</th> -->
                     </tr>
 
-                    <tr class="tr" v-for="role in roleListToDisplay()" :key="role?.name">                        
+                    <tr class="tr" v-for="role in roleListToDisplay()" :key="role.id">                        
                         <!-- <td>
                             {{role?.id}}
                         </td> -->
@@ -58,8 +58,8 @@
                         </td>
 
                         <DotsImg 
-                            @openMenu="menu($event, {roleName: role.name, visibility: true})"
-                            @hideMenu="menu($event, {roleName: '', visibility: false})"    
+                            @openMenu="menu($event, {roleId: role.id, visibility: true})"
+                            @hideMenu="menu($event, {roleId: '', visibility: false})"    
                         />
                     </tr>
                 </table>
@@ -93,7 +93,7 @@ import DotsImg from './DotsImg.vue'
             },
             menuVisibisility: '',
             rolesList: '',
-            editRoleName: '',
+            editRoleId: '',
             filteredRolesList: undefined,
             displayAlert: false,
         };
@@ -110,9 +110,9 @@ import DotsImg from './DotsImg.vue'
         // getRoleData() {
         //     getRoleData({roleName: this.roleName})
         // },
-        menu(e, {roleName, visibility}) {
+        menu(e, {roleId, visibility}) {
             this.menuVisibisility = visibility
-            this.editRoleName = roleName
+            this.editRoleId = roleId
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
         },
         deleteRole(params) {

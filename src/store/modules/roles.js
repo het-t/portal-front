@@ -61,7 +61,7 @@ const actions = {
         const res = getters['rolesDataGet']?.(roleId)
         if (res == undefined || res == '') {
             roles.getData({
-                editRoleName: roleId
+                editRoleId: roleId
             })
             .then((res) => {
                 commit('rolesDataSet', {index: roleId, data: res.data.roleData})
