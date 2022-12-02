@@ -16,7 +16,7 @@
             </template>
 
             <template #table-action>
-                <table-action-plus url="/u/tasks/create-task" />
+                <table-action-plus url="/u/tasks/create-task"></table-action-plus>
             </template>
 
             <template #thead>
@@ -107,19 +107,16 @@ export default {
             if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
             else this.$refs[rowIndex][0].classList.add('hide')
 
-                //get taskData and subTask to edit if not available in store
-                //and after getting data render corresponding taskcreate component
-                Promise.all([
-                    this.$store.dispatch('tasks/tasksDataSet', {taskId}),
-                    this.$store.dispatch('tasks/subTasksDataSet', {taskId})
-                ])
-                .then(() => {
-                    console.log("allowed")
-                    this.allow[taskId] = true
-                })
-
-
-            //get subTasks of task to edit if not available in store
+            //get taskData and subTask to edit if not available in store
+            //and after getting data render corresponding taskcreate component
+            Promise.all([
+                this.$store.dispatch('tasks/tasksDataSet', {taskId}),
+                this.$store.dispatch('tasks/subTasksDataSet', {taskId})
+            ])
+            .then(() => {
+                console.log("allowed")
+                this.allow[taskId] = true
+            })
         }
     },
     components: { DotsMenu, TasksProgress, TasksCreate, TableMain, TableActionPlus, DotsImg, TablePagination }
