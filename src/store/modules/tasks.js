@@ -32,7 +32,7 @@ const mutations = {
         state.tasks = {}
         state.tasksData = {}
         state.subTasksData = {}
-        tasksMaster = []
+        state.tasksMaster = []
     },
     tasksDataSet(state, {taskId, taskData}) {
         Object.defineProperty(state.tasksData, taskId, {
