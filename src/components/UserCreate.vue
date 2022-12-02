@@ -93,35 +93,26 @@ import { mapActions } from 'vuex'
             }
         },
         created() {
-            console.log("editing user ",this.editUserId)
             if (this.editUserId != undefined) {
                 this.formHead = 'edit user'
-
-                this.$store.dispatch('roles/rolesAll')
-                this.$store.dispatch('users/usersDataSet', {userId: this.editUserId})
             } 
         },
         mounted() {
-            const userData = this.$store.getters['users/usersDataGet'](this.editUserId)
-            const rolesList = this.$store.getters['roles/allRoles']
-            
-            if (rolesList != undefined && rolesList != '') {
-                this.dbRoles = rolesList
-            }
-            if (userData != undefined && userData != '') {
-                this.populateDataProperties(userData)
-            }
-            else this.$store.subscribe((mutation, state) => {
-                if (mutation.type == 'users/usersDataSet' && mutation.payload.index == this.editUserId) {
-                    this.populateDataProperties(state.users.usersData[this.editUserId])
+            console.log("editUserId", this.editUserId)
+            if (this.editUserId != undefined) {
+                const userData = this.$store.getters['users/usersDataGet'](this.editUserId)
+                const rolesList = this.$store.getters['roles/allRoles']
+
+                if (userData != undefined && userData != '') {
+                    this.populateDataProperties(userData)
                 }
-                else if (mutation.type == 'roles/rolesAll') {
-                    this.dbRoles = state.roles.allRoles
+                if (rolesList != undefined && rolesList != '') {
+                    this.dbRoles = rolesList
                 }
-            })
+            }
 
             this.$refs['defaultTab'+this.uk].click()
-
+            this.$store.commit('users/RESET_STATE')
         },
         methods: {
             ...mapActions(['promptMessage']),
@@ -190,7 +181,6 @@ import { mapActions } from 'vuex'
                 this.userBithdate = new Date(birthdate)
                 this.userEmail = email
                 this.userRole = role
-                console.log("userrole", this.userRole)
                 this.userPassword = password
                 this.userId = id
             }

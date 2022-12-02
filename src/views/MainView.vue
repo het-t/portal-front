@@ -93,7 +93,7 @@ import { mapGetters } from 'vuex'
     name: "MainView",
     data() {
       return {
-        allow: true,
+        allow: false,
         showLabels: true,
       }
     },

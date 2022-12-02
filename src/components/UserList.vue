@@ -77,7 +77,6 @@
                                 displayHead="false"
                                 :uk="index"
                                 class="user-create"
-                                editing="true"
                             ></user-create>
                         </td>
                     </tr>
@@ -137,7 +136,13 @@ export default {
             if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
             else this.$refs[rowIndex][0].classList.add('hide')
 
-            this.allow[userId] = true
+            Promise.all([
+                this.$store.dispatch('roles/rolesAll'),
+                this.$store.dispatch('users/usersDataSet', {userId})
+            ])
+            .then(() => {
+                this.allow[userId] = true
+            })
         },
         usersListToDisplay() {
             if (this.filteredUsersList != undefined) {
