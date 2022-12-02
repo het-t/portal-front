@@ -15,6 +15,13 @@ export default createStore({
       msg: '',
       title: '',
       bgcolor: '',
+    },
+    count: {
+      roles: '',
+      users: '',
+      tasks: '',
+      clients: '',
+      myTasks: ''
     }
   },
   getters: {
@@ -27,7 +34,11 @@ export default createStore({
         title: state.message.title,
         bgcolor: state.message.bgcolor
       }
-    }
+    },
+    ////
+    getTableCount: (state) => (tableName) => {
+      return state.count[tableName]
+    },
   },
   mutations: {
     showMessage(state, {msg, title, bgcolor}) {
