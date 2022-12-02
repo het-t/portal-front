@@ -112,7 +112,6 @@ import { mapActions } from 'vuex'
             }
 
             this.$refs['defaultTab'+this.uk].click()
-            this.$store.commit('users/RESET_STATE')
         },
         methods: {
             ...mapActions(['promptMessage']),
