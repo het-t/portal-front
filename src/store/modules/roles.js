@@ -23,6 +23,12 @@ const getters = {
 }
 
 const mutations = {
+    RESET_STATE(state) {
+        state.rolesCount = ''
+        state.roles = {}
+        state.allRoles = []
+        state.rolesData = {}
+    },
     rolesCountSet(state, rolesCount) {
         state.rolesCount = rolesCount
     },
@@ -47,26 +53,41 @@ const mutations = {
 
 const actions = {
     rolesAll({getters, commit}) {
-        if (getters['allRoles'].length == 0) {
-            roles.get({
-                from: null,
-                recordsPerPage: null,
-            })
-            .then((res) => {
-                commit('rolesAll', res?.data?.rolesList)
-            })
-        }
+        return new Promise((resolve, reject) => {
+            if (getters['allRoles'].length == 0) {
+                roles.get({
+                    from: null,
+                    recordsPerPage: null,
+                })
+                .then((res) => {
+                    commit('rolesAll', res?.data?.rolesList)
+                    resolve()
+                })
+                .catch(err => {
+                    reject(err)
+                })
+            }
+            else resolve()
+        })
     },
     rolesDataSet({getters, commit}, {roleId}) {
         const res = getters['rolesDataGet']?.(roleId)
-        if (res == undefined || res == '') {
-            roles.getData({
-                editRoleId: roleId
-            })
-            .then((res) => {
-                commit('rolesDataSet', {index: roleId, data: res.data.roleData})
-            })
-        }
+        
+        return new Promise((resolve, reject) => {
+            if (res == undefined || res == '') {
+                roles.getData({
+                    editRoleId: roleId
+                })
+                .then((res) => {
+                    commit('rolesDataSet', {index: roleId, data: res.data.roleData})
+                    resolve()
+                })
+                .catch(err => {
+                    reject(err)
+                })
+            }
+            else resolve()
+        })
     }
 }
 

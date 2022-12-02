@@ -27,6 +27,13 @@ const getters = {
 }
 
 const mutations = {
+    RESET_STATE(state) {
+        state.tasksCount = ''
+        state.tasks = {}
+        state.tasksData = {}
+        state.subTasksData = {}
+        tasksMaster = []
+    },
     tasksDataSet(state, {taskId, taskData}) {
         Object.defineProperty(state.tasksData, taskId, {
             value: taskData,

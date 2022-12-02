@@ -25,12 +25,19 @@ const mutations = {
 
 const actions = {
     setAllRightsList({getters, commit}) {
-        if (getters['getAllRightsList'].length == 0) {
-            getAllRights()
-            .then(res => {
-                commit('setAllRightsList', res.data.rightsMasterList)
-            })
-        }
+        return new Promise((resolve, reject) => {
+            if (getters['getAllRightsList'].length == 0) {
+                getAllRights()
+                .then(res => {
+                    commit('setAllRightsList', res.data.rightsMasterList)
+                    resolve()
+                })
+                .catch(err => {
+                    reject(err)
+                })
+            }
+            else resolve()
+        })
     }
 }
 

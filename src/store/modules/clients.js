@@ -24,6 +24,12 @@ const getters = {
 }
 
 const mutations = {
+    RESET_STATE(state) {
+        state.clientTypes = []
+        state.clients = {}
+        state.clientsCount = ''
+        state.allClients = []
+    },
     setAllTypesList(state, typesList) {
         state.clientTypes = typesList
     },
@@ -44,23 +50,37 @@ const mutations = {
 
 const actions = {
     getTypes({commit, getters}) {
-        if (getters['getAllTypesList'] == '') {
-            clients.getTypes()
-            .then(res => {
-                commit('setAllTypesList', res?.data?.clientsMasterTypes)
-            })
-        }
+        return new Promise((resolve, reject) => {
+            if (getters['getAllTypesList'] == '') {
+                clients.getTypes()
+                .then(res => {
+                    commit('setAllTypesList', res?.data?.clientsMasterTypes)
+                    resolve()
+                })
+                .catch(err => {
+                    reject(err)
+                })
+            }
+            else resolve()
+        })
     },
     clientsAll({commit, getters}) {
-        if (getters['allClients'].length == 0) {
-            clients.get({
-                from: null,
-                recordsPerPage: null,
-            })
-            .then((res) => {
-                commit('clientsAll', res?.data?.clientsList)
-            })
-        }
+        return new Promise((resolve, reject) => {
+            if (getters['allClients'].length == 0) {
+                clients.get({
+                    from: null,
+                    recordsPerPage: null,
+                })
+                .then((res) => {
+                    commit('clientsAll', res?.data?.clientsList)
+                    resolve()
+                })
+                .catch(err => {
+                    reject(err)
+                })
+            }
+            else resolve()
+        })
     }
 }
 

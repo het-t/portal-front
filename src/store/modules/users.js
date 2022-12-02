@@ -1,5 +1,9 @@
 import { users } from "@/api"
 
+//create user usersCount+1, users: {}, allUsers: [], usersData: as it is
+//edit user   usersCount as it is, users: {}, allUsers: [], usersData: deleted that user
+//delete user  usersCount-1  users:{} delete that user, allUsers:delete that user, usersData: delete that user
+
 const state = {
     usersCount: '', //no. of users for table pagination
     users: {},  //data of all visited users table pages 
@@ -23,6 +27,12 @@ const getters = {
 }
 
 const mutations = {
+    RESET_STATE(state) {
+        state.usersCount = ''
+        state.users = {}
+        state.allUsers = []
+        state.usersData = {}
+    },
     usersList(state, {index, data}) {
         Object.defineProperty(state.users, index, {
             value: data,
@@ -47,26 +57,41 @@ const mutations = {
 
 const actions = {
     usersAll({getters, commit}) {
-        if (getters['allUsers'].length == 0) {
-            users.get({
-                from: null,
-                recordsPerPage: null,
-            })
-            .then((res) => {
-                commit('usersAll', res?.data?.usersList)
-            })
-        }
+        return new Promise((resolve, reject) => {
+            if (getters['allUsers'].length == 0) {
+                users.get({
+                    from: null,
+                    recordsPerPage: null,
+                })
+                .then((res) => {
+                    commit('usersAll', res?.data?.usersList)
+                    resolve()
+                })
+                .catch((err) => {
+                    reject(err)
+                })
+            }
+            else resolve()
+        })
     },
     usersDataSet({getters, commit}, {userId}) {
         const res = getters['usersDataGet']?.(userId)
-        if (res == undefined || res == '') {
-            users.getData({
-                editUserId: userId
-            })
-            .then((res) => {
-                commit('usersDataSet', {index: userId, data: res.data.userData})
-            })
-        }
+        
+        return new Promise((resolve, reject) => {
+            if (res == undefined || res == '') {
+                users.getData({
+                    editUserId: userId
+                })
+                .then((res) => {
+                    commit('usersDataSet', {index: userId, data: res.data.userData})
+                    resolve()
+                })
+                .catch(err => {
+                    reject(err)
+                })
+            }
+            else resolve()
+        })
     }
 }
  

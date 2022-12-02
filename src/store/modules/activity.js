@@ -13,6 +13,10 @@ const getters = {
 }
 
 const mutations = {
+    RESET_STATE(state) {
+        state.activityCount = ''
+        state.activity = {}
+    },
     activityCountSet(state, activityCount) {
         state.activityCount = activityCount
     },
