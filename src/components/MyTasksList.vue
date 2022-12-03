@@ -32,12 +32,12 @@
                 </tr>  
             </template>
 
-            <template #pagination>
+            <!-- <template #pagination> -->
                 <table-pagination
                     @tableData="myTasksList = $event"
                     tableName="myTasks"
                 ></table-pagination>
-            </template>
+            <!-- </template> -->
         </table-main>
     </div>
 </template>

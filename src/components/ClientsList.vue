@@ -91,11 +91,11 @@
                 </div>
             </template>
 
-            <template #pagination>
+            <!-- <template #pagination> -->
                 <table-pagination @tableData="clientList = $event"
                     tableName="clients"
                 />
-            </template>
+            <!-- </template> -->
         </table-main>
    </div>
 </template>

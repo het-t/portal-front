@@ -34,12 +34,11 @@
                     <th>name</th>
                     <th>rights</th>
                     <th></th>
-                    <!-- <th>actions</th> -->
                 </tr>
             </template>
-
+            <!-- v-if="usersList != ''" -->
             <template #tbody>
-                <template v-for="(user, index) in usersListToDisplay()" :key="user?.id">
+                <template v-for="(user, index) in usersList" :key="user?.id">
                     <tr 
                         class="tr edit-user-tr"
                         @click.prevent="editUser('row'+index, user.id)"    
@@ -56,40 +55,42 @@
                                 @hideMenu="menu($event, {userId: '', visibility: false})" 
                             ></dots-img>
                         </td>
-                        <!-- <td class="actions">
-                            <router-link :to="{
-                                name: 'edit_user', 
-                                params : {
-                                    editUserId: user.id
-                                }
-                            }">
-                                edit
-                            </router-link>
-                            <p class="delete m0 ml8" @click="alert(`do you want to delete ${user.id} user`, user.id)">
-                            delete</p>
-                        </td> -->
                     </tr>
                     <tr class="tr tr-hidden hide" :ref="('row'+index)">
                         <td colspan="3" class="p0 m0">
-                            <user-create
-                                v-if="allow[user.id]"
-                                :editUserId="user.id"
-                                displayHead="false"
-                                :uk="index"
-                                class="user-create"
-                            ></user-create>
+                            <Suspense>
+                                <template #default>
+                                    <user-create 
+                                        v-if="(allow[user.id] == true)"
+                                        :editUserId="user.id"
+                                        displayHead="false"
+                                        :uk="index"
+                                        class="user-create"
+                                    ></user-create>
+                                </template>
+                                <template #fallback>
+                                    <skeleton-card></skeleton-card>
+                                </template>
+                            </Suspense>
                         </td>
                     </tr>
                 </template>
             </template>
             
-            <template #pagination>
-                <table-pagination
-                    @tableData="usersList = $event"
-                    tableName="users"
-                ></table-pagination>
-            </template>
+            <!-- <Suspense> -->
+                <!-- <template #default> -->
+                    <table-pagination
+                        @tableData="usersList = $event"
+                        tableName="users"
+                    ></table-pagination>
+                <!-- </template> -->
+<!-- 
+                <template #fallback>
+                    <loading-c></loading-c>
+                </template> -->
+            <!-- </Suspense> -->
         </table-main>
+
         <AlertC v-show="displayAlert" 
             :msg="alertData.msg"
             :fn="deleteUser"
@@ -103,14 +104,23 @@
 
 <script>
     import {users} from '../api/index.js'
-    import UserCreate from './UserCreate.vue';
     import AlertC from './AlertC.vue'
-    import TablePagination from './TablePagination.vue'
+    import SkeletonCard from './SkeletonCard.vue';
+    // import LoadingC from './LoadingC.vue';
     import TableMain from './TableMain.vue';
     import DotsImg from './DotsImg.vue';
     import DotsMenu from './DotsMenu.vue'
     // import TableFilter from './TableFilter.vue';
     import TableActionPlus from './TableActionPlus.vue';
+    // import UserCreate from './UserCreate.vue';
+    import { defineAsyncComponent } from '@vue/runtime-core';
+
+    const TablePagination = defineAsyncComponent(
+        () => import('./TablePagination.vue'),
+    )
+    const UserCreate = defineAsyncComponent(
+        () => import('./UserCreate.vue')
+    )
 
 export default {
     name: "UserList",
@@ -143,14 +153,14 @@ export default {
                 this.allow[userId] = true
             })
         },
-        usersListToDisplay() {
-            if (this.filteredUsersList != undefined) {
-                return this.filteredUsersList
-            } 
-            else {
-                return this.usersList
-            }
-        },
+        // usersListToDisplay() {
+        //     if (this.filteredUsersList != undefined) {
+        //         return this.filteredUsersList
+        //     } 
+        //     else {
+        //         return this.usersList
+        //     }
+        // },
         deleteUser(params) {
             users.delete(params)
             .then((results) => {
@@ -168,7 +178,16 @@ export default {
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
         }
     },
-    components: { AlertC, TablePagination, TableActionPlus, TableMain, DotsImg, DotsMenu, UserCreate }
+    components: { 
+        AlertC, 
+        TablePagination, 
+        TableActionPlus, 
+        TableMain,
+        SkeletonCard, 
+        DotsImg, 
+        DotsMenu, 
+        UserCreate,
+    }
 }
 </script>
 

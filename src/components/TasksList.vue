@@ -68,11 +68,11 @@
                 </div>
             </template>
 
-            <template #pagination>
+            <!-- <template #pagination> -->
                 <table-pagination @tableData="tasksList = $event"
                     tableName="tasks"
                 />
-            </template>
+            <!-- </template> -->
         </table-main>
     </div>
 </template>

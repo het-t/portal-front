@@ -20,7 +20,7 @@
                     </tbody>
                 </table>
                 
-                <slot name="pagination"></slot>
+                <slot></slot>
             </div>
         </div>
 

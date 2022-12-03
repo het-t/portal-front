@@ -21,8 +21,8 @@
                         </div>
 
                         <div :id="('i2'+uk)" class="row mt8">
-                            <label for="user-lastname" class="labels c1">lastname</label>
-                            <input v-model="userLastName" type="text" id="user-lastname">
+                            <label :for="('user-lastname'+uk)" class="labels c1">lastname</label>
+                            <input v-model="userLastName" type="text" :id="('user-lastname'+uk)">
                         </div>
 
                         <div :id="('i3'+uk)" class="row mt8">
@@ -154,7 +154,7 @@ import { mapActions } from 'vuex'
                 else {
                     users.edit({
                         userId: this.userId,
-                        firstName: this.firstName,
+                        firstName: this.userFirstName,
                         lastName: this.userLastName,
                         gender: this.userGender,
                         birthdate: this.userBithdate,

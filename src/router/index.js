@@ -2,6 +2,40 @@ import { createRouter, createWebHistory } from 'vue-router'
 import InitialView from '../views/InitialView.vue'
 import store from '@/store/index.js'
 
+import { defineAsyncComponent } from 'vue'
+import SkeletonCard from '../components/SkeletonCard.vue'
+
+const UsersList = defineAsyncComponent({ 
+  loader: () => import("@/components/UserList.vue"), 
+  loadingComponent: SkeletonCard,
+  delay: 0
+})
+const RolesList = defineAsyncComponent({
+  loader: () => import('../components/RoleList.vue'),
+  loadingComponent: SkeletonCard,
+  delay: 0
+})
+const ClientsList = defineAsyncComponent({
+  loader: () => import('../components/ClientsList.vue'),
+  loadingComponent: SkeletonCard,
+  delay: 0
+})
+const TasksList = defineAsyncComponent({
+  loader: () => import('../components/TasksList.vue'),
+  loadingComponent: SkeletonCard,
+  delay: 0
+})
+const MyTasksList = defineAsyncComponent({
+  loader: () => import('../components/MyTasksList.vue'),
+  loadingComponent: SkeletonCard,
+  delay: 0
+})
+const ActivityList = defineAsyncComponent({
+  loader: () => import('../components/UserActivity.vue'),
+  loadingComponent: SkeletonCard,
+  delay: 0
+})
+
 const routes = [{
     path: '/',
     alias: '/portal-deploy',
@@ -37,7 +71,7 @@ const routes = [{
           path: 'list',
           alias: '',
           name: 'users_list',
-          component: () => import('../components/UserList.vue'),
+          component: UsersList,
         }, 
         {
           path: 'edit/:editUserId',
@@ -60,7 +94,7 @@ const routes = [{
         path: 'list',
         alias: '',
         name: 'roles_list',
-        component: () => import('../components/RoleList.vue'),
+        component: RolesList,
       }, {
         path: 'edit/:editRoleId',
         name: 'edit_role',
@@ -89,7 +123,7 @@ const routes = [{
         path: 'list',
         alias: '',
         name: 'clients_list',
-        component: () => import('../components/ClientsList.vue')
+        component: ClientsList
       }, {
         path: 'create-client',
         name: 'create_client',
@@ -102,7 +136,7 @@ const routes = [{
       children: [{
         path: 'list',
         alias: '',
-        component: () => import('../components/TasksList.vue')
+        component: TasksList
       }, {
         path: 'create-task',
         name: 'create_task',
@@ -123,13 +157,13 @@ const routes = [{
         path: 'list',
         alias: '',
         name: 'my_tasks_list',
-        component: () => import('../components/MyTasksList.vue')
+        component: MyTasksList
       }]
     }, {
       path: 'activity',
       name: 'activity',
       meta: {protected: true},
-      component: () => import('../components/UserActivity.vue')
+      component: ActivityList
     }]
   }
 ]    
