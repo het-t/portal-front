@@ -58,37 +58,26 @@
                     </tr>
                     <tr class="tr tr-hidden hide" :ref="('row'+index)">
                         <td colspan="3" class="p0 m0">
-                            <Suspense>
-                                <template #default>
-                                    <user-create 
-                                        v-if="(allow[user.id] == true)"
-                                        :editUserId="user.id"
-                                        displayHead="false"
-                                        :uk="index"
-                                        class="user-create"
-                                    ></user-create>
-                                </template>
-                                <template #fallback>
-                                    <skeleton-card></skeleton-card>
-                                </template>
-                            </Suspense>
+                            <user-create 
+                                v-if="(allow[user.id] == true)"
+                                :editUserId="user.id"
+                                displayHead="false"
+                                :uk="index"
+                                class="user-create"
+                            ></user-create>
+                            <skeleton-form v-else 
+                                displayHead="false"
+                                :buttonsIndex=2    
+                            ></skeleton-form>
                         </td>
                     </tr>
                 </template>
             </template>
             
-            <!-- <Suspense> -->
-                <!-- <template #default> -->
-                    <table-pagination
-                        @tableData="usersList = $event"
-                        tableName="users"
-                    ></table-pagination>
-                <!-- </template> -->
-<!-- 
-                <template #fallback>
-                    <loading-c></loading-c>
-                </template> -->
-            <!-- </Suspense> -->
+            <table-pagination
+                @tableData="usersList = $event"
+                tableName="users"
+            ></table-pagination>
         </table-main>
 
         <AlertC v-show="displayAlert" 
@@ -103,23 +92,20 @@
 </template>
 
 <script>
+    import UserCreate from './UserCreate.vue';
     import {users} from '../api/index.js'
     import AlertC from './AlertC.vue'
-    import SkeletonCard from './SkeletonCard.vue';
-    // import LoadingC from './LoadingC.vue';
     import TableMain from './TableMain.vue';
     import DotsImg from './DotsImg.vue';
     import DotsMenu from './DotsMenu.vue'
     // import TableFilter from './TableFilter.vue';
-    import TableActionPlus from './TableActionPlus.vue';
-    // import UserCreate from './UserCreate.vue';
+    import TableActionPlus from './TableActionPlus.vue'
+    import SkeletonForm from '../skeletons/SkeletonForm.vue';
+
     import { defineAsyncComponent } from '@vue/runtime-core';
 
     const TablePagination = defineAsyncComponent(
         () => import('./TablePagination.vue'),
-    )
-    const UserCreate = defineAsyncComponent(
-        () => import('./UserCreate.vue')
     )
 
 export default {
@@ -183,13 +169,13 @@ export default {
         TablePagination, 
         TableActionPlus, 
         TableMain,
-        SkeletonCard, 
         DotsImg, 
         DotsMenu, 
         UserCreate,
+        SkeletonForm
     }
 }
-</script>
+</script>,
 
 <style scoped>  
     .edit-user-tr {

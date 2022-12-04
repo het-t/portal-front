@@ -3,7 +3,7 @@ import InitialView from '../views/InitialView.vue'
 import store from '@/store/index.js'
 
 import { defineAsyncComponent } from 'vue'
-import SkeletonCard from '../components/SkeletonCard.vue'
+import SkeletonCard from '../skeletons/SkeletonCard.vue'
 
 const UsersList = defineAsyncComponent({ 
   loader: () => import("@/components/UserList.vue"), 

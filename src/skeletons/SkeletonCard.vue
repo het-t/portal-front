@@ -24,7 +24,7 @@
 </template>
 
 <script>
-    import TableMain from './TableMain.vue'
+    import TableMain from '../components/TableMain.vue'
     export default {
         components: { TableMain },
         name: 'SkeletonCard'

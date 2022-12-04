@@ -64,6 +64,10 @@
                             class="tasks-create" 
                             editing="true" 
                         />
+                        <skeleton-form v-else
+                            displayHead="false"
+                            :buttonsIndex="2"
+                        ></skeleton-form>
                     </tr>
                 </div>
             </template>
@@ -85,6 +89,7 @@ import TableActionPlus from './TableActionPlus.vue';
 import DotsImg from './DotsImg.vue';
 import DotsMenu from './DotsMenu.vue'
 import TablePagination from './TablePagination.vue';
+import SkeletonForm from '../skeletons/SkeletonForm.vue';
 
 export default {
     name: "TasksList",
@@ -119,7 +124,7 @@ export default {
             })
         }
     },
-    components: { DotsMenu, TasksProgress, TasksCreate, TableMain, TableActionPlus, DotsImg, TablePagination }
+    components: { DotsMenu, TasksProgress, TasksCreate, TableMain, TableActionPlus, DotsImg, TablePagination, SkeletonForm }
 }
 </script>
 

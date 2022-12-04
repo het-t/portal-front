@@ -109,6 +109,7 @@
     import DotsImg from './DotsImg.vue'
     import TablePagination from './TablePagination.vue'
     import DotsMenu from './DotsMenu.vue'
+
     export default {
         components: { TableActionPlus, ClientCreate, TableMain, DotsImg, TablePagination, DotsMenu },
         name: 'ClientList',
