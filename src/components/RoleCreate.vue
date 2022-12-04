@@ -54,12 +54,13 @@ import { mapActions } from 'vuex'
         methods: {
             ...mapActions(['promptMessage']),
             proceed() {
-                this.$router.push('/u/roles/list')
                 this.promptMessage({
                     title: 'Role Created',
                     msg: 'successfully'
                 })
-                if (this.editRoleName != undefined) this.editRole()
+                if (this.editRoleId != undefined) {
+                    this.editRole()
+                }
                 else this.createRole()
             },
             createRole() {
@@ -67,11 +68,23 @@ import { mapActions } from 'vuex'
                 .then((res) => {
                     if (res.data.roleCreated == 'success') {
                         this.$store.dispatch('roles/rolesAll', {force: true})
+                        .then(() => {
+                            this.$store.commit('roles/RESET_STATE')
+                        })
+                        .then(() => {
+                            this.$router.push('/u/roles/list')
+                        })
                     }
                 })
             },
             editRole() {
-                roles.edit({roleName: this.roleName, roleRight: this.roleRights})
+                roles.edit({roleId: this.editRoleId, roleName: this.roleName, roleRights: this.roleRights})
+                .then(() => {
+                    this.$store.commit('roles/RESET_STATE')
+                })
+                .then(() => {
+                    this.$router.push('/u/roles/list')
+                })
             },
             clear() {
                 this.roleName = ''

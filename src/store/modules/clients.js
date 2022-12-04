@@ -25,7 +25,6 @@ const getters = {
 
 const mutations = {
     RESET_STATE(state) {
-        state.clientTypes = []
         state.clients = {}
         state.clientsCount = ''
         state.allClients = []

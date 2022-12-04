@@ -45,7 +45,7 @@
                             <label :for="('user-email'+uk)" class="labels c1">email</label>
                             <input v-model="userEmail" type="text" :id="('user-email'+uk)">
                         </div>
-                    
+
                         <div :id="('i6'+uk)" class="row mt8">
                             <label :for="('user-role'+uk)" class="labels c1">role</label>
                             <select v-model="userRole" :id="('user-role'+uk)">
@@ -95,13 +95,13 @@ import { mapActions } from 'vuex'
         created() {
             if (this.editUserId != undefined) {
                 this.formHead = 'edit user'
-            } 
+            }
         },
         mounted() {
             console.log("editUserId", this.editUserId)
 
             const rolesList = this.$store.getters['roles/allRoles']
-            
+
             if (rolesList != undefined && rolesList != '') {
                 this.dbRoles = rolesList
             }
@@ -148,7 +148,7 @@ import { mapActions } from 'vuex'
                     .then(() => {
                         this.$store.commit('users/RESET_STATE')
                     })
-                    // error handling 
+                    // error handling
                     //.catch((err) => {})
                 }
                 else {
@@ -168,17 +168,20 @@ import { mapActions } from 'vuex'
                             msg: 'successfully'
                         })
                     })
+                    .then(() => {
+                        this.$store.commit('users/RESET_STATE')
+                    })
                 }
             },
             populateDataProperties(o) {
                 const {
-                    firstName, 
-                    lastName, 
-                    gender, 
-                    birthdate, 
-                    email, 
-                    role, 
-                    password, 
+                    firstName,
+                    lastName,
+                    gender,
+                    birthdate,
+                    email,
+                    role,
+                    password,
                     id
                 } = o
 

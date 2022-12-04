@@ -219,7 +219,7 @@
         methods: {
             ...mapActions(['promptMessage']),
             taskMasterSelected() {
-                const selectedTaskMaster = this.tasksMasterList.find((o) => o.id == this.taskMasterId)
+                const selectedTaskMaster = this['tasks/tasksMasterListGet'].find((o) => o.id == this.taskMasterId)
                 subTasksMaster.get({taskMasterId: this.taskMasterId})
                 .then((results) => {
                     this.subTasks = results.data.subTasksMasterList
@@ -252,9 +252,7 @@
                 this.newSubTask = ''
             },
             removeSubTask(index) {
-                console.log("before", this.$refs)
                 this.subTasks.splice(index, 1)
-                console.log("after", this.$refs)
             },
             toggleDisplaySubTask(index) {
                 this.$refs['sub-task'+index][0].classList.value.includes('show') ?
@@ -279,8 +277,6 @@
                 this.taskMasterId = taskMasterId
             },
             proceed() {
-                this.$router.push('/u/tasks/list')
-
                 if (this.editing == false) {
                     tasks.create({
                         taskMasterId: this.taskMasterId,
@@ -292,12 +288,19 @@
                         clientId: this.taskClient,
                         coordinatorId: this.taskCoordinator,
                     })
+                    .then(() => {
+                        this.$store.commit('tasks/RESET_STATE', {isMaster: this.save})
+                    })
+                    .then(() => {
+                        if (this.save) this.$store.dispatch('tasks/tasksMasterListSet')
+                    })
                     .then(()=> {
                         this.promptMessage({
                             title: 'Task Created',
                             msg: 'successfully',
                             bgcolor: 'green'
                         })
+                        this.$router.push('/u/tasks/list')
                     })
                     .catch((e) => {
                         this.promptMessage({

@@ -158,6 +158,9 @@ export default {
                     bgcolor: 'green'
                 })
             })
+            .then(() => {
+                this.$store.commit('clients/RESET_STATE')
+            })
             .catch(() => {
                 this.promptMessage({
                     title: 'Error',
