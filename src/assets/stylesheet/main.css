@@ -256,7 +256,7 @@ form {
 .row {
     vertical-align: initial;
     display: flex;
-    padding: 12px 0;
+    padding: 6px 0;
 }
 input, select, textarea {
     width: 80%;
