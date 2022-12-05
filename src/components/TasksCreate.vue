@@ -82,7 +82,7 @@
                             <label :for="'save-task-template'+uk">save task template for future use </label>
                         </div>
 
-                        <button @click.prevent="proceed(), clear()" class="green mt16 button">save</button>
+                        <button @click.prevent="proceed()" class="green mt16 button">save</button>
                         <button @click.prevent="clear()" class="neutral ml8 mt16 button">cancel</button>
                     </form>
                 </div>
@@ -154,17 +154,15 @@
                     <tr>
                         <th>user</th>
                         <th>action</th>
-                        <th>task</th>
+                        <th>sub-task</th>
+                        <th>date</th>
                     </tr>
-                    <tr class="tr">
-                        <td>Mayur Buha</td>
-                        <td>updated status to done</td>
-                        <td>check name of company</td>
-                    </tr>
-                    <tr class="tr">
-                        <td>Pritul Patel</td>
-                        <td>updated status to done</td>
-                        <td>Draft Main Object of Company</td>
+                    <tr v-for="(logObj, index) in taskLogs" :key="index"
+                        class="tr">
+                        <td>{{logObj.user}}</td>
+                        <td>{{(logObj.action + ' ' + logObj.key)}}</td>
+                        <td>{{logObj.subTask ? logObj.subTask : "Not Available"}}</td>
+                        <td>{{logObj.timestamp}}</td>
                     </tr>
                 </table>
             </div>
@@ -178,7 +176,7 @@
 
     export default {
         name: 'TasksCreate',
-        props: ['taskId', 'displayHead', 'uk'],
+        props: ['editTaskId', 'displayHead', 'uk'],
         data() {
             return {
                 editing: false,
@@ -198,6 +196,8 @@
                 save: false,
                 taskRepeat: '',
                 taskRepeatOn: '',
+
+                taskLogs: [],
             }
         },
         computed: {
@@ -277,7 +277,22 @@
                 this.taskMasterId = taskMasterId
             },
             proceed() {
-                if (this.editing == false) {
+                if (this.editing == true) {
+                    const args = {
+                        taskId: this.editTaskId,
+                        taskMasterId: this.taskMasterId,
+                        title: this.taskTitle,
+                        description: this.taskDescription,
+                        cost: this.taskCost,
+                        clientId: this.taskClient,
+                        coordinatorId: this.taskCoordinator,
+                    }
+                    tasks.edit(args)
+                        .then(() => this.$state.commit('tasks/RESET_TASKS'))
+                        .then(() => this.$router.push('/u/tasks/list'))
+                        .catch((e) => console.log("error while editing task", e))
+            }
+                else {
                     tasks.create({
                         taskMasterId: this.taskMasterId,
                         title: this.taskTitle,
@@ -290,9 +305,7 @@
                     })
                     .then(() => {
                         this.$store.commit('tasks/RESET_STATE', {isMaster: this.save})
-                    })
-                    .then(() => {
-                        if (this.save) this.$store.dispatch('tasks/tasksMasterListSet')
+                        if (this.save) return this.$store.dispatch('tasks/tasksMasterListSet')
                     })
                     .then(()=> {
                         this.promptMessage({
@@ -309,7 +322,7 @@
                             bgcolor: 'red'
                         })
                     })
-                }
+                } 
             },
             clear() {
                 this.populateDataProperties({})
@@ -330,7 +343,7 @@
                 this.tableHead = 'edit task'         
                 this.getTaskStatus(this.subTasks)
             }
-            else if (this.taskId != undefined) {
+            else if (this.editTaskId != undefined) {
                 this.editing = true
                 this.tableHead = 'edit task'         
                 this.getTaskStatus(this.subTasks)
@@ -338,10 +351,12 @@
         },
         mounted() {
             if (this.editing == true) {
-                const taskData = (this['tasks/taskData'])(this.taskId)[0]
-                const subTasksData = this['tasks/subTasksData'](this.taskId)
+                const taskData = (this['tasks/taskData'])(this.editTaskId).taskData[0]
+                const taskLogs = (this['tasks/taskData'])(this.editTaskId).taskLogs
+                const subTasksData = this['tasks/subTasksData'](this.editTaskId)
                 if (taskData != undefined && taskData != '') {
                     this.populateDataProperties(taskData)
+                    this.taskLogs = taskLogs
                 }
                 if (subTasksData != undefined && subTasksData != '') {
                     console.log(subTasksData)

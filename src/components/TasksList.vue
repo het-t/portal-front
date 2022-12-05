@@ -58,7 +58,7 @@
                     <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
                         <tasks-create 
                             v-if="(allow[task.id] == true)"
-                            :taskId="task.id" 
+                            :editTaskId="task.id"
                             displayHead='false' 
                             :uk="index" 
                             class="tasks-create" 
@@ -98,13 +98,13 @@ export default {
             allow: {},
             tasksList: [],
             menuVisibisility: '',
-            selectedTask: ''
+            // selectedTask: ''
         };
     },
     methods: {
-        menu(e, {taskId, visibility}) {
+        menu(e, {visibility}) {
             this.menuVisibisility = visibility
-            this.selectedTask = taskId
+            // this.selectedTask = taskId
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
         },
         editTask(rowIndex, taskId) {

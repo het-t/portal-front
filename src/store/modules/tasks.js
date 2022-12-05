@@ -72,7 +72,7 @@ const actions = {
                 .then((res) => {
                     commit('tasksDataSet',{
                         taskId: taskId,
-                        taskData: res?.data?.taskData
+                        taskData: res?.data
                     })
                     resolve()
                 })
