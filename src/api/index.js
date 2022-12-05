@@ -3,9 +3,10 @@ import makeGetReq from "./makeGetReq.js"
 import makePostReq from './makePostReq.js'
 
 const clients = {
-    get: () => makeGetReq(endpoints.getClients),
+    get: (args) => makeGetReq(endpoints.getClients, args),
     create: (args) => makeGetReq(endpoints.createClient, args),
-    getTypes: () => makeGetReq(endpoints.getClientsMasterTypes)
+    getTypes: () => makeGetReq(endpoints.getClientsMasterTypes),
+    edit: (args) => makeGetReq(endpoints.editClient, args)
 }
 
 const users = {
@@ -25,14 +26,16 @@ const roles = {
 }
 
 const tasks = {
-    get: () => makeGetReq(endpoints.getTasks),
+    get: (args) => makeGetReq(endpoints.getTasks, args),
     getData: (args) => makeGetReq(endpoints.getTaskData, args),
     create: (args) => makeGetReq(endpoints.createTask, args),
+    edit: (args) => makeGetReq(endpoints.editTask, args),
     getSubTasks: (args) => makeGetReq(endpoints.getSubTasks, args),
 }
 
 const tasksMaster = {
-    get: () => makeGetReq(endpoints.getTasksMaster)
+    get: () => makeGetReq(endpoints.getTasksMaster),
+    edit: (args) => makeGetReq(endpoints.editTaskMaster, args),
 }
 
 const subTasksMaster = {

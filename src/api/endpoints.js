@@ -20,8 +20,10 @@ const endpoints = {
     getTasksMaster: '/u/api/tasks/get-tasks-master',
     getSubTasksMaster: '/u/api/tasks/get-sub-tasks-master',
     getClientsMasterTypes: '/u/api/clients/types',
-    getMyTasks: '/u/api/my-tasks/'
-    // editClient: '/u/api/roles/'
+    getMyTasks: '/u/api/my-tasks/',
+    editClient: '/u/api/clients/edit-client',
+    editTask: '/u/api/tasks/edit-task',
+    editTaskMaster: '/u/api/tasks/edit-task-master',
 }
 
 export default endpoints

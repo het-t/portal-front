@@ -138,15 +138,15 @@ import { mapActions } from 'vuex'
                         role: this.userRole,
                         password: this.userPassword,
                     })
+                    .then(() => {
+                        this.$store.commit('users/RESET_STATE')
+                    })
                     .then(()=>{
                         this.$router.push('/u/users/list')
                         this.promptMessage({
                             title: 'User Created',
                             msg: 'successfully'
                         })
-                    })
-                    .then(() => {
-                        this.$store.commit('users/RESET_STATE')
                     })
                     // error handling
                     //.catch((err) => {})
@@ -161,15 +161,15 @@ import { mapActions } from 'vuex'
                         email: this.userEmail,
                         role: this.userRole,
                     })
+                    .then(() => 
+                        this.$store.commit('users/RESET_STATE')
+                    )
                     .then(()=>{
                         this.$router.push('/u/users/list')
                         this.promptMessage({
                             title: 'User Created',
                             msg: 'successfully'
                         })
-                    })
-                    .then(() => {
-                        this.$store.commit('users/RESET_STATE')
                     })
                 }
             },
