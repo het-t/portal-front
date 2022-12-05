@@ -11,13 +11,13 @@
         </div>
         <ul>
             <li class="neutral">
-                <a href="#" @click="pageChange(1)">&lt;&lt;</a>
+                <a href="#" @click="pageChange(1)">&lt;</a>
             </li>
             <li class="neutral" v-for="n in showPage()" :key="n">
                 <a href="#" :class="(n == currentPage) ? 'green' : ''" @click="pageChange(n)">{{n}}</a>
             </li>
             <li class="neutral">
-                <a href="#" @click="pageChange(pageCount)">&gt;&gt;</a>
+                <a href="#" @click="pageChange(pageCount)">&gt;</a>
             </li>
         </ul>
     </div>
@@ -129,6 +129,7 @@
     li {
         list-style: none;
         border: solid 1px #e7eaec;
+        margin: 0 1px;
     }
     li a {
         padding: 4px 10px;
