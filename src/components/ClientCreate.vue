@@ -75,7 +75,7 @@
                     </div>
                 </div>
 
-                <button @click.prevent="proceed(), clear()" class="green mt16 button">save</button>
+                <button @click.prevent="proceed()" class="green mt16 button">save</button>
                 <button @click.prevent="clear()" class="neutral ml8 mt16 button">cancel</button>
 
             </form>
@@ -137,6 +137,7 @@ export default {
         },
         proceed() {
             const args = {
+                clientId: this.editClientId,
                 clientName: this.clientName,
                 clientTypeId: this.clientTypeId,
                 cin: this.cin,
@@ -148,26 +149,42 @@ export default {
                 conEmail: this.conEmail,
                 conPhone: this.conPhone
             }
-            clients.create(args)
-            .then((response) => {
-                if (response.data.clientCreated == 'fail') throw new Error();
-                this.$router.push('/u/clients/list')        
-                this.promptMessage({
-                    title: 'Client Created',
-                    msg: 'successfully',
-                    bgcolor: 'green'
+            if (args.clientId == undefined || args.clientId == '') {
+                clients.create(args)
+                .then((response) => {
+                    if (response.data.clientCreated == 'fail') throw new Error();
+                    this.$router.push('/u/clients/list')        
+                    this.promptMessage({
+                        title: 'Client Created',
+                        msg: 'successfully',
+                        bgcolor: 'green'
+                    })
                 })
-            })
-            .then(() => {
-                this.$store.commit('clients/RESET_STATE')
-            })
-            .catch(() => {
-                this.promptMessage({
-                    title: 'Error',
-                    msg: 'client cannot be created',
-                    bgcolor: 'red'
+                .then(() => {
+                    this.$store.commit('clients/RESET_STATE')
                 })
-            })
+                .catch(() => {
+                    this.promptMessage({
+                        title: 'Error',
+                        msg: 'client cannot be created',
+                        bgcolor: 'red'
+                    })
+                })
+            }
+            else {
+                clients.edit(args)
+                .then((response) => {
+                    if (response.data.clientEdited == 'fail') throw new Error()
+                    else { 
+                        this.$store.commit('clients/RESET_STATE')
+                        console.log("commiting")
+                    }
+                })
+                .then(() => {
+                    console.log("routing")
+                    this.$router.push('/u/clients/')        
+                })
+            }
         }
     },
     mounted() {
@@ -179,7 +196,7 @@ export default {
 
         if (this.editing != false) {
             const {id, typeId, name, cin, caFirmName, caAddress, caPan, caEmail, conName, conEmail, conPhone} = JSON.parse(this.clientData)
-
+            console.log("client edit", this.editing, id)
             this.editClientId = id
             this.clientName = name
             this.cin = cin
