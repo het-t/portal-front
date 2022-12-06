@@ -6,7 +6,8 @@ const clients = {
     get: (args) => makeGetReq(endpoints.getClients, args),
     create: (args) => makeGetReq(endpoints.createClient, args),
     getTypes: () => makeGetReq(endpoints.getClientsMasterTypes),
-    edit: (args) => makeGetReq(endpoints.editClient, args)
+    edit: (args) => makeGetReq(endpoints.editClient, args),
+    delete: (args) => makePostReq(endpoints.deleteClient, args)
 }
 
 const users = {

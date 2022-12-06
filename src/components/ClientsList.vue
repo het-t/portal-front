@@ -4,7 +4,10 @@
             <dots-menu v-if="menuVisibisility == true">
                 <template #links>
                     <li>
-                        <font-awesome-icon class="menu-icons" :icon="['fas', 'trash']"></font-awesome-icon>
+                        <font-awesome-icon @click.prevent="deleteClient"
+                            class="menu-icons" 
+                            :icon="['fas', 'trash']"
+                        ></font-awesome-icon>
                     </li>
                 </template>
             </dots-menu>
@@ -109,6 +112,7 @@
     import DotsImg from './DotsImg.vue'
     import TablePagination from './TablePagination.vue'
     import DotsMenu from './DotsMenu.vue'
+import { clients } from '../api'
 
     export default {
         components: { TableActionPlus, ClientCreate, TableMain, DotsImg, TablePagination, DotsMenu },
@@ -130,6 +134,10 @@
                 this.menuVisibisility = visibility
                 this.selectedClientId = clientId
                 if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
+            },
+            deleteClient() {
+                clients.delete({clientId: this.selectedClientId})
+                .then((res) => console.log("client delete res", res.data))
             }
         }
     }

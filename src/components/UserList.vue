@@ -14,7 +14,10 @@
                         </router-link>
                     </li>
                     <li>
-                        <font-awesome-icon class="menu-icons" :icon="['fas', 'trash']"></font-awesome-icon>
+                        <font-awesome-icon @click.prevent="deleteUser"
+                            class="menu-icons" 
+                            :icon="['fas', 'trash']"
+                        ></font-awesome-icon>
                     </li>
                 </template>
             </dots-menu>

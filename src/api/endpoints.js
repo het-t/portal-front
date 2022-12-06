@@ -24,6 +24,7 @@ const endpoints = {
     editClient: '/u/api/clients/edit-client',
     editTask: '/u/api/tasks/edit-task',
     editTaskMaster: '/u/api/tasks/edit-task-master',
+    deleteClient: '/u/api/clients/delete-client'
 }
 
 export default endpoints

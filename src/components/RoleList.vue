@@ -11,18 +11,12 @@
                     <li>
                         <font-awesome-icon @click.stop="deleteRole"
                             class="menu-icons" 
-                            :icon="['fas', 'trash']"></font-awesome-icon>
+                            :icon="['fas', 'trash']"
+                        ></font-awesome-icon>
                     </li>
                 </template>
             </dots-menu>
         </div>
-
-        <AlertC v-show="displayAlert" 
-            :msg="alertData.msg"
-            :fn="deleteRole"
-            :fnParam="alertData.params"
-            v-on:close-alert="displayAlert = false"
-        />
 
         <div class="card">
             <div class="card-head m0 pb16 pt16 pr16 pl16">
@@ -75,7 +69,6 @@
 
 <script>
 import {roles} from '@/api/index.js'
-import AlertC from './AlertC.vue'
 import TablePagination from './TablePagination.vue'
 // import TableSort from './TableSort.vue'
 import TableFilter from './TableFilter.vue'
@@ -129,7 +122,7 @@ import DotsImg from './DotsImg.vue'
             this.roleName = "";
         }
     },
-    components: { AlertC, TablePagination, TableFilter, TableActionPlus, DotsMenu, DotsImg }
+    components: { TablePagination, TableFilter, TableActionPlus, DotsMenu, DotsImg }
 }
 </script>
 

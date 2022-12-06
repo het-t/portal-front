@@ -4,7 +4,10 @@
             <dots-menu v-if="menuVisibisility == true">
                 <template #links>
                     <li>
-                        <font-awesome-icon class="menu-icons" :icon="['fas', 'trash']"></font-awesome-icon>
+                        <font-awesome-icon 
+                            class="menu-icons" 
+                            :icon="['fas', 'trash']"
+                        ></font-awesome-icon>
                     </li>
                 </template>
             </dots-menu>
@@ -42,7 +45,7 @@
                         <td>
                             {{task.description}}
                         </td>
-                        <td>{{task.client}}</td>
+                        <td>{{task.isClientActive ? task.client : 'Deleted'}}</td>
                         <td>
                             <tasks-progress/>
                         </td>
@@ -72,11 +75,9 @@
                 </div>
             </template>
 
-            <!-- <template #pagination> -->
-                <table-pagination @tableData="tasksList = $event"
-                    tableName="tasks"
-                />
-            <!-- </template> -->
+            <table-pagination @tableData="tasksList = $event"
+                tableName="tasks"
+            />
         </table-main>
     </div>
 </template>
