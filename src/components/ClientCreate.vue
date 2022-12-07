@@ -76,7 +76,7 @@
                 </div>
 
                 <button @click.prevent="proceed()" class="green mt16 button">save</button>
-                <button @click.prevent="clear()" class="neutral ml8 mt16 button">cancel</button>
+                <button @click.prevent="canceled()" class="neutral ml8 mt16 button">cancel</button>
 
             </form>
         </div>
@@ -84,6 +84,8 @@
 
 <script>
 import {clients} from '@/api/index.js'
+import useEditSwal from '../helpers/swalEdit.js'
+import useCreateSwal from '@/helpers/swalCreate'
 import swal from 'sweetalert'
 
 export default {
@@ -122,7 +124,8 @@ export default {
                 this.$refs['contact'+this.uk]?.classList?.add('hide')
                 this.$refs[newTab+this.uk]?.classList?.remove('hide')
             },
-        clear() {
+        canceled() {
+            ////////////////////////////////////////
             swal({
                 title: "Do you really want to cancel editing?", 
                 text: "All changes will be reverted",
@@ -131,9 +134,16 @@ export default {
                 dangerMode: true
             })
             .then((value) => {
-                if (value == null) throw null
-                if (this.editing == true) this.$emit('editingCompleted')
-                else this.$router.push('/u/clients/list')
+                if (value != null) throw null
+            })
+            .catch(() => {
+                // to toggle the hidden-tr visibility
+                if (this.editing == true) this.$emit("editingCompleted", {
+                    editing: 0,
+                    client: `${this.clientName} (${this.firmName})`
+                })
+            //////////////////////////////////////////
+                this.$router.push('/u/clients/list') //prop->path to redirect
             })
         },
         proceed() {
@@ -152,62 +162,22 @@ export default {
             }
 
             if (args.clientId != undefined && args.clientId != '') {
-                swal({
-                    title: "Alert",
-                    text: `Do you really want to edit "${args.clientName}" (${args.firmName})`,
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true
+                useEditSwal({
+                    text: args.clientName,
+                    mutationFnName: 'clients/RESET_STATE',
+                    promise: () => clients.edit(args),
+                    context: this,
                 })
-                .then((value) => {
-                    if (value == null) throw null
-                    return clients.edit(args)
-                })
-                .then((response) => {
-                    if (response.data.clientCreated == 'fail') throw 'fail';
-                })
-                .then(() => {
-                    this.$store.commit('clients/RESET_STATE')
-                })
-                .catch((err) => 
-                    swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
-                )
-                .finally(()=>{
-                    this.$emit('editingCompleted')
-                })
-                .then(() => swal({
-                    title: "Success",
-                    text: `Edited "${args.clientName}" (${args.firmName})`,
-                    icon: "success",
-                    button: "Ok"
-                }))
             }
             else {
-                swal({
-                    title: "Alert",
-                    text: `Do you really want to create "${args.clientName}" (${args.firmName})`,
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true
+                useCreateSwal({
+                    text: args.clientName,
+                    url: '/u/clients/list',
+                    mutationFnName: 'clients/RESET_STATE',
+                    mutationArgs: {},
+                    promise: () => clients.create(args),
+                    context: this
                 })
-                .then((value) => {
-                    if (value == null) throw null
-                    console.log(value)
-                    return clients.create(args) 
-                })
-                .then(() => {
-                    this.$store.commit('clients/RESET_STATE')
-                })
-                .catch(err => 
-                    swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
-                )
-                .finally(() => this.$router.push('/u/clients/list'))
-                .then(() => swal({
-                    title: "Success",
-                    text: `Created "${args.clientName}" (${args.firmName})`,
-                    icon: "success",
-                    button: "Ok"
-                }))
             }
         }
     },

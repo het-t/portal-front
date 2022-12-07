@@ -83,7 +83,7 @@
                         </div>
 
                         <button @click.prevent="proceed()" class="green mt16 button">save</button>
-                        <button @click.prevent="clear()" class="neutral ml8 mt16 button">cancel</button>
+                        <button @click.prevent="canceled()" class="neutral ml8 mt16 button">cancel</button>
                     </form>
                 </div>
                 <div class="vr"></div>
@@ -177,6 +177,8 @@
     import { mapActions, mapGetters } from 'vuex'
     import { tasks, subTasksMaster } from '@/api/index.js'
     import swal from 'sweetalert'
+import useEditSwal from '../helpers/swalEdit'
+import useCreateSwal from '@/helpers/swalCreate'
 
     export default {
         name: 'TasksCreate',
@@ -286,8 +288,8 @@
                 this.taskMasterId = taskMasterId
             },
             proceed() {
-                if (this.editing == true) {
-                    const args = {
+                const args = {
+                        saved: new Number(this.save),
                         taskId: this.editTaskId,
                         taskMasterId: this.taskMasterId,
                         title: this.taskTitle,
@@ -298,60 +300,27 @@
                         subTasks: JSON.stringify(this.subTasks),
                         removedSubTasks: JSON.stringify(this.removedSubTasksId)
                     }
-
-                    swal({
-                        title: "Alert",
-                        text: `Do you really want to edit "${this.taskTitle}"`,
-                        icon: "warning",
-                        buttons: true,
-                        dangerMode: true
-                    })
-                    .then(value => {
-                        if (value == null) throw null
-                        return tasks.edit(args)
-                    })
-                    .then(() => this.$store.commit('tasks/RESET_TASKS', {isMaster: this.save}))
-                    .catch(err => 
-                        swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
-                    )
-                    .finally(()=>{
-                        this.$emit('editingCompleted', {
-                            editing: 1,
-                            task: this.taskTitle
-                        })
+                if (this.editing == true) {
+                    useEditSwal({
+                        text: args.title,
+                        mutationFnName: 'tasks/RESET_STATE',
+                        mutationArgs: {isMaster: this.save},
+                        context: this,
+                        promise: () => tasks.edit(args)
                     })
                 }
                 else {
-                    tasks.create({
-                        taskMasterId: this.taskMasterId,
-                        title: this.taskTitle,
-                        taskDescription: this.taskDescription,
-                        cost: this.taskCost,
-                        saved: new Number(this.save),
-                        subTasks: JSON.stringify(this.subTasks),
-                        clientId: this.taskClient,
-                        coordinatorId: this.taskCoordinator,
+                    useCreateSwal({
+                        text: args.title,
+                        mutationFnName: 'tasks/RESET_STATE',
+                        mutationArgs: {isMaster: this.save},
+                        promise: () => tasks.create(args),
+                        url: '/u/tasks/list',
+                        context: this
                     })
-                    .then(() => {
-                        this.$store.commit('tasks/RESET_STATE', {isMaster: this.save})
-                        if (this.save) return this.$store.dispatch('tasks/tasksMasterListSet')
-                        return
-                    })
-                    .then(()=> 
-                        this.$router.push('/u/tasks/list')
-                    )
-                    .then(() => swal({
-                        title: 'success',
-                        icon: 'success',
-                        text: `Created task "${this.taskTitle}"`,
-                        button: 'ok', 
-                    }))
-                    .catch(err => 
-                        swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)                
-                    )
                 } 
             },
-            clear() {
+            canceled() {
                 swal({
                     title: "Do you really want to cancel editing?", 
                     text: "All changes will be reverted",
@@ -360,7 +329,9 @@
                     dangerMode: true
                 })
                 .then((value) => {
-                    if (value == null) throw null
+                    if (value != null) throw null
+                })
+                .catch(() => {
                     if (this.editing == true) this.$emit("editingCompleted", {
                         editing: 0,
                         task: this.taskTitle
@@ -370,6 +341,17 @@
             }
         },
         created() {
+            ////////////////////////////////////////////////////
+                //get all clients if not in store
+                this.$store.dispatch('clients/clientsAll'),
+                
+                //get all tasksMaster if not in store
+                this.$store.dispatch('tasks/tasksMasterListSet'),
+                
+                //get all users if not in store 
+                this.$store.dispatch('users/usersAll')
+            ////////////////////////////////////////////////////
+
             if (window.history.state.taskId != undefined){ 
                 this.editing = true  
                 this.tableHead = 'edit task'         

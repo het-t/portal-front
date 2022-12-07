@@ -36,7 +36,7 @@
 
                         <div :id="('i4'+uk)" class="row mt8">
                             <label :for="('user-birthdate'+uk)" class="labels c1">birthdate</label>
-                            <input v-model="userBithdate" type="date" :id="('user-birthdate'+uk)">
+                            <input v-model="userBirthdate" type="date" :id="('user-birthdate'+uk)">
                         </div>
                     </div>
 
@@ -74,7 +74,9 @@
 
 <script>
 import {users} from '@/api/index.js'
+import useCreateSwal from '@/helpers/swalCreate'
 import swal from 'sweetalert'
+import useEditSwal from '../helpers/swalEdit'
 
     export default {
         name: 'CreateUser',
@@ -84,7 +86,7 @@ import swal from 'sweetalert'
                 userFirstName: '',
                 userLastName: '',
                 userGender: '',
-                userBithdate: '',
+                userBirthdate: '',
                 userEmail: '',
                 userRole: '',
                 userPassword: '',
@@ -136,65 +138,42 @@ import swal from 'sweetalert'
                     dangerMode: true
                 })
                 .then((value) => {
-                    if (value == null) throw null
-                    this.$emit("editingCompleted", {
+                    if (value != null) throw 'Aborted'
+                })
+                .catch(() => {
+                    if (this.editing == true) this.$emit("editingCompleted", {
                         editing: 0,
-                        user: this.userFirstName + ' ' + this.userLastName
+                        user: this.userFirstName + this.userLastName
                     })
+                    else this.$router.push('/u/users/list')
                 })
             },
             proceed() {
-                if (!this.userId) {
-
-                    users.create({
-                        firstName: this.userFirstName,
-                        lastName: this.userLastName,
-                        gender: this.userGender,
-                        birthdate: this.userBithdate,
-                        email: this.userEmail,
-                        role: this.userRole,
-                        password: this.userPassword,
-                    })
-                    .then(() => {
-                        this.$store.commit('users/RESET_STATE')
+                const args = {
+                    userId: this.userId,
+                    firstName: this.userFirstName,
+                    lastName: this.userLastName,
+                    gender: this.userGender,
+                    birthdate: this.userBirthdate,
+                    email: this.userEmail,
+                    role: this.userRole,
+                    password: this.userPassword
+                }
+                if (!args.userId) {
+                    useCreateSwal({
+                        text: args.firstName + ' ' + args.lastName,
+                        url: '/u/users/list',
+                        mutationFnName: 'users/RESET_STATE',
+                        promise: () => users.create(args),
+                        context: this
                     })
                 }
                 else {
-                    swal({
-                        title: "Alert",
-                        text: `Do you really want to edit "${this.userFirstName + ' ' + this.userLastName}" user`,
-                        icon: "warning",
-                        buttons: true,
-                        dangerMode: true
-                    })
-                    .then((value) => {
-                        if (value == null) throw null
-                        return users.edit({
-                            userId: this.userId,
-                            firstName: this.userFirstName,
-                            lastName: this.userLastName,
-                            gender: this.userGender,
-                            birthdate: this.userBithdate,
-                            email: this.userEmail,
-                            role: this.userRole,
-                        })
-                    })
-                    .then(() =>{ 
-                        this.$store.commit('users/RESET_STATE')
-                    })
-                    .then(() =>{
-                        this.$emit('editingCompleted', {
-                            editing: 1,
-                            user: this.userFirstName + ' ' + this.userLastName
-                        })
-                    })
-                    .catch((err) =>{ 
-                        console.log("coming in catch")
-                        this.$emit('editingCompleted', {
-                            editing: 0,
-                            user: this.userFirstName + ' ' + this.userLastName
-                        })
-                        return swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
+                    useEditSwal({
+                        text: args.firstName + ' ' + args.lastName,
+                        mutationFnName: 'users/RESET_STATE',
+                        promise: () => users.edit(args),
+                        context: this
                     })
                 }
             },
@@ -213,7 +192,7 @@ import swal from 'sweetalert'
                 this.userFirstName = firstName
                 this.userLastName = lastName
                 this.userGender = gender
-                this.userBithdate = new Date(birthdate)
+                this.userBirthdate = new Date(birthdate)
                 this.userEmail = email
                 this.userRole = role
                 this.userPassword = password

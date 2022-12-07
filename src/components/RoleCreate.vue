@@ -31,17 +31,19 @@
             <div class="hr"></div>
 
             <button 
-                @click.prevent="(editRoleId == undefined || editRoleId == '') ? createRole() : editRole()" 
+                @click.prevent="(editRoleId == undefined || editRoleId == '') ? createRole({roleName, roleRights}) : editRole()" 
                 class="green button"
             >save</button>
-            <button @click.prevent="clear()" class="neutral ml8 button">cancel</button>
+            <button @click.prevent="canceled()" class="neutral ml8 button">cancel</button>
         </form>
     </div>
 </template>
 
 <script>
 import { roles } from '@/api'
+import useCreateSwal from '@/helpers/swalCreate'
 import swal from 'sweetalert'
+import useEditSwal from '../helpers/swalEdit'
 
     export default {
         name: 'CreateRole',
@@ -55,62 +57,29 @@ import swal from 'sweetalert'
             }
         },
         methods: {
-            createRole() {
-                roles.create({roleName: this.roleName, roleRights: this.roleRights})
-                .then((res) => {
-                    if (res.data.roleCreated == 'success') {
-                        this.$store.dispatch("roles/rolesAll", {force: true})
-                        .then(() => swal({
-                            title: "",
-                            text: "new role created",
-                            icon: 'success',
-                            button: 'ok'
-                        }))
-                        .then(() => 
-                            this.$store.commit('roles/RESET_STATE')
-                        )
-                        .then(() => 
-                            this.$router.push('/u/roles/list')
-                        )
-                        .catch((err) => {
-                            swal("oops!", `we can't perform this action right now please try again\n\n details: ${err}`)
-                        })
-                    }
-                })
+            createRole({roleName, roleRights}) {
+                useCreateSwal({
+                    text: roleName,
+                    mutationFnName: 'roles/RESET_STATE',
+                    promise: () => roles.create({roleName, roleRights}),
+                    context: this,
+                    url: '/u/roles/list'
+                }) 
             },
             editRole() {
-                swal({
-                    title: "Alert", 
-                    text: `Do you really want to edit "${this.roleName}" role`,
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true
+                const args = {
+                    roleId: this.editRoleId,
+                    roleName: this.roleName,
+                    roleRights: this.roleRights
+                }
+                useEditSwal({
+                    text: args.roleName,
+                    promise: () => roles.edit(args),
+                    mutationFnName: 'roles/RESET_STATE',
+                    context: this
                 })
-                .then((value) =>{ 
-                    if (value == null) throw null
-                    return roles.edit({
-                        roleId: this.editRoleId,
-                        roleName: this.roleName, 
-                        roleRights: this.roleRights
-                    })
-                })
-                .then(() => 
-                    this.$store.commit('roles/RESET_STATE')
-                )
-                .catch((err) => 
-                    swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
-                )
-                .finally(() => {
-                    this.$router.push('/u/roles/list')
-                }) 
-                .then(() => swal({
-                    title: "Success",
-                    text: `Edited "${this.roleName}"`,
-                    icon: "success",
-                    button: "Ok"
-                }))
             },
-            clear() {
+            canceled() {
                 swal({
                     title: "Do you really want to cancel editing?", 
                     text: "All changes will be reverted",
@@ -119,10 +88,15 @@ import swal from 'sweetalert'
                     dangerMode: true
                 })
                 .then((value) => {
-                    if (value == null) throw null
-                    this.$router.push('/u/roles/list')
+                    if (value != null) throw null
                 })
-                
+                .catch(() => {
+                    if (this.editing == true) this.$emit("editingCompleted", {
+                        editing: 0,
+                        role: this.roleName
+                    })
+                    else this.$router.push('/u/roles/list')
+                })
             }
         },
         created() {           
