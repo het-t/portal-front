@@ -61,8 +61,8 @@
                         </div>
                     </div>
 
-                    <button @click.prevent="proceed(), clear()" class="green mt16 button">save</button>
-                    <button @click.prevent="clear()" class="neutral ml8 mt16 button">cancel</button>
+                    <button @click.prevent="proceed()" class="green mt16 button">save</button>
+                    <button @click.prevent="canceled()" class="neutral ml8 mt16 button">cancel</button>
 
                 </div>
             </form>
@@ -74,7 +74,8 @@
 
 <script>
 import {users} from '@/api/index.js'
-import { mapActions } from 'vuex'
+import swal from 'sweetalert'
+
     export default {
         name: 'CreateUser',
         props: ['editUserId', 'displayHead', 'uk'],
@@ -117,7 +118,6 @@ import { mapActions } from 'vuex'
             this.$refs['defaultTab'+this.uk].click()
         },
         methods: {
-            ...mapActions(['promptMessage']),
             openTab(e, newTab) {
                 var tabs = e.target.parentElement.getElementsByClassName('tab')
                 let curTab = [...tabs].find(tab => tab?.classList?.contains('tab-open') == true)
@@ -127,8 +127,25 @@ import { mapActions } from 'vuex'
                 this.$refs['credentials'+this.uk]?.classList?.add('hide')
                 this.$refs[newTab+this.uk]?.classList?.remove('hide')
             },
+            canceled() {
+                swal({
+                    title: "Do you really want to cancel editing?", 
+                    text: "All changes will be reverted",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true
+                })
+                .then((value) => {
+                    if (value == null) throw null
+                    this.$emit("editingCompleted", {
+                        editing: 0,
+                        user: this.userFirstName + ' ' + this.userLastName
+                    })
+                })
+            },
             proceed() {
                 if (!this.userId) {
+
                     users.create({
                         firstName: this.userFirstName,
                         lastName: this.userLastName,
@@ -141,35 +158,43 @@ import { mapActions } from 'vuex'
                     .then(() => {
                         this.$store.commit('users/RESET_STATE')
                     })
-                    .then(()=>{
-                        this.$router.push('/u/users/list')
-                        this.promptMessage({
-                            title: 'User Created',
-                            msg: 'successfully'
-                        })
-                    })
-                    // error handling
-                    //.catch((err) => {})
                 }
                 else {
-                    users.edit({
-                        userId: this.userId,
-                        firstName: this.userFirstName,
-                        lastName: this.userLastName,
-                        gender: this.userGender,
-                        birthdate: this.userBithdate,
-                        email: this.userEmail,
-                        role: this.userRole,
+                    swal({
+                        title: "Alert",
+                        text: `Do you really want to edit "${this.userFirstName + ' ' + this.userLastName}" user`,
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true
                     })
-                    .then(() => 
-                        this.$store.commit('users/RESET_STATE')
-                    )
-                    .then(()=>{
-                        this.$router.push('/u/users/list')
-                        this.promptMessage({
-                            title: 'User Created',
-                            msg: 'successfully'
+                    .then((value) => {
+                        if (value == null) throw null
+                        return users.edit({
+                            userId: this.userId,
+                            firstName: this.userFirstName,
+                            lastName: this.userLastName,
+                            gender: this.userGender,
+                            birthdate: this.userBithdate,
+                            email: this.userEmail,
+                            role: this.userRole,
                         })
+                    })
+                    .then(() =>{ 
+                        this.$store.commit('users/RESET_STATE')
+                    })
+                    .then(() =>{
+                        this.$emit('editingCompleted', {
+                            editing: 1,
+                            user: this.userFirstName + ' ' + this.userLastName
+                        })
+                    })
+                    .catch((err) =>{ 
+                        console.log("coming in catch")
+                        this.$emit('editingCompleted', {
+                            editing: 0,
+                            user: this.userFirstName + ' ' + this.userLastName
+                        })
+                        return swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
                     })
                 }
             },

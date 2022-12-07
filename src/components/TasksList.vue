@@ -5,6 +5,7 @@
                 <template #links>
                     <li>
                         <font-awesome-icon 
+                        @click="deleteTask(selectedTaskId, selectedTask)"
                             class="menu-icons" 
                             :icon="['fas', 'trash']"
                         ></font-awesome-icon>
@@ -45,15 +46,15 @@
                         <td>
                             {{task.description}}
                         </td>
-                        <td>{{task.isClientActive ? task.client : 'Deleted'}}</td>
+                        <td>{{task.client}}</td>
                         <td>
                             <tasks-progress/>
                         </td>
                         <td>{{task.status}}</td>
                         <div class="dots">
                             <dots-img 
-                                @openMenu="menu($event, {taskId: task.id, visibility: true})" 
-                                @hideMenu="menu($event, {taskId: '', visibility: false})" 
+                                @openMenu="menu($event, {task: task.title, taskId: task.id, visibility: true})" 
+                                @hideMenu="menu($event, {task: task.title, taskId: task.id, visibility: false})" 
                             />
                         </div>
                     </tr>
@@ -64,6 +65,7 @@
                             :editTaskId="task.id"
                             displayHead='false' 
                             :uk="index" 
+                            @editingCompleted="[editTask('row'+index, task.id), showSwal($event)]"
                             class="tasks-create" 
                             editing="true" 
                         />
@@ -83,6 +85,7 @@
 </template>
 
 <script>
+import swal from 'sweetalert'
 import TasksCreate from './TasksCreate.vue';
 import TasksProgress from './TasksProgress.vue';
 import TableMain from './TableMain.vue';
@@ -91,6 +94,7 @@ import DotsImg from './DotsImg.vue';
 import DotsMenu from './DotsMenu.vue'
 import TablePagination from './TablePagination.vue';
 import SkeletonForm from '../skeletons/SkeletonForm.vue';
+import { tasks } from '../api';
 
 export default {
     name: "TasksList",
@@ -99,14 +103,51 @@ export default {
             allow: {},
             tasksList: [],
             menuVisibisility: '',
-            // selectedTask: ''
+            selectedTaskId: '',
+            selectedTask: ''
         };
     },
     methods: {
-        menu(e, {visibility}) {
+        menu(e, {taskId, task, visibility}) {
             this.menuVisibisility = visibility
-            // this.selectedTask = taskId
+            this.selectedTaskId = taskId
+            this.selectedTask = task
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
+        },
+        deleteTask(taskId, task) {
+            swal({
+                title: "Alert",
+                text: `do you really want to delete "${task}"`,
+                icon: "warning",
+                buttons: true,
+                dangerMode: true                
+            })
+            .then((value) => {
+                if (value == null) throw null
+                return tasks.delete({taskId})  
+            })
+            .then((res) => {
+                if (res.data.taskDeleted == true)
+                return swal({
+                    title: "Success",
+                    text: `Deleted "${task}"`,
+                    icon: 'success',
+                    button: 'ok'
+                })
+            })
+            .catch(err => 
+                swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
+            )
+        },
+        showSwal({editing, task}) {
+            if (editing) {
+                swal({
+                    title: "Success",
+                    text: `Edited "${task}"`,
+                    icon: "success",
+                    button: "Ok"
+                })
+            }
         },
         editTask(rowIndex, taskId) {
             const show = this.$refs[rowIndex][0].classList.contains('hide')

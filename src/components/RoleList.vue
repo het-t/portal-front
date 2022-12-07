@@ -9,7 +9,7 @@
                         </router-link>
                     </li>
                     <li>
-                        <font-awesome-icon @click.stop="deleteRole"
+                        <font-awesome-icon @click="deleteRole(editRoleId, editRoleName)"
                             class="menu-icons" 
                             :icon="['fas', 'trash']"
                         ></font-awesome-icon>
@@ -53,9 +53,11 @@
                             {{role?.rights}}
                         </td>
 
+                        <!--      -->
+                        <!-- @hideMenu="menu($event, {roleName: role.name, roleId: role.id, visibility: true})"" -->
                         <DotsImg 
-                            @openMenu="menu($event, {roleId: role.id, visibility: true})"
-                            @hideMenu="menu($event, {roleId: '', visibility: false})"    
+                            @openMenu="menu($event, {roleName: role.name, roleId: role.id, visibility: true})"
+                            @hideMenu="menu($event, {roleName: role.name, roleId: role.id, visibility: false})"
                         />
                     </tr>
                 </table>
@@ -68,6 +70,7 @@
 </template>
 
 <script>
+// import swal from 'sweetalert'
 import {roles} from '@/api/index.js'
 import TablePagination from './TablePagination.vue'
 // import TableSort from './TableSort.vue'
@@ -75,30 +78,44 @@ import TableFilter from './TableFilter.vue'
 import TableActionPlus from './TableActionPlus.vue'
 import DotsMenu from './DotsMenu.vue'
 import DotsImg from './DotsImg.vue'
+import swal from 'sweetalert'
 
     export default {
     name: "EditRoleList",
     data() {
         return {
-            alertData: {
-                params: [{
-                    role_id: ''
-                }],
-                msg: '',
-            },
             menuVisibisility: '',
             rolesList: [],
             editRoleId: '',
+            editRoleName: '',
             filteredRolesList: undefined,
             displayAlert: false,
         };
     },
     methods: {
-        deleteRole() {
-            roles.delete(this.editRoleId)
-            .then(() => {
-                console.log("role deleted")
+        deleteRole(roleId, roleName) {
+            swal({
+                title: "Alert",
+                text: `do you really want to delete "${roleName}"`,
+                icon: "warning",
+                buttons: true,
+                dangerMode: true
             })
+            .then((value) => {
+                if (value == null) throw null
+                return roles.delete({roleId})
+            })
+            .then(() => {
+                swal({
+                    title: "Success",
+                    text: `Deleted "${roleName}"`,
+                    icon: 'success',
+                    button: 'ok'
+                })
+            })
+            .catch(err => 
+                swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
+            )
         },
         roleListToDisplay() {
             if (this.filteredRolesList != undefined) {
@@ -108,16 +125,22 @@ import DotsImg from './DotsImg.vue'
                 return this.rolesList
             }
         },
-        menu(e, {roleId, visibility}) {
+        menu(e, {roleName, roleId, visibility}) {
             this.menuVisibisility = visibility
             this.editRoleId = roleId
+            this.editRoleName = roleName
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
         },
-        alert(msg, roleId) {
-            this.displayAlert = true;
-            this.alertData.params[0].role_id = roleId
-            this.alertData.msg = msg;
-        },
+        // showSwal({editing, role}) {
+        //     if (editing) {
+        //         swal({
+        //             title: "Success",
+        //             text: `Edited "${role}"`,
+        //             icon: "success",
+        //             button: "Ok"
+        //         })
+        //     }
+        // },
         clear() {
             this.roleName = "";
         }

@@ -61,7 +61,7 @@
 
                             <div class="row mt8">
                                 <label :for="'task-description'+uk" class="labels c1">description</label>
-                                <textarea v-model="taskDescription" name="task-description" :id="'task-description'+uk" cols="30" rows="5" placeholder="description"></textarea>
+                                <textarea v-model="taskDescription" name="task-description" :id="'task-description'+uk" cols="30" rows="5" placeholder="Description"></textarea>
                             </div>
 
                         </div>
@@ -94,9 +94,7 @@
                             <label :for="'task-sub-task'+uk" class="labels c1">sub task</label>
                             <div style="width:80%; display:flex">
                                 <input v-model="newSubTask" style="width: 100%" type="text" :id="'task-sub-task'+uk">
-                                <button @click.prevent="addSubTask()" class="ml16 button action-button">
-                                    <img src="../assets/icons/plus-icon.png" class="" alt="">
-                                </button>
+                                    <font-awesome-icon class="icon pointer add-st" @click.prevent="addSubTask()" icon="fa-solid fa-plus"></font-awesome-icon>
                             </div>
                         </div>
                     </div>
@@ -104,15 +102,20 @@
                     <div v-if="subTasks" class="grid-wrapper">
                         <div v-for="(task, index) in subTasks" :key="index" class="mb8">
                             <div class="grid">
-                                <div class="dots">
-                                    <img @click.prevent="toggleDisplaySubTask(index)" class="dots-img" src="../assets/icons/dots-icon.png" alt="">
-                                </div>
+                                
                                 <div>{{index+1}})</div>
-                                <div>{{task.description}}</div>
 
-                                <button @click.prevent="removeSubTask(index)" class="button action-button">
-                                    <img src="../assets/icons/minus-icon.png" class="" alt="">
-                                </button>
+                                <div class="pointer"
+                                    @click.prevent="toggleDisplaySubTask(index)"
+                                >
+                                    {{task.description}}
+                                </div>
+
+                                <font-awesome-icon icon="fa-solid fa-minus"
+                                    @click.prevent="removeSubTask(index)" 
+                                    class="button pointer icon"
+                                ></font-awesome-icon>
+                                
                             </div>
 
                             <div :ref="'sub-task'+index" class="hide ml24">
@@ -134,11 +137,11 @@
                                 </div>
                                 
                                 <div class="ml16">
-                                    <input v-model="task.cost" type="text" :id="'sub-task-cost'+uk" placeholder="cost" class="sub-task-extra">
+                                    <input v-model="task.cost" type="number" :id="'sub-task-cost'+uk" placeholder="Cost" class="sub-task-extra">
                                 </div>
 
                                 <div class="ml16">
-                                    <input v-model="task.comments" class="sub-task-extra" type="text" placeholder="comments">
+                                    <input v-model="task.comments" class="sub-task-extra" type="text" placeholder="Comments">
                                 </div>
                             </div>
                         </div>
@@ -173,6 +176,7 @@
 <script>
     import { mapActions, mapGetters } from 'vuex'
     import { tasks, subTasksMaster } from '@/api/index.js'
+    import swal from 'sweetalert'
 
     export default {
         name: 'TasksCreate',
@@ -184,6 +188,8 @@
                 tableHead: 'create task',
                 
                 subTasks: [],
+                removedSubTasksId: [],
+
                 taskMasterId: '',
                 repeat: false,
                 newSubTask: '',
@@ -244,7 +250,7 @@
                 document.getElementById('task-sub-task'+this.uk).focus()
                 this.subTasks.push({
                     description: this.newSubTask,
-                    status: 2,
+                    statusId: 2,
                     assignedTo: '',
                     comments: '',
                     cost: '',
@@ -252,7 +258,10 @@
                 this.newSubTask = ''
             },
             removeSubTask(index) {
-                this.subTasks.splice(index, 1)
+                const rmSubTask = this.subTasks.splice(index, 1)
+                if (rmSubTask[0]?.id) {
+                    this.removedSubTasksId.push(rmSubTask[0]?.id)
+                }
             },
             toggleDisplaySubTask(index) {
                 this.$refs['sub-task'+index][0].classList.value.includes('show') ?
@@ -286,12 +295,32 @@
                         cost: this.taskCost,
                         clientId: this.taskClient,
                         coordinatorId: this.taskCoordinator,
+                        subTasks: JSON.stringify(this.subTasks),
+                        removedSubTasks: JSON.stringify(this.removedSubTasksId)
                     }
-                    tasks.edit(args)
-                        .then(() => this.$state.commit('tasks/RESET_TASKS'))
-                        .then(() => this.$router.push('/u/tasks/list'))
-                        .catch((e) => console.log("error while editing task", e))
-            }
+
+                    swal({
+                        title: "Alert",
+                        text: `Do you really want to edit "${this.taskTitle}"`,
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true
+                    })
+                    .then(value => {
+                        if (value == null) throw null
+                        return tasks.edit(args)
+                    })
+                    .then(() => this.$store.commit('tasks/RESET_TASKS', {isMaster: this.save}))
+                    .catch(err => 
+                        swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
+                    )
+                    .finally(()=>{
+                        this.$emit('editingCompleted', {
+                            editing: 1,
+                            task: this.taskTitle
+                        })
+                    })
+                }
                 else {
                     tasks.create({
                         taskMasterId: this.taskMasterId,
@@ -306,35 +335,38 @@
                     .then(() => {
                         this.$store.commit('tasks/RESET_STATE', {isMaster: this.save})
                         if (this.save) return this.$store.dispatch('tasks/tasksMasterListSet')
+                        return
                     })
-                    .then(()=> {
-                        this.promptMessage({
-                            title: 'Task Created',
-                            msg: 'successfully',
-                            bgcolor: 'green'
-                        })
+                    .then(()=> 
                         this.$router.push('/u/tasks/list')
-                    })
-                    .catch((e) => {
-                        this.promptMessage({
-                            title: 'Error',
-                            msg: 'task cannot be created'+e,
-                            bgcolor: 'red'
-                        })
-                    })
+                    )
+                    .then(() => swal({
+                        title: 'success',
+                        icon: 'success',
+                        text: `Created task "${this.taskTitle}"`,
+                        button: 'ok', 
+                    }))
+                    .catch(err => 
+                        swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)                
+                    )
                 } 
             },
             clear() {
-                this.populateDataProperties({})
-                this.subTasks = [] 
-                this.repeat = false
-                this.newSubTask =  ''
-                this.taskStatus = ''
-                this.taskTasks = ''
-                this.save = false
-                this.taskRepeat = ''
-                this.taskRepeatOn = ''
-                this.taskSubTasks = ''
+                swal({
+                    title: "Do you really want to cancel editing?", 
+                    text: "All changes will be reverted",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true
+                })
+                .then((value) => {
+                    if (value == null) throw null
+                    if (this.editing == true) this.$emit("editingCompleted", {
+                        editing: 0,
+                        task: this.taskTitle
+                    })
+                    else this.$router.push('/u/tasks/list')
+                })
             }
         },
         created() {
@@ -370,6 +402,24 @@
 </script>
 
 <style scoped>
+.add-st {
+    width: 24px;
+    height: inherit;
+    padding: 4px;
+}
+.icon {
+    color: #8888888f;
+    border: solid 1px #e0e0e0;
+}
+.icon:hover {
+    border-color: #c2c2c2;
+}
+.pointer {
+    cursor: pointer;
+}
+option, select {
+    text-transform: capitalize;
+}
 .table-tabs {
     display: flex;
 }
@@ -407,22 +457,12 @@ input, select {
 }
 .grid {
     display: grid;
-    grid-template-columns: 13px 10px 80% 22px;
+    /* grid-template-columns: 13px 10px 80% 22px; */
+    grid-template-columns: 10px 80% 22px;
     grid-template-rows: 2;
     column-gap: 12px;
     align-items: center;
     line-height: 1.5rem;
-}
-.action-button>img {
-    width: 22px;
-    height: 22px;
-    padding: 0 !important;
-    filter: invert(0.5);
-}
-.button.action-button {
-    background-color: white;
-    padding: 0;
-    border: none;
 }
 .grid:hover .dots-img {
     visibility: visible !important;

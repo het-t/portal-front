@@ -16,13 +16,6 @@
             <span v-if="showLabels">roles</span>
           </router-link>
         </div>
-
-        <!-- <div class="link-list">
-          <router-link to="/u/projects/list" class="pt16 pb16 link">
-            <img src="../assets/icons/projects-icon.png" id="projects-icon" class="pa-icon ml24 mr24" alt="">
-            <span v-if="showLabels">projects</span>
-          </router-link>
-        </div> -->
         
         <div class="link-list">
           <router-link to="/u/clients/list" class="pt16 pb16 link">
@@ -76,7 +69,6 @@
           </div>
         </div>
       </div>
-      <!-- <MessageC v-if="getMessageVisiblity"/> -->
 
       <router-view v-if="allow">
       </router-view>
@@ -87,7 +79,6 @@
 <script>
 import LogOut from '@/components/LogOut.vue'
 import { getUserRights } from '../api'
-import { mapGetters } from 'vuex'
 
   export default {
     name: "MainView",
@@ -96,9 +87,6 @@ import { mapGetters } from 'vuex'
         allow: false,
         showLabels: true,
       }
-    },
-    computed: {
-      ...mapGetters(['getMessageVisiblity'])
     },
     components: {
       LogOut,

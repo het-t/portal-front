@@ -14,7 +14,7 @@
                         </router-link>
                     </li>
                     <li>
-                        <font-awesome-icon @click.prevent="deleteUser"
+                        <font-awesome-icon @click.prevent="deleteUser(selectedUserId, selectedUserName)"
                             class="menu-icons" 
                             :icon="['fas', 'trash']"
                         ></font-awesome-icon>
@@ -54,8 +54,8 @@
                         </td>
                         <td>
                             <dots-img
-                                @openMenu="menu($event, {userId: user.id, visibility: true})"
-                                @hideMenu="menu($event, {userId: '', visibility: false})" 
+                                @openMenu="menu($event, {userName: user.firstName + ' ' + user.lastName, userId: user.id, visibility: true})"
+                                @hideMenu="menu($event, {userName: user.firstName + ' ' + user.lastName, userId: user.id, visibility: false})" 
                             ></dots-img>
                         </td>
                     </tr>
@@ -66,6 +66,7 @@
                                 :editUserId="user.id"
                                 displayHead="false"
                                 :uk="index"
+                                @editingCompleted="[editUser('row'+index, user.id), showSwal($event)]"
                                 class="user-create"
                             ></user-create>
                             <skeleton-form v-else 
@@ -83,21 +84,14 @@
             ></table-pagination>
         </table-main>
 
-        <AlertC v-show="displayAlert" 
-            :msg="alertData.msg"
-            :fn="deleteUser"
-            :fnParam="alertData.params"
-            v-on:close-alert="displayAlert = false"
-        />
-
             <!-- <TableFilter :tableData="usersList" @filtered="filteredUsersList = $event" class="mr16 ml16 mt16 actions"/> -->
     </div>
 </template>
 
 <script>
+    import swal from "sweetalert"
     import UserCreate from './UserCreate.vue';
     import {users} from '../api/index.js'
-    import AlertC from './AlertC.vue'
     import TableMain from './TableMain.vue';
     import DotsImg from './DotsImg.vue';
     import DotsMenu from './DotsMenu.vue'
@@ -115,14 +109,11 @@ export default {
     name: "UserList",
     data() {
         return {
-            alertData: {
-                params: [{
-                    userId: ''
-                }],
-                msg: '',
-            },
             usersList: "",
+
             selectedUserId: '',
+            selectedUserName: '',
+
             filteredUsersList: undefined,
             displayAlert: false,
             menuVisibisility: '',
@@ -142,6 +133,16 @@ export default {
                 this.allow[userId] = true
             })
         },
+        showSwal({editing, user}) {
+            if (editing) {
+                swal({
+                    title: "Success",
+                    text: `Edited "${user}"`,
+                    icon: "success",
+                    button: "Ok"
+                })
+            }
+        },
         // usersListToDisplay() {
         //     if (this.filteredUsersList != undefined) {
         //         return this.filteredUsersList
@@ -150,25 +151,41 @@ export default {
         //         return this.usersList
         //     }
         // },
-        deleteUser(params) {
-            users.delete(params)
-            .then((results) => {
-                console.log("deleteUser", results.data)
+        deleteUser(userId, userName) {
+            console.log('deleted user1', userName)
+            swal({
+                title: "Alert",
+                text: `do you really want to delete "${userName}"`,
+                icon: "warning",
+                buttons: true,
+                dangerMode: true
             })
+            .then((value) => {
+                if (value == null) throw null
+                return users.delete({userId})
+            })
+            .then(() => {
+                console.log('deleted user2', userName)
+                swal({
+                    title: "Success",
+                    text: `Deleted "${userName}"`,
+                    icon: 'success',
+                    button: 'ok'
+                })
+            })
+            .catch(err => 
+                swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
+            )
         },
-        alert(msg, userId) {
-            this.displayAlert = true
-            this.alertData.params[0].userId = userId
-            this.alertData.msg = msg
-        },
-        menu(e, {userId, visibility}) {
+        menu(e, {userId, userName, visibility}) {
+            console.log("menu called")
             this.menuVisibisility = visibility
             this.selectedUserId = userId
+            this.selectedUserName = userName
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
         }
     },
     components: { 
-        AlertC, 
         TablePagination, 
         TableActionPlus, 
         TableMain,

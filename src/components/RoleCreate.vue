@@ -30,7 +30,10 @@
 
             <div class="hr"></div>
 
-            <button @click.prevent="proceed(), clear()" class="green button">save</button>
+            <button 
+                @click.prevent="(editRoleId == undefined || editRoleId == '') ? createRole() : editRole()" 
+                class="green button"
+            >save</button>
             <button @click.prevent="clear()" class="neutral ml8 button">cancel</button>
         </form>
     </div>
@@ -38,7 +41,7 @@
 
 <script>
 import { roles } from '@/api'
-import { mapActions } from 'vuex'
+import swal from 'sweetalert'
 
     export default {
         name: 'CreateRole',
@@ -52,43 +55,74 @@ import { mapActions } from 'vuex'
             }
         },
         methods: {
-            ...mapActions(['promptMessage']),
-            proceed() {
-                this.promptMessage({
-                    title: 'Role Created',
-                    msg: 'successfully'
-                })
-                if (this.editRoleId != undefined) {
-                    this.editRole()
-                }
-                else this.createRole()
-            },
             createRole() {
                 roles.create({roleName: this.roleName, roleRights: this.roleRights})
                 .then((res) => {
                     if (res.data.roleCreated == 'success') {
-                        this.$store.dispatch('roles/rolesAll', {force: true})
-                        .then(() => {
+                        this.$store.dispatch("roles/rolesAll", {force: true})
+                        .then(() => swal({
+                            title: "",
+                            text: "new role created",
+                            icon: 'success',
+                            button: 'ok'
+                        }))
+                        .then(() => 
                             this.$store.commit('roles/RESET_STATE')
-                        })
-                        .then(() => {
+                        )
+                        .then(() => 
                             this.$router.push('/u/roles/list')
+                        )
+                        .catch((err) => {
+                            swal("oops!", `we can't perform this action right now please try again\n\n details: ${err}`)
                         })
                     }
                 })
             },
             editRole() {
-                roles.edit({roleId: this.editRoleId, roleName: this.roleName, roleRights: this.roleRights})
-                .then(() => {
+                swal({
+                    title: "Alert", 
+                    text: `Do you really want to edit "${this.roleName}" role`,
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true
+                })
+                .then((value) =>{ 
+                    if (value == null) throw null
+                    return roles.edit({
+                        roleId: this.editRoleId,
+                        roleName: this.roleName, 
+                        roleRights: this.roleRights
+                    })
+                })
+                .then(() => 
                     this.$store.commit('roles/RESET_STATE')
-                })
-                .then(() => {
+                )
+                .catch((err) => 
+                    swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
+                )
+                .finally(() => {
                     this.$router.push('/u/roles/list')
-                })
+                }) 
+                .then(() => swal({
+                    title: "Success",
+                    text: `Edited "${this.roleName}"`,
+                    icon: "success",
+                    button: "Ok"
+                }))
             },
             clear() {
-                this.roleName = ''
-                this.roleRights = []
+                swal({
+                    title: "Do you really want to cancel editing?", 
+                    text: "All changes will be reverted",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true
+                })
+                .then((value) => {
+                    if (value == null) throw null
+                    this.$router.push('/u/roles/list')
+                })
+                
             }
         },
         created() {           

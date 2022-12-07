@@ -83,8 +83,8 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
 import {clients} from '@/api/index.js'
+import swal from 'sweetalert'
 
 export default {
     name: 'ClientCreate',
@@ -112,7 +112,6 @@ export default {
         }
     },
     methods: {
-        ...mapActions(['promptMessage']),
         openTab(e, newTab) {
                 var tabs = e.target.parentElement.getElementsByClassName('tab')
                 let curTab = [...tabs].find(tab => tab?.classList?.contains('tab-open') == true)
@@ -124,16 +123,18 @@ export default {
                 this.$refs[newTab+this.uk]?.classList?.remove('hide')
             },
         clear() {
-            this.clientName = ''
-            this.clientTypeId = ''
-            this.cin = ''
-            this.firmAddress = ''
-            this.firmName = ''
-            this.caEmail = ''
-            this.caPan = ''
-            this.conName = ''
-            this.conEmail = ''
-            this.conPhone = ''
+            swal({
+                title: "Do you really want to cancel editing?", 
+                text: "All changes will be reverted",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true
+            })
+            .then((value) => {
+                if (value == null) throw null
+                if (this.editing == true) this.$emit('editingCompleted')
+                else this.$router.push('/u/clients/list')
+            })
         },
         proceed() {
             const args = {
@@ -149,41 +150,64 @@ export default {
                 conEmail: this.conEmail,
                 conPhone: this.conPhone
             }
-            if (args.clientId == undefined || args.clientId == '') {
-                clients.create(args)
+
+            if (args.clientId != undefined && args.clientId != '') {
+                swal({
+                    title: "Alert",
+                    text: `Do you really want to edit "${args.clientName}" (${args.firmName})`,
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true
+                })
+                .then((value) => {
+                    if (value == null) throw null
+                    return clients.edit(args)
+                })
                 .then((response) => {
-                    if (response.data.clientCreated == 'fail') throw new Error();
-                    this.$router.push('/u/clients/list')        
-                    this.promptMessage({
-                        title: 'Client Created',
-                        msg: 'successfully',
-                        bgcolor: 'green'
-                    })
+                    if (response.data.clientCreated == 'fail') throw 'fail';
                 })
                 .then(() => {
                     this.$store.commit('clients/RESET_STATE')
                 })
-                .catch(() => {
-                    this.promptMessage({
-                        title: 'Error',
-                        msg: 'client cannot be created',
-                        bgcolor: 'red'
-                    })
+                .catch((err) => 
+                    swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
+                )
+                .finally(()=>{
+                    this.$emit('editingCompleted')
                 })
+                .then(() => swal({
+                    title: "Success",
+                    text: `Edited "${args.clientName}" (${args.firmName})`,
+                    icon: "success",
+                    button: "Ok"
+                }))
             }
             else {
-                clients.edit(args)
-                .then((response) => {
-                    if (response.data.clientEdited == 'fail') throw new Error()
-                    else { 
-                        this.$store.commit('clients/RESET_STATE')
-                        console.log("commiting")
-                    }
+                swal({
+                    title: "Alert",
+                    text: `Do you really want to create "${args.clientName}" (${args.firmName})`,
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true
+                })
+                .then((value) => {
+                    if (value == null) throw null
+                    console.log(value)
+                    return clients.create(args) 
                 })
                 .then(() => {
-                    console.log("routing")
-                    this.$router.push('/u/clients/')        
+                    this.$store.commit('clients/RESET_STATE')
                 })
+                .catch(err => 
+                    swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
+                )
+                .finally(() => this.$router.push('/u/clients/list'))
+                .then(() => swal({
+                    title: "Success",
+                    text: `Created "${args.clientName}" (${args.firmName})`,
+                    icon: "success",
+                    button: "Ok"
+                }))
             }
         }
     },

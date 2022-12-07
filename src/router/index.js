@@ -103,19 +103,6 @@ const routes = [{
         props: true
       }]
     },{
-      path: 'projects',
-      component: () => import('../views/ProjectsView.vue'),
-      children: [{
-        path: 'list',
-        alias: '',
-        name: 'projects_list',
-        component: () => import('../components/ProjectsList.vue')
-      }, {
-        path: 'create',
-        name: 'create_project',
-        component: () => import('../components/ProjectsCreate.vue')
-      }]
-    }, {
       path: 'clients',
       name: 'clients_list',
       component: () => import('../views/ClientView.vue'),
@@ -141,14 +128,7 @@ const routes = [{
         path: 'create-task',
         name: 'create_task',
         component: () => import('../components/TasksCreate.vue')
-      }
-      //, {
-      //   path: 'edit-task',
-      //   name: 'edit_task',
-      //   component: () => import('../components/TasksCreate.vue'),
-      //   props: true,        
-      // }
-      ]
+      }]
     }, {
       path: 'my-tasks',
       name: 'my_tasks',

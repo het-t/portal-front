@@ -23,7 +23,9 @@ import { faListCheck,
         faUser, 
         faCirclePlus,
         faTrash,
-        faPencil
+        faPencil,
+        faPlus,
+        faMinus
     } from '@fortawesome/free-solid-svg-icons'
 
 
@@ -40,7 +42,9 @@ library.add(
     faUser, 
     faCirclePlus,
     faTrash,
-    faPencil
+    faPencil,
+    faPlus,
+    faMinus
 )
 
 let app = createApp(App)

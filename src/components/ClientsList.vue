@@ -4,7 +4,7 @@
             <dots-menu v-if="menuVisibisility == true">
                 <template #links>
                     <li>
-                        <font-awesome-icon @click.prevent="deleteClient"
+                        <font-awesome-icon @click.prevent="deleteClient(selectedClientId, selectedClient)"
                             class="menu-icons" 
                             :icon="['fas', 'trash']"
                         ></font-awesome-icon>
@@ -78,8 +78,8 @@
                         </td>
                         <div class="dots p12">
                             <dots-img 
-                                @openMenu="menu($event, {clientId: client.id, visibility: true})" 
-                                @hideMenu="menu($event, {clientId: '', visibility: false})" 
+                                @openMenu="menu($event, {client: client.name + ' (' + client.type + ')', clientId: client.id, visibility: true})" 
+                                @hideMenu="menu($event, {client: client.name + ' (' + client.type + ')', clientId: client.id, visibility: false})" 
                             />
                         </div>
                     </tr>
@@ -89,16 +89,15 @@
                             :uk="index"
                             :clientData="JSON.stringify(client)" 
                             displayHead="false"
+                            @editingCompleted="editClient('row'+index)"
                         ></client-create>
                     </tr>
                 </div>
             </template>
 
-            <!-- <template #pagination> -->
-                <table-pagination @tableData="clientList = $event"
-                    tableName="clients"
-                />
-            <!-- </template> -->
+            <table-pagination @tableData="clientList = $event"
+                tableName="clients"
+            />
         </table-main>
    </div>
 </template>
@@ -112,7 +111,8 @@
     import DotsImg from './DotsImg.vue'
     import TablePagination from './TablePagination.vue'
     import DotsMenu from './DotsMenu.vue'
-import { clients } from '../api'
+    import { clients } from '../api'
+    import swal from 'sweetalert'
 
     export default {
         components: { TableActionPlus, ClientCreate, TableMain, DotsImg, TablePagination, DotsMenu },
@@ -120,7 +120,10 @@ import { clients } from '../api'
         data() {
             return {
                 clientList: '',
+
                 selectedClientId: '',
+                selectedClient: '',
+
                 menuVisibisility: '',
             }
         },
@@ -130,14 +133,35 @@ import { clients } from '../api'
                 if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
                 else this.$refs[rowIndex][0].classList.add('hide')
             },
-            menu(e, {clientId, visibility}) {
+            menu(e, {client, clientId, visibility}) {
                 this.menuVisibisility = visibility
                 this.selectedClientId = clientId
+                this.selectedClient = client
                 if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
             },
-            deleteClient() {
-                clients.delete({clientId: this.selectedClientId})
-                .then((res) => console.log("client delete res", res.data))
+            deleteClient(clientId, client) {
+                swal({
+                    title: "Alert",
+                    text: `do you really want to delete "${client}"`,
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true
+                })
+                .then((value) => {
+                    if (value == null) throw null 
+                    return clients.delete({clientId})
+                })
+                .then(() => {
+                    swal({
+                        title: "Success",
+                        text: `Deleted "${client}"`,
+                        icon: 'success',
+                        button: 'ok'
+                    })
+                })
+                .catch(err => 
+                    swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
+                )
             }
         }
     }
