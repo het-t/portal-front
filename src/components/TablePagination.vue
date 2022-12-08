@@ -3,10 +3,10 @@
         <div class="recordsPerPage">
             <label for="recordsPerPage">entries</label>
             <select @change="getPageData()" id="recordsPerPage" v-model="recordsPerPage" class="ml8"> 
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
+                <option :value=10>10</option>
+                <option :value=20>20</option>
+                <option :value=50>50</option>
+                <option :value="100">100</option>
             </select>
         </div>
         <ul>
@@ -34,6 +34,11 @@
                 currentPage: 1,
                 recordsPerPage: 10,
                 pageCount: ''
+            }
+        },
+        watch: {
+            recordsPerPage() {
+                console.log(this.recordsPerPage)
             }
         },
         computed: {
@@ -67,7 +72,7 @@
                 
                 let pageDataStore = this.$store.getters[`${this.tableName}/${this.tableName}ListGet`]?.(this.currentPage)
 
-                if ((pageDataStore == undefined) || (pageDataStore?.length == 0)) {
+                if ((pageDataStore == undefined) || (pageDataStore?.length == 0) || (pageDataStore?.length != this.recordsPerPage)) {
 
                     axios.get(`/u/api/${this.tableName}`, {
                         params: {
