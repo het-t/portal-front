@@ -88,7 +88,7 @@
         name: "UserActivity",
         data() {
             return {
-                activityData: '',
+                activityData: [],
                 filterFields: [
                     {name: 'id', relation: 'exact', type: 'number'},
                     {name: 'datestamp', relation: 'inequality', type: 'date'},
@@ -112,6 +112,7 @@
         },
         methods: {
             tablePagination(event) {
+                console.log("in user activity", event)
                 this.activityData = event
                 this.filteredActivities = undefined
                 this.clear = true

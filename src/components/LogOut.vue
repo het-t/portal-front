@@ -1,5 +1,5 @@
 <template>
-    <button @click.prevent="logout()" class="mt8 mb8 neutral">
+    <button @click.prevent="logout()" tabindex="-1" class="mt8 mb8 neutral">
       <font-awesome-icon :icon="['fas', 'power-off']" class="top-nav-icons"></font-awesome-icon>
     </button>
 </template>

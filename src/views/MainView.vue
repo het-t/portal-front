@@ -52,14 +52,14 @@
     <div id="pb" class="mb16">
       <div id="top-nav" class="mb16 pr24 pl24">
         <div class="header mt8 mb8">
-          <button @click="menuToggle()" class="neutral">
+          <button @click="menuToggle()" tabindex="-1" class="neutral">
             <font-awesome-icon :icon="['fas', 'bars']" class="top-nav-icons"></font-awesome-icon>
           </button>
         </div>
 
         <div class="top-nav-right">
           <div class="header mt8 mb8">
-            <button class="neutral mr16">
+            <button class="neutral mr16" tabindex="-1">
               <font-awesome-icon :icon="['fas', 'user']" class="top-nav-icons"></font-awesome-icon>
             </button>
           </div>

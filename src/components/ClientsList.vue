@@ -41,7 +41,11 @@
 
             <template #tbody>
                 <div v-for="(client, index) in clientList" :key="index">
-                    <tr class="tr hidden-tr-parent" @click.stop="editClient('row'+index)">
+                    <tr class="tr hidden-tr-parent" 
+                        tabindex="0" 
+                        @click.stop="editClient('row'+index)"
+                        @keyup.enter="editClient('row'+index)"
+                    >
                         <td class="flex">
                             {{client.name}}
                         </td>

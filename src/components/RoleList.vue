@@ -38,13 +38,9 @@
                         <th>name</th>
                         <th>rights</th>
                         <th></th>
-                        <!-- <th>actions</th> -->
                     </tr>
 
                     <tr class="tr" v-for="role in roleListToDisplay()" :key="role.id">                        
-                        <!-- <td>
-                            {{role?.id}}
-                        </td> -->
                         <td>
                             {{role?.name}}
                         </td>

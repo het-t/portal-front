@@ -44,6 +44,8 @@
                 <template v-for="(user, index) in usersList" :key="user?.id">
                     <tr 
                         class="tr edit-user-tr"
+                        tabindex="0"
+                        @keyup.enter="editUser('row'+index, user.id)"
                         @click.prevent="editUser('row'+index, user.id)"    
                     >
                         <td>

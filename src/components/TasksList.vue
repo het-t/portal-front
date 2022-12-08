@@ -38,6 +38,8 @@
                 <div v-for="(task, index) of tasksList" :key="task.id">
                     <tr
                         class="tr edit-task-tr" 
+                        tabindex="0"
+                        @keyup.enter="editTask('row'+index, task.id)"
                         @click.prevent="editTask('row'+index, task.id)"
                     >
                         <td>
@@ -86,6 +88,7 @@
 
 <script>
 import swal from 'sweetalert'
+import useDeleteSwal from '@/helpers/swalDelete';
 import TasksCreate from './TasksCreate.vue';
 import TasksProgress from './TasksProgress.vue';
 import TableMain from './TableMain.vue';
@@ -115,29 +118,13 @@ export default {
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
         },
         deleteTask(taskId, task) {
-            swal({
-                title: "Alert",
-                text: `do you really want to delete "${task}"`,
-                icon: "warning",
-                buttons: true,
-                dangerMode: true                
+            useDeleteSwal({
+                text: task,
+                promise: () => tasks.delete({taskId}),
+                context: this,
+                mutationFn: 'tasks/RESET_STATE',
+                mutationArgs: {isMaster: true}
             })
-            .then((value) => {
-                if (value == null) throw null
-                return tasks.delete({taskId})  
-            })
-            .then((res) => {
-                if (res.data.taskDeleted == true)
-                return swal({
-                    title: "Success",
-                    text: `Deleted "${task}"`,
-                    icon: 'success',
-                    button: 'ok'
-                })
-            })
-            .catch(err => 
-                swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
-            )
         },
         showSwal({editing, task}) {
             if (editing) {

@@ -28,6 +28,6 @@
 
 <script>
     export default {
-        name: 'TableMain'
+        name: 'TableMain',
     }
 </script>
