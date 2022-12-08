@@ -94,7 +94,7 @@
                             <label :for="'task-sub-task'+uk" class="labels c1">sub task</label>
                             <div style="width:80%; display:flex">
                                 <input v-model="newSubTask" style="width: 100%" type="text" :id="'task-sub-task'+uk">
-                                    <font-awesome-icon class="icon pointer add-st" @click.prevent="addSubTask()" icon="fa-solid fa-plus"></font-awesome-icon>
+                                    <font-awesome-icon tabindex="0" class="icon pointer add-st" @keyup.enter="addSubTask()" @click.prevent="addSubTask()" icon="fa-solid fa-plus"></font-awesome-icon>
                             </div>
                         </div>
                     </div>
@@ -112,6 +112,7 @@
                                 </div>
 
                                 <font-awesome-icon icon="fa-solid fa-minus"
+                                    @keyup.enter="removeSubTask(index)"
                                     @click.prevent="removeSubTask(index)" 
                                     class="button pointer icon"
                                 ></font-awesome-icon>
@@ -230,7 +231,7 @@ import useCreateSwal from '@/helpers/swalCreate'
                 const selectedTaskMaster = this['tasks/tasksMasterListGet'].find((o) => o.id == this.taskMasterId)
                 subTasksMaster.get({taskMasterId: this.taskMasterId})
                 .then((results) => {
-                    this.subTasks = results.data.subTasksMasterList
+                    this.subTasks = (results.data.subTasksMasterList)
                     this.taskCost = selectedTaskMaster.cost
                 })
             },
@@ -249,7 +250,6 @@ import useCreateSwal from '@/helpers/swalCreate'
             },
             addSubTask() {
                 console.log("subtasks", this.subTasks)
-                document.getElementById('task-sub-task'+this.uk).focus()
                 this.subTasks.push({
                     description: this.newSubTask,
                     statusId: 2,
@@ -257,6 +257,7 @@ import useCreateSwal from '@/helpers/swalCreate'
                     comments: '',
                     cost: '',
                 })
+                document.getElementById('task-sub-task'+this.uk).focus()
                 this.newSubTask = ''
             },
             removeSubTask(index) {
