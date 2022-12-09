@@ -24,13 +24,6 @@
         </div>
 
         <table-main>
-            <template #table-heading>
-                Users
-            </template>
-
-            <template #table-action>
-                <table-action-plus url="/u/users/create-user"></table-action-plus>
-            </template>
 
             <template #thead>
                 <tr>
@@ -66,13 +59,11 @@
                             <user-create 
                                 v-if="(allow[user.id] == true)"
                                 :editUserId="user.id"
-                                displayHead="false"
                                 :uk="index"
                                 @editingCompleted="[editUser('row'+index, user.id), showSwal($event)]"
                                 class="user-create"
                             ></user-create>
                             <skeleton-form v-else 
-                                displayHead="false"
                                 :buttonsIndex=2    
                             ></skeleton-form>
                         </td>
@@ -98,7 +89,6 @@
     import DotsImg from './DotsImg.vue';
     import DotsMenu from './DotsMenu.vue'
     // import TableFilter from './TableFilter.vue';
-    import TableActionPlus from './TableActionPlus.vue'
     import SkeletonForm from '../skeletons/SkeletonForm.vue';
 
     import { defineAsyncComponent } from '@vue/runtime-core';
@@ -189,7 +179,6 @@ export default {
     },
     components: { 
         TablePagination, 
-        TableActionPlus, 
         TableMain,
         DotsImg, 
         DotsMenu, 

@@ -455,6 +455,9 @@ input:focus, select:focus, textarea:focus {
 .pl24 {
     padding-left: 24px
 }
+.pt24 {
+    padding-top: 24px;
+}
 
 .pl0 {
     padding-left: 0;

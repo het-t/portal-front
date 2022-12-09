@@ -1,9 +1,6 @@
 <template>
     <div>
         <div class="card">
-            <div class="card-head m0 pb16 pt16 pr16 pl16">
-                <h5 class="table-head m0">activity</h5>
-            </div>
 
         <FullFilter :tableData="activityData" :dataFields="filterFields"  @filtered="filteredActivities = $event" :clear="clear" class="mr16 ml16 mt16 actions"/>
 

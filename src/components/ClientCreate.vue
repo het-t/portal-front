@@ -1,9 +1,6 @@
 <template>
         <div class="card">
-            <div v-if="displayHead != 'false'" class="card-head m0 pb16 pt16 pr16 pl16">
-                <h5 class="table-head m0">create client</h5>
-            </div>
-
+            
             <div class="table-tabs">
                 <button @click="openTab($event, 'client')" :ref='"defaultTab"+uk' class="button neutral tab">client detail</button>
                 <button @click="openTab($event, 'ca')" class="button neutral tab">ca details</button>
@@ -90,7 +87,7 @@ import swal from 'sweetalert'
 
 export default {
     name: 'ClientCreate',
-    props: ['displayHead', 'clientData', 'uk'],
+    props: ['clientData', 'uk'],
     data() {
         return {
             cin: '',
@@ -190,7 +187,7 @@ export default {
 
         if (this.editing != false) {
             const {id, typeId, name, cin, caFirmName, caAddress, caPan, caEmail, conName, conEmail, conPhone} = JSON.parse(this.clientData)
-            console.log("client edit", this.editing, id)
+
             this.editClientId = id
             this.clientName = name
             this.cin = cin

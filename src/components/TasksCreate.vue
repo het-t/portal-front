@@ -2,10 +2,6 @@
     <div>
         <div class="card">
 
-            <div class="card-head m0 pb16 pt16 pr16 pl16" v-if="displayHead != 'false'">
-                <h5 class="table-head m0">{{tableHead}}</h5>
-            </div>
-
             <div class="table-tabs">
                 <button @click="openTab($event, 'details')" :ref='"defaultTab"+uk' class="button neutral tab">details</button>
                 <button @click="openTab($event, 'logs')" class="button neutral tab">logs</button>
@@ -178,17 +174,16 @@
     import { mapActions, mapGetters } from 'vuex'
     import { tasks, subTasksMaster } from '@/api/index.js'
     import swal from 'sweetalert'
-import useEditSwal from '../helpers/swalEdit'
-import useCreateSwal from '@/helpers/swalCreate'
+    import useEditSwal from '../helpers/swalEdit'
+    import useCreateSwal from '@/helpers/swalCreate'
 
     export default {
         name: 'TasksCreate',
-        props: ['editTaskId', 'displayHead', 'uk'],
+        props: ['editTaskId', 'uk'],
         data() {
             return {
                 editing: false,
                 subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "pending with signed documents"}, {id: 9, status: "pending with DSC"}],
-                tableHead: 'create task',
                 
                 subTasks: [],
                 removedSubTasksId: [],
@@ -355,12 +350,10 @@ import useCreateSwal from '@/helpers/swalCreate'
 
             if (window.history.state.taskId != undefined){ 
                 this.editing = true  
-                this.tableHead = 'edit task'         
                 this.getTaskStatus(this.subTasks)
             }
             else if (this.editTaskId != undefined) {
                 this.editing = true
-                this.tableHead = 'edit task'         
                 this.getTaskStatus(this.subTasks)
             }
         },

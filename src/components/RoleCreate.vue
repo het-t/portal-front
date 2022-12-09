@@ -1,8 +1,5 @@
 <template>
     <div class="card">
-        <div class="card-head m0 pb16 pt16 pr16 pl16">
-            <h5 class="table-head m0">{{formHead}}</h5>
-        </div>
         <form class="mr16 ml16 mt16 mb16 pr12 pl12">
             <div class="row mt8">
                 <label for="role-name" class="labels c1">name</label>
@@ -53,7 +50,6 @@ import useEditSwal from '../helpers/swalEdit'
                 roleName: '',
                 roleRights: [],
                 rightsList: [],
-                formHead: 'create role',
             }
         },
         methods: {
@@ -105,7 +101,6 @@ import useEditSwal from '../helpers/swalEdit'
             const roleDataStore = this.$store.getters['roles/rolesDataGet'](this.editRoleId)
             
             if (this.editRoleId != undefined) {
-                this.formHead = 'edit role'
                 this.$store.dispatch('roles/rolesDataSet', {roleId: this.editRoleId})
             }
             

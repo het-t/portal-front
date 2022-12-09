@@ -19,10 +19,6 @@
         </div>
 
         <div class="card">
-            <div class="card-head m0 pb16 pt16 pr16 pl16">
-                <h5 class="table-head m0">roles</h5>
-                <table-action-plus url="/u/roles/create-role"/>
-            </div>
 
             <TableFilter :tableData="rolesList" @filtered="filteredRolesList = $event" class="mr16 ml16 mt16 actions"/>
 
@@ -68,13 +64,12 @@
 <script>
 // import swal from 'sweetalert'
 import {roles} from '@/api/index.js'
-import TablePagination from './TablePagination.vue'
 // import TableSort from './TableSort.vue'
 import TableFilter from './TableFilter.vue'
-import TableActionPlus from './TableActionPlus.vue'
 import DotsMenu from './DotsMenu.vue'
 import DotsImg from './DotsImg.vue'
 import swal from 'sweetalert'
+import TablePagination from './TablePagination.vue'
 
     export default {
     name: "EditRoleList",
@@ -141,7 +136,7 @@ import swal from 'sweetalert'
             this.roleName = "";
         }
     },
-    components: { TablePagination, TableFilter, TableActionPlus, DotsMenu, DotsImg }
+    components: { TablePagination, TableFilter, DotsMenu, DotsImg }
 }
 </script>
 

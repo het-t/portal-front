@@ -1,10 +1,5 @@
 <template>
     <div class="card">
-        <div v-if="(displayHead != 'false')"
-            class="card-head m0 pb16 pt16 pr16 pl16"
-        >
-            <h5 class="table-head m0">{{formHead}}</h5>
-        </div>
 
         <div class="table-tabs">
             <button @click="openTab($event, 'general')" :ref="('defaultTab'+uk)" class="button nutral tab">general</button>
@@ -80,7 +75,7 @@ import useEditSwal from '../helpers/swalEdit'
 
     export default {
         name: 'CreateUser',
-        props: ['editUserId', 'displayHead', 'uk'],
+        props: ['editUserId', 'uk'],
         data() {
             return {
                 userFirstName: '',
@@ -92,16 +87,9 @@ import useEditSwal from '../helpers/swalEdit'
                 userPassword: '',
                 dbRoles: [],
                 userId: '',
-                formHead: 'create user',
-            }
-        },
-        created() {
-            if (this.editUserId != undefined) {
-                this.formHead = 'edit user'
             }
         },
         mounted() {
-            console.log("editUserId", this.editUserId)
 
             const rolesList = this.$store.getters['roles/allRoles']
 

@@ -1,15 +1,29 @@
 <template>
     <div id="breadcrumb" class="pr24 pl24 pt16 pb16">
-        <h2 class="m0">{{$route?.meta?.breadcrumb?.title}}</h2>
+        <div class="flex">
+            <h2 class="m0">{{$route?.meta?.breadcrumb?.title}}</h2>
+            <font-awesome-icon v-if="$route?.meta?.breadcrumb?.action"
+                @keyup.enter="routeChange($route?.meta?.breadcrumb?.actionUrl)"
+                @click.prevent="routeChange($route?.meta?.breadcrumb?.actionUrl)"
+                tabindex="1" 
+                class="icon ml16" 
+                icon="fa-solid fa-plus"
+            ></font-awesome-icon>
+        </div>
         
-        <div class="route-path mt16">
-            <p class="route-name m0" 
-                v-for="(route, index) of $route?.meta?.breadcrumb?.path" :key="index"
-                @click.prevent="routeChange(route?.route)"
+        <div class="flex mt16">
+            <div v-for="(route, index) of $route?.meta?.breadcrumb?.path" :key="index"
+                class="flex"
             >
-                {{route?.text}}
-            <span class="mr8 ml8">/</span>
-            </p>
+                <p class="route-name m0" 
+                    tabindex="0"
+                    @click.prevent="routeChange(route?.route)"
+                >
+                    {{route?.text}}
+                </p>
+
+                <span class="mr8 ml8">/</span>
+            </div>
         </div>
     </div>
 </template>
@@ -23,7 +37,7 @@ export default {
             if (args != undefined) this.$router.push(path)
             else this.$router.push(path)
         }
-    }
+    },
 }
 </script>
 
@@ -37,13 +51,25 @@ export default {
     text-transform: capitalize;
     color: inherit;
 }
-.route-path {
+.flex {
     display: flex;
+    align-items: center;
 }
 .route-name {
     cursor: pointer;
 }
 h2 {
     font-weight: 300;
+}
+.icon {
+    width: 16px;
+    height: 16px;
+    border: solid 1px #c2c2c2;
+    border-radius: 100%;
+    padding: 4px;
+    cursor: pointer;
+}
+p {
+    padding: 3px 3px 3px 0;
 }
 </style>

@@ -75,7 +75,7 @@ const routes = [{
                 route: '/u/users/list'
               }, {
                 text: 'create',
-                route: '/u/users/create'
+                route: '/u/users/create-user'
               }]
             }
           },
@@ -87,6 +87,8 @@ const routes = [{
           meta: {
             breadcrumb: {
               title: 'users',
+              action: true,
+              actionUrl: '/u/users/create-user',
               path: [{
                 text: 'list',
                 route: '/u/users/list'
@@ -106,15 +108,6 @@ const routes = [{
       path: 'roles',
       name: 'roles',
       component: () => import('../views/RoleView.vue'),
-      meta: {
-        breadcrumb: {
-          title: 'roles',
-          path: [{
-            text: 'list',
-            route: '/u/roles/list'
-          }]
-        }
-      },
       children: [{
         path: 'create-role',
         name: 'create_role',
@@ -138,11 +131,15 @@ const routes = [{
         name: 'roles_list',
         component: RolesList,
         meta: {
-          title: 'roles',
-          breadcrumb: [{
-            text: 'list',
-            route: '/u/roles/list'
-          }]
+          breadcrumb: {
+            title: 'roles',
+            action: true,
+            actionUrl: '/u/roles/create-role',
+            path: [{
+              text: 'list',
+              route: '/u/roles/list'
+            }]
+          }
         }
       }, {
         path: 'edit/:editRoleId',
@@ -175,6 +172,8 @@ const routes = [{
         meta: {
           breadcrumb: {
             title: 'clients',
+            action: true,
+            actionUrl: '/u/clients/create-client',
             path: [{
               text: 'list',
               route: '/u/clients/list'  
@@ -208,6 +207,8 @@ const routes = [{
         meta: {
           breadcrumb: {
             title: 'tasks',
+            action: true,
+            actionUrl: '/u/tasks/create-task',
             path: [{
               text: 'list',
               route: '/u/tasks/list'
@@ -245,7 +246,7 @@ const routes = [{
             title: 'my tasks',
             path: [{
               text: 'list',
-              route: '/u/my-task/list'
+              route: '/u/my-tasks/list'
             }]
           }
         }
@@ -258,7 +259,7 @@ const routes = [{
         breadcrumb: {
           title: 'activity',
           path: [{
-            text: 'activity',
+            text: 'list',
             route: '/u/activity/'
           }]
         },

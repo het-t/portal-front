@@ -1,13 +1,5 @@
 <template>
     <table-main class="pb16">
-        <template #table-heading>
-            <p class="table-head skeleton m0"></p>
-        </template>
-
-        <template #table-action>
-            <p class="table-action skeleton m0"></p>
-        </template>
-
         <template #thead>
             <tr class="mr16 mt16 ml16">
                 <th class="skeleton"></th>
@@ -52,13 +44,13 @@ tr {
 
 @keyframes pulse-bg {
   0% {
-    background-color: #ddd;
+    background-color: #ccc;
   }
   50% {
-    background-color: #d0d0d0;
+    background-color: #c2c2c2;
   }
   100% {
-    background-color: #ddd;
+    background-color: #ccc;
   }
 }
 </style>

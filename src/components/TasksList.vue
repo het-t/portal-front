@@ -15,13 +15,6 @@
         </div>
         
         <table-main>
-            <template #table-heading>
-                Tasks
-            </template>
-
-            <template #table-action>
-                <table-action-plus url="/u/tasks/create-task"></table-action-plus>
-            </template>
 
             <template #thead>
                 <tr class="table-heading">
@@ -92,7 +85,7 @@ import useDeleteSwal from '@/helpers/swalDelete';
 import TasksCreate from './TasksCreate.vue';
 import TasksProgress from './TasksProgress.vue';
 import TableMain from './TableMain.vue';
-import TableActionPlus from './TableActionPlus.vue';
+// import TableActionPlus from './TableActionPlus.vue';
 import DotsImg from './DotsImg.vue';
 import DotsMenu from './DotsMenu.vue'
 import TablePagination from './TablePagination.vue';
@@ -153,7 +146,7 @@ export default {
             })
         }
     },
-    components: { DotsMenu, TasksProgress, TasksCreate, TableMain, TableActionPlus, DotsImg, TablePagination, SkeletonForm }
+    components: { DotsMenu, TasksProgress, TasksCreate, TableMain, DotsImg, TablePagination, SkeletonForm }
 }
 </script>
 

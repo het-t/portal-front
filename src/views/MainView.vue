@@ -72,7 +72,7 @@
 
       <the-breadcrumb></the-breadcrumb>
 
-      <router-view v-if="allow">
+      <router-view v-if="allow" class="pt24">
       </router-view>
     </div>
   </div>

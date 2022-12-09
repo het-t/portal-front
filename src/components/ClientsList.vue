@@ -14,13 +14,6 @@
         </div>
 
         <table-main>
-            <template #table-heading>
-                clients
-            </template>
-
-            <template #table-action>
-                <table-action-plus url="/u/clients/create-client" />
-            </template>
 
             <template #thead>
                 <tr class="table-heading">
@@ -92,7 +85,6 @@
                         <client-create 
                             :uk="index"
                             :clientData="JSON.stringify(client)" 
-                            displayHead="false"
                             @editingCompleted="editClient('row'+index)"
                         ></client-create>
                     </tr>
@@ -109,7 +101,6 @@
 <script>
     // import TableFilter from './TableFilter.vue'
     // import TableSort from './TableSort.vue';
-    import TableActionPlus from './TableActionPlus.vue'
     import ClientCreate from './ClientCreate.vue'
     import TableMain from './TableMain.vue'
     import DotsImg from './DotsImg.vue'
@@ -119,7 +110,7 @@
     import swal from 'sweetalert'
 
     export default {
-        components: { TableActionPlus, ClientCreate, TableMain, DotsImg, TablePagination, DotsMenu },
+        components: { ClientCreate, TableMain, DotsImg, TablePagination, DotsMenu },
         name: 'ClientList',
         data() {
             return {

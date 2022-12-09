@@ -1,9 +1,6 @@
 <template>
     <div>
         <table-main>
-            <template #table-heading>
-                My Tasks
-            </template>
 
             <template #thead>
                 <tr class="table-heading">
@@ -32,12 +29,11 @@
                 </tr>  
             </template>
 
-            <!-- <template #pagination> -->
                 <table-pagination
                     @tableData="myTasksList = $event"
                     tableName="myTasks"
                 ></table-pagination>
-            <!-- </template> -->
+
         </table-main>
     </div>
 </template>
