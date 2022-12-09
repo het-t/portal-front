@@ -36,11 +36,6 @@
                 pageCount: ''
             }
         },
-        watch: {
-            recordsPerPage() {
-                console.log(this.recordsPerPage)
-            }
-        },
         computed: {
             totalRecords() {
                 return this.$store.getters[`${this.tableName}/${this.tableName}CountGet`]
@@ -72,7 +67,7 @@
                 
                 let pageDataStore = this.$store.getters[`${this.tableName}/${this.tableName}ListGet`]?.(this.currentPage)
 
-                if ((pageDataStore == undefined) || (pageDataStore?.length == 0) || (pageDataStore?.length != this.recordsPerPage)) {
+                if ((pageDataStore == undefined) || (pageDataStore?.length == 0) || (pageDataStore?.length < this.recordsPerPage && pageDataStore?.length > 10)) {
 
                     axios.get(`/u/api/${this.tableName}`, {
                         params: {

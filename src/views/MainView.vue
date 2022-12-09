@@ -52,14 +52,14 @@
     <div id="pb" class="mb16">
       <div id="top-nav" class="mb16 pr24 pl24">
         <div class="header mt8 mb8">
-          <button @click="menuToggle()" tabindex="-1" class="neutral">
+          <button @click="menuToggle()" tabindex="-1" class="neutral p0">
             <font-awesome-icon :icon="['fas', 'bars']" class="top-nav-icons"></font-awesome-icon>
           </button>
         </div>
 
         <div class="top-nav-right">
           <div class="header mt8 mb8">
-            <button class="neutral mr16" tabindex="-1">
+            <button class="mr16" tabindex="-1">
               <font-awesome-icon :icon="['fas', 'user']" class="top-nav-icons"></font-awesome-icon>
             </button>
           </div>
@@ -70,6 +70,8 @@
         </div>
       </div>
 
+      <the-breadcrumb></the-breadcrumb>
+
       <router-view v-if="allow">
       </router-view>
     </div>
@@ -79,6 +81,7 @@
 <script>
 import LogOut from '@/components/LogOut.vue'
 import { getUserRights } from '../api'
+import TheBreadcrumb from '../components/TheBreadcrumb.vue'
 
   export default {
     name: "MainView",
@@ -90,6 +93,7 @@ import { getUserRights } from '../api'
     },
     components: {
       LogOut,
+      TheBreadcrumb,
     },
     methods: {
       menuToggle() {
@@ -119,5 +123,8 @@ import { getUserRights } from '../api'
   }
   #tasks-icon, #my-day-icon, #activity-icon {
     scale: 1.5;
+  }
+  button:hover, button:active {
+    border: solid 1px #c2c2c2 !important;
   }
 </style>

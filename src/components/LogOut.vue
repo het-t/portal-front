@@ -1,5 +1,5 @@
 <template>
-    <button @click.prevent="logout()" tabindex="-1" class="mt8 mb8 neutral">
+    <button @click.prevent="logout()" tabindex="-1" class="mt8 mb8">
       <font-awesome-icon :icon="['fas', 'power-off']" class="top-nav-icons"></font-awesome-icon>
     </button>
 </template>
@@ -32,9 +32,8 @@
 
 <style scoped>
 button {
-  padding: 0;
+  padding: 0 4px;
   border: none;
-  background-color: white;
-  border: solid 1px white;
+  border: solid 1px #f3f3f4;
 }
 </style>

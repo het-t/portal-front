@@ -102,9 +102,8 @@ a, button {
 #top-nav {
     height: 50px;
     margin: auto;
-    background-color: whitesmoke;
-    background-color: white;
-    margin-bottom: 32px;
+    /* background-color: whitesmoke; */
+    /* background-color: white; */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -118,7 +117,8 @@ a, button {
     display: inline;
 }
 .header button {
-    border: solid 1px white;
+    border: solid 1px #f3f3f4;
+    background-color: #f3f3f4;
 }
 #ham {
     filter: invert(0.2);
@@ -180,6 +180,7 @@ th:hover .tr-th img, .tr-th button:focus img {
 .table-action:hover, .table-action:focus {
     border: solid 1px #d2d2d2;
 }
+
 
 /* for hidden tr */
 .tr-hidden input, .tr-hidden select, .tr-hidden textarea {
@@ -494,6 +495,6 @@ tr .child-row
     pa a:hover #293846
     pb general font color 676a6c
     border e7eaec
-    body whitesmoke
+    body whitesmoke-> f3f3f4
     head-tr font color #676a6c
 */

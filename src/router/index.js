@@ -65,13 +65,34 @@ const routes = [{
       children: [{
           path: 'create-user',
           name: 'create_user',
-          meta: {protected: true},
-          component: () => import('../components/UserCreate.vue')
+          component: () => import('../components/UserCreate.vue'),
+          meta: {
+            protected: true,
+            breadcrumb: {
+              title: 'create user',
+              path: [{
+                text: 'list',
+                route: '/u/users/list'
+              }, {
+                text: 'create',
+                route: '/u/users/create'
+              }]
+            }
+          },
         }, {
           path: 'list',
           alias: '',
           name: 'users_list',
           component: UsersList,
+          meta: {
+            breadcrumb: {
+              title: 'users',
+              path: [{
+                text: 'list',
+                route: '/u/users/list'
+              }]
+            }
+          }
         }, 
         {
           path: 'edit/:editUserId',
@@ -85,20 +106,60 @@ const routes = [{
       path: 'roles',
       name: 'roles',
       component: () => import('../views/RoleView.vue'),
+      meta: {
+        breadcrumb: {
+          title: 'roles',
+          path: [{
+            text: 'list',
+            route: '/u/roles/list'
+          }]
+        }
+      },
       children: [{
         path: 'create-role',
         name: 'create_role',
-        meta: {protected: true},
-        component: () => import('../components/RoleCreate.vue')
+        component: () => import('../components/RoleCreate.vue'),
+        meta: {
+          breadcrumb: {
+            title: 'roles',
+            path: [{
+              text: 'list',
+              route: '/u/roles/list'
+            }, {
+              text: 'create',
+              route: '/u/roles/create-role'
+            }]
+          },
+          protected: true
+        },
       }, {
         path: 'list',
         alias: '',
         name: 'roles_list',
         component: RolesList,
+        meta: {
+          title: 'roles',
+          breadcrumb: [{
+            text: 'list',
+            route: '/u/roles/list'
+          }]
+        }
       }, {
         path: 'edit/:editRoleId',
         name: 'edit_role',
-        meta: {protected: true},
+        meta: {
+          breadcrumb: [{
+            title: 'edit role',
+            path: [{
+              text: 'list',
+              route: '/u/roles/list'
+            }, {
+              text: 'edit',
+              route: '/u/roles/edit/:editRoleId',
+            }]
+          }],
+          protected: true
+        },
         component: () => import('../components/RoleCreate.vue'),
         props: true
       }]
@@ -110,24 +171,65 @@ const routes = [{
         path: 'list',
         alias: '',
         name: 'clients_list',
-        component: ClientsList
+        component: ClientsList,
+        meta: {
+          breadcrumb: {
+            title: 'clients',
+            path: [{
+              text: 'list',
+              route: '/u/clients/list'  
+            }]
+          }
+        }
       }, {
         path: 'create-client',
         name: 'create_client',
-        component: () => import('../components/ClientCreate.vue')
-      }]
-    }, {
+        component: () => import('../components/ClientCreate.vue'),
+        meta: {
+          breadcrumb: {
+            title: 'create client',
+            path: [{
+              text: 'list',
+              route: '/u/clients/list'
+            }, {
+              text: 'create',
+              route: '/u/clients/create-client'
+            }]
+        }
+      }}
+    ]}, {
       path: 'tasks',
       name: 'tasks',
       component: () => import('../views/TasksView.vue'),
       children: [{
         path: 'list',
         alias: '',
-        component: TasksList
+        component: TasksList,
+        meta: {
+          breadcrumb: {
+            title: 'tasks',
+            path: [{
+              text: 'list',
+              route: '/u/tasks/list'
+            }]
+          }
+        }
       }, {
         path: 'create-task',
         name: 'create_task',
-        component: () => import('../components/TasksCreate.vue')
+        component: () => import('../components/TasksCreate.vue'),
+        meta: {
+          breadcrumb: {
+            title: 'create task',
+            path: [{
+              text: 'list',
+              route: '/u/tasks/list'
+            }, {
+              text: 'create',
+              route: '/u/tasks/create-task'
+            }]
+          }
+        }
       }]
     }, {
       path: 'my-tasks',
@@ -137,13 +239,31 @@ const routes = [{
         path: 'list',
         alias: '',
         name: 'my_tasks_list',
-        component: MyTasksList
+        component: MyTasksList,
+        meta: {
+          breadcrumb: {
+            title: 'my tasks',
+            path: [{
+              text: 'list',
+              route: '/u/my-task/list'
+            }]
+          }
+        }
       }]
     }, {
       path: 'activity',
       name: 'activity',
-      meta: {protected: true},
-      component: ActivityList
+      component: ActivityList,
+      meta: {
+        breadcrumb: {
+          title: 'activity',
+          path: [{
+            text: 'activity',
+            route: '/u/activity/'
+          }]
+        },
+        protected: true
+      },
     }]
   }
 ]    
