@@ -46,6 +46,7 @@ const subTasksMaster = {
 
 const myTasks = {
     get: () => makeGetReq(endpoints.getMyTasks),
+    changeStatus: (args) => makeGetReq(endpoints.changeStatusMyTask, args)
 }
 const getAllRights = () => makeGetReq(endpoints.getAllRights)
 

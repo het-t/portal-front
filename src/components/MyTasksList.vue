@@ -22,7 +22,7 @@
                         {{task.deadline}}
                     </td>
                     <td>
-                        <select v-model="task.statusId" name="" id="">
+                        <select @change="changeStatus(task.taskId, task.id, task.statusId, task.description)" v-model="task.statusId" name="" id="">
                             <option v-for="status in subTaskStatuses" :value="status.id" :key="status.id">{{status.status}}</option>
                         </select>
                     </td>
@@ -39,6 +39,8 @@
 </template>
 
 <script>
+import { myTasks } from '../api'
+import useEditSwal from '../helpers/swalEdit'
 import TableMain from './TableMain.vue'
 import TablePagination from './TablePagination.vue'
 // import TableSort from './TableSort.vue';
@@ -52,6 +54,17 @@ export default {
             myTasksList: []
         }
     },
+    methods: {
+        changeStatus(taskId, subTaskId, statusId, subTask) {
+            useEditSwal({
+                text: subTask,
+                mutationFnName: 'tasks/RESET_STATE',
+                mutationArgs: {isMaster: false},
+                promise: () => myTasks.changeStatus({taskId, subTaskId, statusId}),
+                context: this
+            })
+        }
+    }
     // components: { TableSort, TableFilter }
 }
 </script>

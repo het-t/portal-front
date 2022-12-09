@@ -20,12 +20,13 @@ const endpoints = {
     getTasksMaster: '/u/api/tasks/get-tasks-master',
     getSubTasksMaster: '/u/api/tasks/get-sub-tasks-master',
     getClientsMasterTypes: '/u/api/clients/types',
-    getMyTasks: '/u/api/my-tasks/',
+    getMyTasks: '/u/api/myTasks/',
     editClient: '/u/api/clients/edit-client',
     editTask: '/u/api/tasks/edit-task',
     editTaskMaster: '/u/api/tasks/edit-task-master',
     deleteClient: '/u/api/clients/delete-client',
-    deleteTask: '/u/api/tasks/delete-task'
+    deleteTask: '/u/api/tasks/delete-task',
+    changeStatusMyTask: '/u/api/myTasks/change-status'
 }
 
 export default endpoints
