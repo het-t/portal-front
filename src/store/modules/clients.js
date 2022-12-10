@@ -5,6 +5,8 @@ const state = {
     clients: {},        //list of all data of visited pages of clients table
     clientsCount: '',
     allClients: [],     //list of all clients
+    sortBy: 'id',
+    sortOrder: 0    //0-desc, 1-asc
 }
 
 const getters = {
@@ -20,6 +22,12 @@ const getters = {
     },
     allClients(state) {
         return state.allClients
+    },
+    sortGet(state) {
+        return {
+            sortBy: state.sortBy,
+            sortOrder: state.sortOrder
+        }
     }
 }
 
@@ -44,6 +52,10 @@ const mutations = {
     },
     clientsAll(state, clientsList) {
         state.allClients = clientsList
+    },
+    sortSet(state, {sortBy, sortOrder}) {
+        state.sortBy = sortBy
+        state.sortOrder = sortOrder
     }
 }
 

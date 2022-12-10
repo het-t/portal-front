@@ -1,64 +1,48 @@
 <template>
-    <div class="sort ml24">
-        <button>
-            <img @click.prevent="rotateImg" ref="sortImg" src="../assets/icons/sorting.png" alt="" class="sorting-img" />
-        </button>
+    <div class="sort ml8" @click="rotateImg" @keyup.enter="rotateImg">
+        <div v-if="sortType == 'string'">
+            <font-awesome-icon v-if="sortOrder == 1" class="sort-btn" icon="fa-solid fa-arrow-down-a-z" />
+            <font-awesome-icon v-else class="sort-btn" icon="fa-solid fa-arrow-up-a-z" />
+        </div>
+
+        <div v-else-if="sortType == 'number'">
+            <font-awesome-icon v-if="sortOrder == 1" class="sort-btn" icon="fa-solid fa-arrow-down-1-9" />
+            <font-awesome-icon v-else class="sort-btn" icon="fa-solid fa-arrow-up-1-9" />
+        </div>
     </div>
 </template>
 <script>
     export default {
         name: 'TableSort',
+        props: ['sortBy', 'storeName', 'sortType'],
         data() {
             return {
-                sortStatus: false,
-                sortedData: []
+                sortOrder: 0
             }
-        },
-        props: {
-            tableData: JSON,
-            keyToSort: String
         },
         methods: {
             rotateImg() {
-                console.log("rotating")
-                this.sort = !this.sort
-                if (this.sort) {
-                    this.$refs.sortImg.classList.add('tr-th-rotated') 
-                }
-                else {
-                    this.$refs.sortImg.classList.remove('tr-th-rotated')
-                }
-                this.$emit("sorted", this.sortData().reverse())
-                this.sortedData = this.tableData
+                this.sortOrder === 1 ? this.sortOrder = 0 : this.sortOrder = 1
+                this.$emit('clicked')
+                this.$store.commit(`${this.storeName}/RESET_STATE`, {isMaster: false})
+                this.$store.commit(`${this.storeName}/sortSet`, {
+                    sortBy: this.sortBy, 
+                    sortOrder: this.sortOrder
+                })
+                // this.$emit("sorted", this.sortData().reverse())
             },
-            sortData() {
-                this.sortedData = this.tableData
-                for (let i = 1; i!=this.tableData.length; i++) {
-                    let key = this.tableData[i]
-                    let j;
-                    for (j=i-1; j>=0; j--) {
-                        if (this.tableData[j] > this.tableData[i]) {
-                            this.sortedData[j+1] = this.tableData[j]
-                        }
-                        else break
-                    }
-                    this.sortedData[j+1] = key
-
-                }
-                return this.sortedData
-            }
+        },
+        updated() {
+            console.log("updated")
         }
     }
 </script>
 
 <style scoped>
-    button {
-        border: none;
+    .sort-btn {
+        color: #c2c2c2;
+    }
+    .sort:hover, .sort:focus {
         cursor: pointer;
-        background-color: white;
-        padding: 3px;
-        width: 19px;
-        height: 19px;
-        padding:auto;
     }
 </style>

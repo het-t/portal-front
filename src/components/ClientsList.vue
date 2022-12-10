@@ -17,17 +17,23 @@
 
             <template #thead>
                 <tr class="table-heading">
-                    <!-- <th>
-                        <div class="tr-th">
-                            id
-                            <TableSort :tableData="''" keyToSort="''" />
-                        </div>
-                    </th> -->
-                    <th>name</th>
+                    <th class="flex">
+                        name
+                        <table-sort @clicked="l=!l; j=!j; k=!k; p=!p;" :key="i" sortBy="name" sortType="string" storeName="clients"></table-sort>
+                    </th>
                     <th>CIN/LLPIN</th>
-                    <th>type</th>
-                    <th>CA</th>
-                    <th>contact</th>
+                    <th class="flex">
+                        type
+                        <table-sort @clicked="l=!l;k=!k; i=!i; p=!p;" :key="j" sortBy="type" sortType="string" storeName="clients"></table-sort>
+                    </th>
+                    <th class="flex">
+                        CA
+                        <table-sort @clicked="l=!l; j=!j; i=!i; p=!p;" :key="k" sortBy="ca" sortType="string" storeName="clients"></table-sort>
+                    </th>
+                    <th class="flex">
+                        contact
+                        <table-sort @clicked="i=!i; j=!j; k=!k; p=!p;" :key="l" sortBy="con" sortType="string" storeName="clients"></table-sort>
+                    </th>
                     <div class="p12"></div>
                 </tr>
             </template>
@@ -39,7 +45,7 @@
                         @click.stop="editClient('row'+index)"
                         @keyup.enter="editClient('row'+index)"
                     >
-                        <td class="flex">
+                        <td>
                             {{client.name}}
                         </td>
                         <td>
@@ -92,6 +98,7 @@
             </template>
 
             <table-pagination @tableData="clientList = $event"
+                :key="p"
                 tableName="clients"
             />
         </table-main>
@@ -108,9 +115,10 @@
     import DotsMenu from './DotsMenu.vue'
     import { clients } from '../api'
     import swal from 'sweetalert'
+import TableSort from './TableSort.vue'
 
     export default {
-        components: { ClientCreate, TableMain, DotsImg, TablePagination, DotsMenu },
+        components: { ClientCreate, TableMain, DotsImg, TablePagination, DotsMenu, TableSort },
         name: 'ClientList',
         data() {
             return {
@@ -120,6 +128,8 @@
                 selectedClient: '',
 
                 menuVisibisility: '',
+
+                i:0, j:0, k:0, l:0, p:0
             }
         },
         methods: {
@@ -163,6 +173,9 @@
 </script>
 
 <style scoped>
+    .flex {
+        display: flex;
+    }
     .tr:hover .dots-img {
         visibility: visible !important;
     }

@@ -18,10 +18,22 @@
 
             <template #thead>
                 <tr class="table-heading">
-                    <th>title</th>
-                    <th>description</th>
-                    <th>client</th>
-                    <th>progress</th>
+                    <th class="flex">
+                        title
+                        <table-sort @clicked="l=!l; j=!j; k=!k; p=!p;" :key="i" sortBy="title" sortType="string" storeName="tasks"></table-sort>
+                    </th>
+                    <th class="flex">
+                        description
+                        <table-sort @clicked="i=!i; l=!l; k=!k; p=!p;" :key="j" sortBy="description" sortType="string" storeName="tasks"></table-sort>
+                    </th>
+                    <th class="flex">
+                        client
+                        <table-sort @clicked="i=!i; j=!j; l=!l; p=!p;" :key="k" sortBy="client" sortType="string" storeName="tasks"></table-sort>
+                    </th>
+                    <th class="flex">
+                        progress
+                        <table-sort @clicked="i=!i; j=!j; k=!k; p=!p;" :key="l" sortBy="progress" sortType="number" storeName="tasks"></table-sort>
+                    </th>
                     <th>status</th>
                     <div></div>
                 </tr>
@@ -72,8 +84,8 @@
                 </div>
             </template>
 
-            <table-pagination @tableData="tasksList = $event"
-                tableName="tasks"
+            <table-pagination @tableData="tasksList = $event" :key="p"
+                tableName="tasks"                
             />
         </table-main>
     </div>
@@ -91,6 +103,7 @@ import DotsMenu from './DotsMenu.vue'
 import TablePagination from './TablePagination.vue';
 import SkeletonForm from '../skeletons/SkeletonForm.vue';
 import { tasks } from '../api';
+import TableSort from './TableSort.vue';
 
 export default {
     name: "TasksList",
@@ -100,7 +113,9 @@ export default {
             tasksList: [],
             menuVisibisility: '',
             selectedTaskId: '',
-            selectedTask: ''
+            selectedTask: '',
+
+            i:0, j:0, k:0, l:0, p:0,
         };
     },
     methods: {
@@ -147,7 +162,7 @@ export default {
             })
         }
     },
-    components: { DotsMenu, TasksProgress, TasksCreate, TableMain, DotsImg, TablePagination, SkeletonForm }
+    components: { DotsMenu, TasksProgress, TasksCreate, TableMain, DotsImg, TablePagination, SkeletonForm, TableSort }
 }
 </script>
 
@@ -170,7 +185,6 @@ export default {
     }
     .flex {
         display: flex;
-        column-gap: 12px;
     }
     .edit-task-tr {
         cursor: pointer;

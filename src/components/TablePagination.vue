@@ -33,7 +33,7 @@
                 pageData: '',
                 currentPage: 1,
                 recordsPerPage: 10,
-                pageCount: ''
+                pageCount: '',
             }
         },
         computed: {
@@ -43,6 +43,8 @@
         },
         props: {
             tableName: String,
+            sortBy: String,
+            sortOrder: Number
         },
         methods: {
             showPage() {
@@ -67,12 +69,17 @@
                 
                 let pageDataStore = this.$store.getters[`${this.tableName}/${this.tableName}ListGet`]?.(this.currentPage)
 
+                const {sortBy, sortOrder} = this.$store.getters[`${this.tableName}/sortGet`]
+                
                 if ((pageDataStore == undefined) || (pageDataStore?.length == 0) || (pageDataStore?.length < this.recordsPerPage && pageDataStore?.length >= 10)) {
 
                     axios.get(`/u/api/${this.tableName}`, {
                         params: {
                             from: (this.currentPage-1)*this.recordsPerPage,
                             recordsPerPage: this.recordsPerPage,
+                            //use getters 
+                            sortBy: sortBy,
+                            sortOrder: sortOrder
                         },
                         withCredentials: true
                     })

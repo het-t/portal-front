@@ -88,9 +88,9 @@
                     <div>
                         <div class="row mt8">
                             <label :for="'task-sub-task'+uk" class="labels c1">sub task</label>
-                            <div style="width:80%; display:flex">
+                            <div style="width:80%; display:flex; align-items: center;">
                                 <input v-model="newSubTask" style="width: 100%" type="text" :id="'task-sub-task'+uk">
-                                <font-awesome-icon tabindex="0" class="icon pointer add-st" @keyup.enter="addSubTask()" @click.prevent="addSubTask()" icon="fa-solid fa-plus"></font-awesome-icon>
+                                <font-awesome-icon tabindex="0" class="icon pointer add-st ml8" @keyup.enter="addSubTask()" @click.prevent="addSubTask()" icon="fa-solid fa-plus"></font-awesome-icon>
                             </div>
                         </div>
                     </div>
@@ -112,7 +112,7 @@
                                 <font-awesome-icon tabindex="0" icon="fa-solid fa-minus"
                                     @keyup.enter="removeSubTask(index)"
                                     @click.prevent="removeSubTask(index)" 
-                                    class="pointer icon pt8 pb8 pr8 pl8"
+                                    class="pointer icon rmst"
                                 ></font-awesome-icon>
                                 
                             </div>
@@ -391,11 +391,15 @@
 
 <style scoped>
 .add-st {
-    width: 24px;
-    height: inherit;
+    width: 13px;
+    height: 13px;
+    padding: 8px;
+}
+.rmst {
     padding: 4px;
 }
 .icon {
+    border-radius: 100%;
     color: #8888888f;
     border: solid 1px #e0e0e0;
 }

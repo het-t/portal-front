@@ -6,6 +6,8 @@ const state = {
     tasksData: {},   //data of all tasks opened to edit
     subTasksData: {},    //data of all sub tasks opened to edit
     tasksMaster: [],    //list of all tasks master
+    sortBy: 'id',       
+    sortOrder: 0        //0-desc, 1-asc
 }
 
 const getters = {
@@ -23,6 +25,12 @@ const getters = {
     },
     subTasksData: (state) => (taskId) => {
         return state.subTasksData[taskId]
+    },
+    sortGet(state) {
+        return {
+            sortBy: state.sortBy,
+            sortOrder: state.sortOrder
+        }
     }
 }
 
@@ -60,6 +68,10 @@ const mutations = {
             writable: true,
             enumerable: true,
         })    
+    },
+    sortSet(state, {sortBy, sortOrder}) {
+        state.sortBy = sortBy
+        state.sortOrder = sortOrder
     }
 }
 
