@@ -12,7 +12,7 @@
                     <div class="fg hide" :ref="('general'+uk)">
                         <div :id="('i1'+uk)" class="row mt8">
                             <label :for="('user-firstname'+uk)" class="labels c1">firstname</label>
-                            <input v-model="userFirstName" :id="('user-firstname'+uk)" type="text">
+                            <input :ref="('general'+uk+'focus')" v-model="userFirstName" :id="('user-firstname'+uk)" type="text">
                         </div>
 
                         <div :id="('i2'+uk)" class="row mt8">
@@ -38,7 +38,7 @@
                     <div class="fg hide" :ref="('credentials'+uk)">
                         <div :id="('i5'+uk)" class="row mt8">
                             <label :for="('user-email'+uk)" class="labels c1">email</label>
-                            <input v-model="userEmail" type="text" :id="('user-email'+uk)">
+                            <input :ref="('credentials'+uk+'focus')" v-model="userEmail" type="text" :id="('user-email'+uk)">
                         </div>
 
                         <div :id="('i6'+uk)" class="row mt8">
@@ -116,6 +116,7 @@ import useEditSwal from '../helpers/swalEdit'
                 this.$refs['general'+this.uk]?.classList?.add('hide')
                 this.$refs['credentials'+this.uk]?.classList?.add('hide')
                 this.$refs[newTab+this.uk]?.classList?.remove('hide')
+                this.$refs[newTab+this.uk+'focus'].focus()
             },
             canceled() {
                 swal({

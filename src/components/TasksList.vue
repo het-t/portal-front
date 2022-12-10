@@ -49,7 +49,7 @@
                         <div class="dots">
                             <dots-img 
                                 @openMenu="menu($event, {task: task.title, taskId: task.id, visibility: true})" 
-                                @hideMenu="menu($event, {task: task.title, taskId: task.id, visibility: false})" 
+                                @hideMenu="menu($event, {visibility: false}, '')" 
                             />
                         </div>
                     </tr>
@@ -109,6 +109,7 @@ export default {
             this.selectedTaskId = taskId
             this.selectedTask = task
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
+            console.log(taskId, task, this.selectedTask, this.selectedTaskId)
         },
         deleteTask(taskId, task) {
             useDeleteSwal({

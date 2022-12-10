@@ -17,6 +17,7 @@
             >
                 <p class="route-name m0" 
                     tabindex="0"
+                    @keyup.enter="routeChange(route?.route)"
                     @click.prevent="routeChange(route?.route)"
                 >
                     {{route?.text}}

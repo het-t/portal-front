@@ -12,7 +12,7 @@
                     <div class="hide fg" :ref="('client'+uk)">
                         <div class="row mt8">
                             <label for="client-cli-llpin" class="labels c1">CIN/LLPIN</label>
-                            <input v-model="cin" type="text" id="client-cli-llpin">
+                            <input :ref="'client'+uk+'focus'" v-model="cin" type="text" id="client-cli-llpin">
                         </div>
                         <div id="i1" class="row mt8">
                             <label for="client-name" class="labels c1">name</label>
@@ -33,7 +33,7 @@
                     <div class="hide fg" :ref="('ca'+uk)">
                         <div id="i5" class="row mt8">
                             <label for="firm-name" class="labels c1">firm-name</label>
-                            <input v-model="firmName" type="text" id="firm-name">
+                            <input :ref="'ca'+uk+'focus'" v-model="firmName" type="text" id="firm-name">
                         </div>
                     
                         <div id="i6" class="row mt8">
@@ -57,7 +57,7 @@
                     <div class="hide fg" :ref="('contact'+uk)">
                         <div class="row mt8">
                             <label for="contact-name" class="labels c1">name</label>
-                            <input v-model="conName" type="text" id="contact-name">
+                            <input :ref="'contact'+uk+'focus'" v-model="conName" type="text" id="contact-name">
                         </div>
                         
                         <div class="row mt8">
@@ -120,6 +120,7 @@ export default {
                 this.$refs['ca'+this.uk]?.classList?.add('hide')
                 this.$refs['contact'+this.uk]?.classList?.add('hide')
                 this.$refs[newTab+this.uk]?.classList?.remove('hide')
+                this.$refs[newTab+this.uk+'focus'].focus()
             },
         canceled() {
             ////////////////////////////////////////

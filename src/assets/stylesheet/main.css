@@ -1,4 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap');
+
+*:focus {
+    outline-color: #c2c2c2 !important;
+}
+
 textarea, select, input {    
     font-family: 'Open Sans', sans-serif;
 }
@@ -177,9 +182,9 @@ th:hover .tr-th img, .tr-th button:focus img {
 .table-action {
     border: solid 1px white;
 }
-.table-action:hover, .table-action:focus {
+/* .table-action:hover, .table-action:focus {
     border: solid 1px #d2d2d2;
-}
+} */
 
 
 /* for hidden tr */
@@ -267,13 +272,13 @@ input, select, textarea {
     border: solid 1px rgb(224, 224, 224);
     color: #676a6c;
 }
-input:focus, select:focus, textarea:focus {
+/* input:focus, select:focus, textarea:focus {
     outline: none;
     border: solid 1px rgb(167, 167, 167);
-}
-.button:focus {
+} */
+/* .button:focus {
     outline: none;
-}
+} */
 .vr {
     border-right: solid 1px #e7eaec;
     margin: 0 36px;

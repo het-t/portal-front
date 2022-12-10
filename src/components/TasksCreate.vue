@@ -12,7 +12,7 @@
                     <form class="mb16">
                         <div>
                             <div class="row">
-                                <label :for="'task-title'+uk" class="labels c1">title</label>
+                                <label :ref="('details'+uk+'focus')" :for="'task-title'+uk" class="labels c1">title</label>
                                 <input v-model="taskTitle" type="text" :id='"task-title"+uk'>
                             </div>
                             
@@ -90,7 +90,7 @@
                             <label :for="'task-sub-task'+uk" class="labels c1">sub task</label>
                             <div style="width:80%; display:flex">
                                 <input v-model="newSubTask" style="width: 100%" type="text" :id="'task-sub-task'+uk">
-                                    <font-awesome-icon tabindex="0" class="icon pointer add-st" @keyup.enter="addSubTask()" @click.prevent="addSubTask()" icon="fa-solid fa-plus"></font-awesome-icon>
+                                <font-awesome-icon tabindex="0" class="icon pointer add-st" @keyup.enter="addSubTask()" @click.prevent="addSubTask()" icon="fa-solid fa-plus"></font-awesome-icon>
                             </div>
                         </div>
                     </div>
@@ -102,15 +102,17 @@
                                 <div>{{index+1}})</div>
 
                                 <div class="pointer"
+                                    tabindex="0"
+                                    @keyup.enter="toggleDisplaySubTask(index)"
                                     @click.prevent="toggleDisplaySubTask(index)"
                                 >
                                     {{task.description}}
                                 </div>
 
-                                <font-awesome-icon icon="fa-solid fa-minus"
+                                <font-awesome-icon tabindex="0" icon="fa-solid fa-minus"
                                     @keyup.enter="removeSubTask(index)"
                                     @click.prevent="removeSubTask(index)" 
-                                    class="button pointer icon"
+                                    class="pointer icon pt8 pb8 pr8 pl8"
                                 ></font-awesome-icon>
                                 
                             </div>
@@ -160,9 +162,18 @@
                     <tr v-for="(logObj, index) in taskLogs" :key="index"
                         class="tr">
                         <td>{{logObj.user}}</td>
-                        <td>{{(logObj.action + ' ' + logObj.key)}}</td>
+                        <td>
+                            {{(logObj.action + ' ' + logObj.key)}}
+                            <span v-if="logObj.after != null">
+                                to {{logObj.after}}
+                            </span>
+                            <span v-if="(logObj.before != null)">
+                                from {{logObj.before}}
+                            </span>
+                        </td>
                         <td>{{logObj.subTask ? logObj.subTask : "Not Available"}}</td>
                         <td>{{logObj.timestamp}}</td>
+                        <!-- new Date(logObj.timestamp).toLocaleDateString() -->
                     </tr>
                 </table>
             </div>
@@ -238,6 +249,7 @@
                 this.$refs['details'+this.uk]?.classList?.add('hide')
                 this.$refs['logs'+this.uk]?.classList?.add('hide')
                 this.$refs[newTab+this.uk]?.classList?.remove('hide')
+                this.$refs['details'+this.uk+'focus'].focus()
             },
             getTaskStatus(subTasks) {
                 let o = subTasks?.find(o => o?.subTaskStatus != "done")

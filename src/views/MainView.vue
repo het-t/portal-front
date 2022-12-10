@@ -4,21 +4,21 @@
       <div id="nav">
 
         <div class="link-list">
-          <router-link to="/u/users/list" class="pt16 pb16 link">
+          <router-link to="/u/users/list" tabindex="-1" class="pt16 pb16 link">
             <font-awesome-icon :icon="['fas', 'user-group']" id="users-icon" class="pa-icon ml24 mr24"></font-awesome-icon>
             <span v-if="showLabels">users</span>
           </router-link>
         </div>
 
         <div class="link-list">
-          <router-link to="/u/roles/list" class="pt16 pb16 link">
+          <router-link to="/u/roles/list" tabindex="-1" class="pt16 pb16 link">
             <font-awesome-icon :icon="['fas', 'user-gear']" class="pa-icon ml24 mr24"></font-awesome-icon>
             <span v-if="showLabels">roles</span>
           </router-link>
         </div>
         
         <div class="link-list">
-          <router-link to="/u/clients/list" class="pt16 pb16 link">
+          <router-link to="/u/clients/list" tabindex="-1" class="pt16 pb16 link">
             <font-awesome-icon :icon="['fas', 'address-book']" class="pa-icon ml24 mr24"></font-awesome-icon>
             <span v-if="showLabels">clients</span>
           </router-link>
@@ -26,21 +26,21 @@
 
         
         <div class="link-list">
-          <router-link to="/u/tasks/list" class="pt16 pb16 link">
+          <router-link to="/u/tasks/list" tabindex="-1" class="pt16 pb16 link">
             <font-awesome-icon :icon="['fas', 'list-check']" class="pa-icon ml24 mr24"></font-awesome-icon>
             <span v-if="showLabels">tasks</span>
           </router-link>
         </div>
 
         <div class="link-list">
-          <router-link to="/u/my-tasks/list" class="pt16 pb16 link">
+          <router-link to="/u/my-tasks/list" tabindex="-1" class="pt16 pb16 link">
             <font-awesome-icon :icon="['fas', 'sun']" class="pa-icon ml24 mr24"></font-awesome-icon>
             <span v-if="showLabels">my tasks</span>
           </router-link>
         </div>
 
         <div class="link-list">
-          <router-link to="/u/activity" class="pt16 pb16 link">
+          <router-link to="/u/activity" tabindex="-1" class="pt16 pb16 link">
             <font-awesome-icon :icon="['fas', 'wave-square']" class="pa-icon ml24 mr24"></font-awesome-icon>
             <span v-if="showLabels">activity</span>
           </router-link>

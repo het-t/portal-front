@@ -11,7 +11,9 @@ const getters = {
     },
     getUserRights(state) {
         return state.userRights
-    }
+    },
+    //define getters to return boolean 
+    //for all the rights like createuser, create task template etc...
 }
 
 const mutations = {
