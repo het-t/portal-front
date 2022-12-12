@@ -371,8 +371,9 @@
         },
         mounted() {
             if (this.editing == true) {
-                const taskData = (this['tasks/taskData'])(this.editTaskId).taskData[0]
-                const taskLogs = (this['tasks/taskData'])(this.editTaskId).taskLogs
+
+                const taskData = (this['tasks/taskData'])(this.editTaskId)?.taskData[0]
+                const taskLogs = (this['tasks/taskData'])(this.editTaskId)?.taskLogs
                 const subTasksData = this['tasks/subTasksData'](this.editTaskId)
                 if (taskData != undefined && taskData != '') {
                     this.populateDataProperties(taskData)

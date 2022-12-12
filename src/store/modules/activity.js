@@ -1,6 +1,8 @@
 const state = {
     activityCount: '', //no. of activity
     activity: {},      //table data of visited pages
+    sortBy: 'id',
+    sortOrder: 0        //0-desc, 1-asc
 }
 
 const getters = {
@@ -9,6 +11,12 @@ const getters = {
     },
     activityListGet: (state) => (index) => {
         return state.activity[index]
+    },
+    sortGet(state) {
+        return {
+            sortBy: state.sortBy,
+            sortOrder: state.sortOrder
+        }
     }
 }
 
@@ -26,6 +34,10 @@ const mutations = {
             writable: true,
             enumerable: true,
         })
+    },
+    sortSet(state, {sortBy, sortOrder}) {
+        state.sortBy = sortBy
+        state.sortOrder = sortOrder
     }
 }
 

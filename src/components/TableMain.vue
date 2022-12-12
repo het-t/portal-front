@@ -1,6 +1,5 @@
 <template>
         <div class="card">
-            <!-- <TableFilter :tableData="rolesList" @filtered="filteredRolesList = $event" class="mr16 ml16 mt16 actions"/> -->
 
             <div class="mr16 ml16 mt16">
                 <table>

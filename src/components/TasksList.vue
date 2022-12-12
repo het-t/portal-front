@@ -18,73 +18,104 @@
 
             <template #thead>
                 <tr class="table-heading">
-                    <th class="flex">
-                        title
-                        <table-sort @clicked="l=!l; j=!j; k=!k; p=!p;" :key="i" sortBy="title" sortType="string" storeName="tasks"></table-sort>
+                    <th>
+                        <div class="flex">
+                            <table-sort @clicked="l=!l; j=!j; k=!k; p=!p;" :key="i" sortBy="title" sortType="string" storeName="tasks"></table-sort>
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="nameH" type="text" class="header p0" required>
+                                <span @click="$refs['nameH'].focus()" class="floating-label">name</span>
+                            </div>
+                        </div>
                     </th>
-                    <th class="flex">
-                        description
-                        <table-sort @clicked="i=!i; l=!l; k=!k; p=!p;" :key="j" sortBy="description" sortType="string" storeName="tasks"></table-sort>
+
+                    <th>
+                        <div class="flex">
+                            <table-sort @clicked="i=!i; l=!l; k=!k; p=!p;" :key="j" sortBy="description" sortType="string" storeName="tasks"></table-sort>
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="desH" type="text" class="header p0" required>
+                                <span @click="$refs['desH'].focus()" class="floating-label">description</span>
+                            </div>
+                        </div>
                     </th>
-                    <th class="flex">
-                        client
-                        <table-sort @clicked="i=!i; j=!j; l=!l; p=!p;" :key="k" sortBy="client" sortType="string" storeName="tasks"></table-sort>
+
+                    <th>
+                        <div class="flex">
+                            <table-sort @clicked="i=!i; j=!j; l=!l; p=!p;" :key="k" sortBy="client" sortType="string" storeName="tasks"></table-sort>
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filterFor[2]" ref="clientH" type="text" class="header p0" required>
+                                <span @click="$refs['clientH'].focus()" class="floating-label">client</span>
+                            </div>
+                        </div>
                     </th>
-                    <th class="flex">
-                        progress
-                        <table-sort @clicked="i=!i; j=!j; k=!k; p=!p;" :key="l" sortBy="progress" sortType="number" storeName="tasks"></table-sort>
+                    
+                    <th>
+                        <div class="flex">
+                            <table-sort @clicked="i=!i; j=!j; k=!k; p=!p;" :key="l" sortBy="progress" sortType="number" storeName="tasks"></table-sort>
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" ref="progH" type="text" class="header p0" required>
+                                <span @click="$refs['progH'].focus()" class="floating-label">progress</span>
+                            </div>
+                        </div>
                     </th>
+
                     <th>status</th>
                     <div></div>
                 </tr>
             </template>
 
             <template #tbody>
-                <div v-for="(task, index) of tasksList" :key="task.id">
-                    <tr
-                        class="tr edit-task-tr" 
-                        tabindex="0"
-                        @keyup.enter="editTask('row'+index, task.id)"
-                        @click.prevent="editTask('row'+index, task.id)"
-                    >
-                        <td>
-                            {{task.title}}
-                        </td>
-                        <td>
-                            {{task.description}}
-                        </td>
-                        <td>{{task.client}}</td>
-                        <td>
-                            <tasks-progress/>
-                        </td>
-                        <td>{{task.status}}</td>
-                        <div class="dots">
-                            <dots-img 
-                                @openMenu="menu($event, {task: task.title, taskId: task.id, visibility: true})" 
-                                @hideMenu="menu($event, {visibility: false}, '')" 
-                            />
-                        </div>
-                    </tr>
+                <template v-for="(task, index) of tasksList" :key="task.id">
 
-                    <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
-                        <tasks-create 
-                            v-if="(allow[task.id] == true)"
-                            :editTaskId="task.id"
-                            displayHead='false' 
-                            :uk="index" 
-                            @editingCompleted="[editTask('row'+index, task.id), showSwal($event)]"
-                            class="tasks-create" 
-                            editing="true" 
-                        />
-                        <skeleton-form v-else
-                            displayHead="false"
-                            :buttonsIndex="2"
-                        ></skeleton-form>
-                    </tr>
-                </div>
+                    <!-- <div> -->
+                        <tr
+                            class="tr edit-task-tr" 
+                            tabindex="0"
+                            @keyup.enter="editTask('row'+index, task.id)"
+                            @click.prevent="editTask('row'+index, task.id)"
+                        >
+                            <td>
+                                {{task.title}}
+                            </td>
+                            <td>
+                                {{task.description}}
+                            </td>
+                            <td>{{task.client}}</td>
+                            <td>
+                                <tasks-progress/>
+                            </td>
+                            <td>{{task.status}}</td>
+                            <div class="dots">
+                                <dots-img 
+                                    @openMenu="menu($event, {task: task.title, taskId: task.id, visibility: true})" 
+                                    @hideMenu="menu($event, {visibility: false}, '')" 
+                                />
+                            </div>
+                        </tr>
+
+                        <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
+                            <td class="p0" colspan="5">
+                                <tasks-create 
+                                    v-if="(allow[task.id] == true)"
+                                    :editTaskId="task.id"
+                                    displayHead='false' 
+                                    :uk="index" 
+                                    @editingCompleted="[editTask('row'+index, task.id), showSwal($event)]"
+                                    class="tasks-create" 
+                                    editing="true" 
+                                />
+                                <skeleton-form v-else
+                                    displayHead="false"
+                                    :buttonsIndex="2"
+                                ></skeleton-form>
+                            </td>
+                        </tr>
+                    <!-- </div> -->
+
+                </template>
             </template>
 
             <table-pagination @tableData="tasksList = $event" :key="p"
+                :filters="filterFor"
                 tableName="tasks"                
             />
         </table-main>
@@ -116,6 +147,8 @@ export default {
             selectedTask: '',
 
             i:0, j:0, k:0, l:0, p:0,
+
+            filterFor: ['', '', '']
         };
     },
     methods: {
@@ -160,6 +193,9 @@ export default {
                 console.log("allowed")
                 this.allow[taskId] = true
             })
+        },
+        sort() {
+            this.p = !this.p
         }
     },
     components: { DotsMenu, TasksProgress, TasksCreate, TableMain, DotsImg, TablePagination, SkeletonForm, TableSort }
@@ -172,19 +208,13 @@ export default {
     }
     .tr, .table-heading {
         padding: 0;
-        display: grid;
-        align-items: center;
-        grid-template-columns: 2fr 2fr 1fr 1fr 1fr 40px;    
-    }
-    .tr-hidden {
-        grid-template-columns: auto;
-        grid-column: 1/-1;
     }
     .hide {
         display: none !important;
     }
     .flex {
         display: flex;
+        align-items: center;
     }
     .edit-task-tr {
         cursor: pointer;

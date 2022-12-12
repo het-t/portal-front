@@ -1,6 +1,8 @@
 const state = {
     myTasksCount: '',   //no. of tasks assigned to user
     myTasksData: {},    //data of all pages opened in my tasks screen
+    sortBy: 'id',       
+    sortOrder: 0,       //0-desc, 1-asc
 }
 
 const getters = {
@@ -10,6 +12,12 @@ const getters = {
     //get page data
     myTasksListGet: (state) => (index) => {
         return state.myTasksData[index]
+    },
+    sortGet(state) {
+        return {
+            sortBy: state.sortBy,
+            sortOrder: state.sortOrder
+        }
     }
 }
 
@@ -24,7 +32,11 @@ const mutations = {
             writable: true,
             enumerable: true
         })
-    } 
+    },
+    sortSet(state, {sortBy, sortOrder}) {
+        state.sortBy = sortBy
+        state.sortOrder = sortOrder
+    }
 }
 
 export default {

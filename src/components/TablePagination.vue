@@ -44,7 +44,8 @@
         props: {
             tableName: String,
             sortBy: String,
-            sortOrder: Number
+            sortOrder: Number,
+            filters: Array
         },
         methods: {
             showPage() {
@@ -66,50 +67,60 @@
             },
             getPageData() {
                 this.pageCount = Math.ceil(this.totalRecords / this.recordsPerPage)
-                
-                let pageDataStore = this.$store.getters[`${this.tableName}/${this.tableName}ListGet`]?.(this.currentPage)
 
                 const {sortBy, sortOrder} = this.$store.getters[`${this.tableName}/sortGet`]
-                
-                if ((pageDataStore == undefined) || (pageDataStore?.length == 0) || (pageDataStore?.length < this.recordsPerPage && pageDataStore?.length >= 10)) {
+
+                let pageDataStore = this.$store.getters[`${this.tableName}/${this.tableName}ListGet`]?.(this.currentPage, sortBy, sortOrder, this.filters)
+
+                if (
+                    (pageDataStore == undefined) || 
+                    (pageDataStore?.length == 0) || 
+                    (pageDataStore?.length < this.recordsPerPage && pageDataStore?.length >= 10)
+                ) {
 
                     axios.get(`/u/api/${this.tableName}`, {
                         params: {
                             from: (this.currentPage-1)*this.recordsPerPage,
                             recordsPerPage: this.recordsPerPage,
-                            //use getters 
-                            sortBy: sortBy,
-                            sortOrder: sortOrder
+                            sortBy,
+                            sortOrder,
+                            filters: this.filters
                         },
                         withCredentials: true
                     })
                     .then((res) => {
                         this.$emit("tableData", res.data[this.tableName+'List'])
-                        this.$store.commit(`${this.tableName}/${this.tableName}List`, {index: this.currentPage, data: res.data[this.tableName+'List']})
+                        this.$store.commit(`${this.tableName}/${this.tableName}List`, {
+                            index: this.currentPage, 
+                            sortBy, 
+                            sortOrder,
+                            filters: this.filters,
+                            data: res.data[this.tableName+'List']
+                        })                    
                     })
                 } 
                 else {
                     this.$emit("tableData", pageDataStore)
                 }
-                
-
             },
         },
         created() {
+            console.log("pagination created")
             if (this.totalRecords == '') {
                 axios.get(`/u/api/${this.tableName}/count`, {
                     withCredentials: true
                 })
                 .then((res) => {
                     this.$store.commit(`${this.tableName}/${this.tableName}CountSet`, res?.data?.count)
-                })
-                .then(() => {
                     this.getPageData()
                 })
             }
             else {
                 this.getPageData()
             }            
+        },
+        updated() {
+
         }
     }
 </script>

@@ -4,7 +4,9 @@ const state = {
     rolesCount: '', //no. of roles
     roles: {},      //table data of visited pages
     allRoles: [],   //all roles
-    rolesData: {}   //list of data of roles selected to edit
+    rolesData: {},   //list of data of roles selected to edit
+    sortBy: 'id',
+    sortOrder: 0    //0-desc, 1-asc
 }
 
 const getters = {
@@ -14,11 +16,17 @@ const getters = {
     rolesCountGet(state) {
         return state.rolesCount
     },
-    rolesListGet: (state) => (index) => {
-        return state.roles[index]
+    rolesListGet: (state) => (index, sortBy, sortOrder, filters) => {
+        return state.roles[`${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}`]
     },
     rolesDataGet: (state) => (index) => {
         return state.rolesData[index]
+    },
+    sortGet(state) {
+        return {
+            sortBy: state.sortBy,
+            sortOrder: state.sortOrder
+        }
     }
 }
 
@@ -32,8 +40,9 @@ const mutations = {
     rolesCountSet(state, rolesCount) {
         state.rolesCount = rolesCount
     },
-    rolesList(state, {index, data}) {
-        Object.defineProperty(state.roles, index, {
+    rolesList(state, {index, sortBy, sortOrder, filters, data}) {
+        Object.defineProperty(state.roles, 
+            `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}`, {
             value: data,
             writable: true,
             enumerable: true,
@@ -48,6 +57,10 @@ const mutations = {
             writable: true,
             enumerable: true,
         })
+    },
+    sortSet(state, {sortBy, sortOrder}) {
+        state.sortBy = sortBy
+        state.sortOrder = sortOrder
     }
 }
 
@@ -58,6 +71,7 @@ const actions = {
                 roles.get({
                     from: null,
                     recordsPerPage: null,
+                    filters: ['', '']
                 })
                 .then((res) => {
                     commit('rolesAll', res?.data?.rolesList)

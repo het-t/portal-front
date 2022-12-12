@@ -17,29 +17,56 @@
 
             <template #thead>
                 <tr class="table-heading">
-                    <th class="flex">
-                        name
-                        <table-sort @clicked="l=!l; j=!j; k=!k; p=!p;" :key="i" sortBy="name" sortType="string" storeName="clients"></table-sort>
+                    <th>
+                        <div class="flex">
+                            <table-sort class="inline" @clicked="l=!l; j=!j; k=!k; p=!p;" :key="i" sortBy="name" sortType="string" storeName="clients"></table-sort>
+
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="nameH" type="text" class="header p0" required>
+                                <span @click="$refs['nameH'].focus()" class="floating-label">name</span>
+                            </div>                      
+                        </div>
                     </th>
-                    <th>CIN/LLPIN</th>
-                    <th class="flex">
-                        type
-                        <table-sort @clicked="l=!l;k=!k; i=!i; p=!p;" :key="j" sortBy="type" sortType="string" storeName="clients"></table-sort>
+                    <th>
+                        CIN/LLPIN
                     </th>
-                    <th class="flex">
-                        CA
-                        <table-sort @clicked="l=!l; j=!j; i=!i; p=!p;" :key="k" sortBy="ca" sortType="string" storeName="clients"></table-sort>
+                    <th>
+                        <div class="flex">
+                            <table-sort class="inline" @clicked="l=!l;k=!k; i=!i; p=!p;" :key="j" sortBy="type" sortType="string" storeName="clients"></table-sort>
+
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="typeH" type="text" class="header p0" required>
+                                <span @click="$refs['typeH'].focus()" class="floating-label">type</span>
+                            </div>
+                        </div>
                     </th>
-                    <th class="flex">
-                        contact
-                        <table-sort @clicked="i=!i; j=!j; k=!k; p=!p;" :key="l" sortBy="con" sortType="string" storeName="clients"></table-sort>
+                    <th>
+                        <div class="flex">
+                            <table-sort class="inline" @clicked="l=!l; j=!j; i=!i; p=!p;" :key="k" sortBy="ca" sortType="string" storeName="clients"></table-sort>
+
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filterFor[2]" ref="caH" type="text" class="header p0" required>
+                                <span @click="$refs['caH'].focus()" class="floating-label">CA</span>
+                            </div>
+
+                        </div>
                     </th>
-                    <div class="p12"></div>
+                    <th>
+                        <div class="flex">
+                            <table-sort class="inline" @clicked="i=!i; j=!j; k=!k; p=!p;" :key="l" sortBy="con" sortType="string" storeName="clients"></table-sort>
+
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filterFor[3]" ref="conH" type="text" class="header p0" required>
+                                <span @click="$refs['conH'].focus()" class="floating-label">contact</span>
+                            </div>
+                        </div>
+                    </th>
+                    <th class="p12"></th>
                 </tr>
             </template>
 
             <template #tbody>
-                <div v-for="(client, index) in clientList" :key="index">
+                <template v-for="(client, index) in clientList" :key="index">
                     <tr class="tr hidden-tr-parent" 
                         tabindex="0" 
                         @click.stop="editClient('row'+index)"
@@ -86,18 +113,20 @@
                             />
                         </div>
                     </tr>
-
                     <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
-                        <client-create 
-                            :uk="index"
-                            :clientData="JSON.stringify(client)" 
-                            @editingCompleted="editClient('row'+index)"
-                        ></client-create>
+                        <td colspan="5" class="p0">
+                            <client-create 
+                                :uk="index"
+                                :clientData="JSON.stringify(client)" 
+                                @editingCompleted="editClient('row'+index)"
+                            ></client-create>
+                        </td>
                     </tr>
-                </div>
+                </template>
             </template>
 
             <table-pagination @tableData="clientList = $event"
+            :filters="filterFor"
                 :key="p"
                 tableName="clients"
             />
@@ -106,8 +135,6 @@
 </template>
 
 <script>
-    // import TableFilter from './TableFilter.vue'
-    // import TableSort from './TableSort.vue';
     import ClientCreate from './ClientCreate.vue'
     import TableMain from './TableMain.vue'
     import DotsImg from './DotsImg.vue'
@@ -115,7 +142,7 @@
     import DotsMenu from './DotsMenu.vue'
     import { clients } from '../api'
     import swal from 'sweetalert'
-import TableSort from './TableSort.vue'
+    import TableSort from './TableSort.vue'
 
     export default {
         components: { ClientCreate, TableMain, DotsImg, TablePagination, DotsMenu, TableSort },
@@ -129,7 +156,9 @@ import TableSort from './TableSort.vue'
 
                 menuVisibisility: '',
 
-                i:0, j:0, k:0, l:0, p:0
+                i:0, j:0, k:0, l:0, p:0,
+
+                filterFor: ['', '', '', '']
             }
         },
         methods: {
@@ -167,12 +196,18 @@ import TableSort from './TableSort.vue'
                 .catch(err => 
                     swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
                 )
+            },
+            sort() {
+                this.p = !this.p
             }
         }
     }
 </script>
 
 <style scoped>
+    .inline {
+        display: inline !important;
+    }
     .flex {
         display: flex;
     }
@@ -181,13 +216,13 @@ import TableSort from './TableSort.vue'
     }
     .tr, .table-heading {
         padding: 0;
-        display: grid;
+        /* display: grid; */
         align-items: initial;
-        grid-template-columns: 1fr 1fr 1fr 2fr 2fr 36px;
+        /* grid-template-columns: 1fr 1fr 1fr 2fr 2fr 36px; */
     }
     .tr-hidden {
-        grid-template-columns: auto;
-        grid-column: 1/-1;
+        /* grid-template-columns: auto;
+        grid-column: 1/-1; */
         margin-bottom: 58px;
     }
     td {
@@ -198,5 +233,8 @@ import TableSort from './TableSort.vue'
     }
     .hide {
         display: none !important;
+    }
+    thead {
+        align-items: center;
     }
 </style>

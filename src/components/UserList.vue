@@ -27,8 +27,35 @@
 
             <template #thead>
                 <tr>
-                    <th>name</th>
-                    <th>rights</th>
+                    <th>
+                        <div class="flex">
+                            <table-sort class="inline" @clicked="i=!i; k=!k; p=!p;" :key="j" sortBy="name" sortType="string" storeName="users"></table-sort>
+
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="nameH" type="text" class="header p0" required>
+                                <span @click="$refs['nameH'].focus()" class="floating-label">name</span>
+                            </div>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="flex">
+                            <table-sort class="inline" @clicked="i=!i; j=!j; p=!p;" :key="k" sortBy="email" sortType="string" storeName="users"></table-sort>
+
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="emailH" type="text" class="header p0" required>
+                                <span @click="$refs['emailH'].focus()" class="floating-label">email</span>
+                            </div>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="flex">
+                            <table-sort class="inline" @clicked="j=!j; k=!k; p=!p;" :key="i" sortBy="rights" sortType="number" storeName="users"></table-sort>
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filterFor[2]" ref="rightsH" type="text" class="header p0" required>
+                                <span @click="$refs['rightsH'].focus()" class="floating-label">rights</span>
+                            </div>
+                        </div>
+                    </th>
                     <th></th>
                 </tr>
             </template>
@@ -43,6 +70,9 @@
                     >
                         <td>
                             {{user.firstName + ' ' + user.lastName}}
+                        </td>
+                        <td>
+                            {{user.email}}
                         </td>
                         <td>
                             {{user.rights}}
@@ -71,7 +101,8 @@
                 </template>
             </template>
             
-            <table-pagination
+            <table-pagination :key="p"
+                :filters="filterFor"
                 @tableData="usersList = $event"
                 tableName="users"
             ></table-pagination>
@@ -92,6 +123,7 @@
     import SkeletonForm from '../skeletons/SkeletonForm.vue';
 
     import { defineAsyncComponent } from '@vue/runtime-core';
+import TableSort from './TableSort.vue';
 
     const TablePagination = defineAsyncComponent(
         () => import('./TablePagination.vue'),
@@ -110,6 +142,10 @@ export default {
             displayAlert: false,
             menuVisibisility: '',
             allow: {},
+
+            i:0, j:0, k:0, p:0,
+
+            filterFor: ['', '', ''] //0-name, 1-email, 2-rights
         };
     },
     methods: {
@@ -175,6 +211,9 @@ export default {
             this.selectedUserId = userId
             this.selectedUserName = userName
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
+        },
+        sort() {
+            this.p = !this.p
         }
     },
     components: { 
@@ -183,12 +222,20 @@ export default {
         DotsImg, 
         DotsMenu, 
         UserCreate,
-        SkeletonForm
+        SkeletonForm,
+        TableSort
     }
 }
 </script>,
 
 <style scoped>  
+    .flex { 
+        display: flex;
+        align-items: center;
+    }
+    .inline {
+        display: inline;
+    }
     .edit-user-tr {
         cursor: pointer;
     }

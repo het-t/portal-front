@@ -14,8 +14,9 @@ const getters = {
     taskData: (state) => (taskId) => {
         return state.tasksData[taskId]
     },
-    tasksListGet: (state) => (index) => {
-        return state.tasks[index]
+    tasksListGet: (state) => (index, sortBy, sortOrder, filters) => {
+        //filters=> 0-name, 1-rights
+        return state.tasks[`${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}`]
     },
     tasksCountGet (state) {
         return state.tasksCount
@@ -52,8 +53,11 @@ const mutations = {
     tasksCountSet(state, tasksCount) {
         state.tasksCount = tasksCount
     },
-    tasksList(state, {index, data}) {
-        Object.defineProperty(state.tasks, index, {
+    tasksList(state, {index, sortBy, sortOrder, filters, data}) {
+        //filters: 0-name, 1-rights
+        console.log(`${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}`)
+        Object.defineProperty(state.tasks, 
+            `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}`, {
             value: data,
             writable: true,
             enumerable: true,

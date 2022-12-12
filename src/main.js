@@ -4,6 +4,8 @@ import router from './router'
 import store from './store/index.js'
 import VueCookies from 'vue-cookies'
 
+import { vue3Debounce } from 'vue-debounce'
+
 /* import the fontawesome core */
 import { library } from '@fortawesome/fontawesome-svg-core'
 
@@ -58,6 +60,7 @@ library.add(
 let app = createApp(App)
 
 app.use(VueCookies)
+    .directive('debounce', vue3Debounce({ lock: true }))
     .use(store)
     .use(router)
     .component("font-awesome-icon", FontAwesomeIcon)

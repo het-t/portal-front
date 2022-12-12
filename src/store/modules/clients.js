@@ -13,9 +13,8 @@ const getters = {
     getAllTypesList(state) {
         return state.clientTypes
     },
-    clientsListGet: (state) => (index) => {
-        let res = state.clients[index]
-        return res
+    clientsListGet: (state) => (index, sortBy, sortOrder, filters) => {
+        return state.clients[`${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}_${filters[3]}`]
     },
     clientsCountGet(state) {
         return state.clientsCount
@@ -43,8 +42,9 @@ const mutations = {
     clientsCountSet(state, clientsCount) {
         state.clientsCount = clientsCount
     },
-    clientsList(state, {index, data}) {
-        Object.defineProperty(state.clients, index, {
+    clientsList(state, {index, sortBy, sortOrder, filters, data}) {
+        Object.defineProperty(state.clients, 
+            `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}_${filters[3]}`, {
             value: data,
             writable: true,
             enumerable: true,
@@ -81,6 +81,7 @@ const actions = {
                 clients.get({
                     from: null,
                     recordsPerPage: null,
+                    filters: ['', '', '', '']
                 })
                 .then((res) => {
                     commit('clientsAll', res?.data?.clientsList)

@@ -9,20 +9,28 @@ const state = {
     users: {},  //data of all visited users table pages 
     allUsers: [],   //list of all users
     usersData: {},  //list of data of users selected to edit
+    sortBy: 'id',
+    sortOrder: 0    //0-desc, 1-asc
 }
 
 const getters = {
     allUsers(state) {
         return state.allUsers
     },
-    usersListGet: (state) => (index) => {
-        return state.users[index]
+    usersListGet: (state) => (index, sortBy, sortOrder, filters) => {
+        return state.users[`${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}`]
     },
     usersCountGet(state) {
         return state.usersCount
     },
     usersDataGet: (state) => (index) => {
         return state.usersData[index]
+    },
+    sortGet(state) {
+        return {
+            sortBy: state.sortBy,
+            sortOrder: state.sortOrder
+        }
     }
 }
 
@@ -33,8 +41,9 @@ const mutations = {
         state.allUsers = []
         state.usersData = {}
     },
-    usersList(state, {index, data}) {
-        Object.defineProperty(state.users, index, {
+    usersList(state, {index, sortBy, sortOrder, filters, data}) {
+        Object.defineProperty(state.users, 
+            `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}`, {
             value: data,
             writable: true,
             enumerable: true,
@@ -52,6 +61,10 @@ const mutations = {
             writable: true,
             enumerable: true,
         })
+    },
+    sortSet(state, {sortBy, sortOrder}) {
+        state.sortBy = sortBy
+        state.sortOrder = sortOrder
     }
 }
 
@@ -62,6 +75,7 @@ const actions = {
                 users.get({
                     from: null,
                     recordsPerPage: null,
+                    filters: ['', '', '']
                 })
                 .then((res) => {
                     commit('usersAll', res?.data?.usersList)

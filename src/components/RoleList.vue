@@ -20,8 +20,6 @@
 
         <div class="card">
 
-            <TableFilter :tableData="rolesList" @filtered="filteredRolesList = $event" class="mr16 ml16 mt16 actions"/>
-
             <div class="mr16 ml16 mt16">
                 <table>
                     <tr>
@@ -31,8 +29,26 @@
                                 <TableSort @sorted="filteredRolesList = $event" :tableData="roleListToDisplay()" keyToSort="id"/>
                             </div>
                         </th> -->
-                        <th>name</th>
-                        <th>rights</th>
+                        <th>
+                            <div class="flex">
+                                <table-sort :key="i" @clicked="j=!j; p=!p;" class="inline" sortType="string" sortBy="name" storeName="roles"></table-sort>
+
+                                <div class="floating-container">
+                                    <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="nameH" class="header p0" type="text" required>
+                                    <span @click="$refs['nameH'].focus()" class="floating-label">name</span>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="flex">
+                                <table-sort :key="j" @clicked="i!=i; p=!p;" class="inline" sortType="number" sortBy="rights" storeName="roles"></table-sort>
+
+                                <div class="floating-container">
+                                    <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="rightsH" type="text" class="header p0" required>
+                                    <span @click="$refs['rightsH'].focus()" class="floating-label">rights</span>
+                                </div>
+                            </div>
+                        </th>
                         <th></th>
                     </tr>
 
@@ -54,6 +70,8 @@
                     </tr>
                 </table>
                 <TablePagination @tableData="rolesList = $event"
+                    :key="p"
+                    :filters="filterFor"
                     tableName="roles"
                 />
             </div>
@@ -62,14 +80,12 @@
 </template>
 
 <script>
-// import swal from 'sweetalert'
 import {roles} from '@/api/index.js'
-// import TableSort from './TableSort.vue'
-import TableFilter from './TableFilter.vue'
 import DotsMenu from './DotsMenu.vue'
 import DotsImg from './DotsImg.vue'
 import swal from 'sweetalert'
 import TablePagination from './TablePagination.vue'
+import TableSort from './TableSort.vue'
 
     export default {
     name: "EditRoleList",
@@ -81,6 +97,10 @@ import TablePagination from './TablePagination.vue'
             editRoleName: '',
             filteredRolesList: undefined,
             displayAlert: false,
+
+            i:0, j:0, p:0,
+
+            filterFor: ['', ''] //0-name, 1-rights
         };
     },
     methods: {
@@ -122,25 +142,27 @@ import TablePagination from './TablePagination.vue'
             this.editRoleName = roleName
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
         },
-        // showSwal({editing, role}) {
-        //     if (editing) {
-        //         swal({
-        //             title: "Success",
-        //             text: `Edited "${role}"`,
-        //             icon: "success",
-        //             button: "Ok"
-        //         })
-        //     }
-        // },
         clear() {
             this.roleName = "";
+        },
+        sort() {
+            console.log('sorting', this.filterFor)
+            this.p = !this.p
         }
     },
-    components: { TablePagination, TableFilter, DotsMenu, DotsImg }
+    components: { TablePagination, DotsMenu, DotsImg, TableSort }
 }
 </script>
 
 <style scoped>
+
+.flex { 
+    display: flex;
+    align-items: center;
+}
+.inline {
+    display: inline;
+}
 input {
     width: 50%;
 }

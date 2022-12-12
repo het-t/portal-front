@@ -2,7 +2,6 @@
     <div>
         <div class="card">
 
-        <FullFilter :tableData="activityData" :dataFields="filterFields"  @filtered="filteredActivities = $event" :clear="clear" class="mr16 ml16 mt16 actions"/>
 
             <div class="mt16 ml16 mr16">
                 <table>
@@ -10,7 +9,6 @@
                         <th>
                             <div class="tr-th">
                                 id
-                                <TableSort @sorted="activityData = $event" :tableData="activityData" keyToSort="id" />
                             </div>
                         </th>
                         <th>
@@ -31,7 +29,6 @@
                         <th class="w">
                             <div class="tr-th">
                                 time
-                                <TableSort  @sorted="activityData = $event" :tableData="activityData" keyToSort="datestamp" />
                             </div>
                         </th>
                     </tr>
@@ -78,8 +75,6 @@
 
 <script>
     import TablePagination from './TablePagination.vue'
-    import TableSort from './TableSort.vue'
-    import FullFilter from './TableFullFilter.vue'
 
     export default {
         name: "UserActivity",
@@ -115,7 +110,7 @@
                 this.clear = true
             }
         },
-        components: { TablePagination, TableSort, FullFilter }
+        components: { TablePagination }
     }
 </script>
 
