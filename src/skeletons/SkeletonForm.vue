@@ -1,10 +1,5 @@
 <template>
     <div class="card">
-        <div v-if="(displayHead != 'false')" 
-            class="card-head m0 pb16 pt16 pr16 pl16">
-            <div class="skeleton table-head m0"></div>
-        </div>
-        
         <div class="table-tabs">
             <button v-for="n in buttonsIndex" :key="n" class="skeleton button neutral tab">.</button>
         </div>
@@ -29,7 +24,6 @@
     export default {
         name: 'SkeletonForm',
         props: {
-            displayHead: String,
             buttonsIndex: Number
         }
     }
