@@ -5,16 +5,38 @@
             <template #thead>
                 <tr class="table-heading">
                     <th>
-                        task
-                        <table-sort class="inline" :key="i" @clicked="j=!j; k=!k; p=!p;" sortBy="title" sortType="string" storeName="tasks"></table-sort>
+                        <div class="flex">
+                            <table-sort :key="i" @clicked="j=!j; k=!k; p=!p;" class="inline" sortType="string" sortBy="title" storeName="myTasks"></table-sort>
+
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="taskH" class="header p0" type="text" required>
+                                <span @click="$refs['taskH'].focus()" class="floating-label">task</span>
+                            </div>
+                        </div>
                     </th>
+
                     <th>
-                        description
-                        <table-sort class="inline" :key="j" @clicked="i=!i; k=!k; p=!p;" sortBy="description" sortType="string" storeName="tasks"></table-sort>
+                        <div class="flex">
+                            <table-sort :key="j" @clicked="i=!i; k=!k; p=!p;" class="inline" sortType="string" sortBy="desc" storeName="myTasks"></table-sort>
+
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="descH" class="header p0" type="text" required>
+                                <span @click="$refs['descH'].focus()" class="floating-label">description</span>
+                            </div>
+                        </div>
                     </th>
+
                     <th>
-                        deadline
+                        <div class="flex">
+                            <table-sort :key="k" @clicked="i=!i; j=!k; p=!p;" class="inline" sortType="string" sortBy="deadline" storeName="myTasks"></table-sort>
+
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filterFor[2]" ref="deadlineH" class="header p0" type="text" required>
+                                <span @click="$refs['deadlineH'].focus()" class="floating-label">deadline</span>
+                            </div>
+                        </div>              
                     </th>
+
                     <th>status</th>
                     <div></div>
                 </tr>
@@ -38,6 +60,7 @@
             </template>
 
                 <table-pagination :key="p"
+                    :filters="filterFor"
                     @tableData="myTasksList = $event"
                     tableName="myTasks"
                 ></table-pagination>
@@ -62,6 +85,8 @@ export default {
             myTasksList: [],
 
             i:0, j:0, k:0, p:0,
+
+            filterFor: ['', '']
         }
     },
     methods: {
@@ -73,12 +98,19 @@ export default {
                 promise: () => myTasks.changeStatus({taskId, subTaskId, statusId}),
                 context: this
             })
+        },
+        sort() {
+            this.p = !this.p
         }
     }
 }
 </script>
 
 <style scoped>
+.flex { 
+    display: flex;
+    align-items: center;
+}
     .inline {
         display: inline;
     }

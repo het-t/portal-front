@@ -10,8 +10,8 @@ const getters = {
         return state.myTasksCount
     },
     //get page data
-    myTasksListGet: (state) => (index) => {
-        return state.myTasksData[index]
+    myTasksListGet: (state) => (index, sortBy, sortOrder, filters) => {
+        return state.myTasksData[`${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}`]
     },
     sortGet(state) {
         return {
@@ -26,8 +26,9 @@ const mutations = {
         state.myTasksCount = count
     },
     //set page data
-    myTasksList(state, {index, data}) {
-        Object.defineProperty(state.myTasksData, index, {
+    myTasksList(state, {index, sortBy, sortOrder, filters, data}) {
+        Object.defineProperty(state.myTasksData, 
+            `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}`, {
             value: data,
             writable: true,
             enumerable: true
