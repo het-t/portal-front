@@ -23,12 +23,6 @@
             <div class="mr16 ml16 mt16">
                 <table>
                     <tr>
-                        <!-- <th>
-                            <div class="tr-th">
-                                id
-                                <TableSort @sorted="filteredRolesList = $event" :tableData="roleListToDisplay()" keyToSort="id"/>
-                            </div>
-                        </th> -->
                         <th>
                             <div class="flex">
                                 <table-sort :key="i" @clicked="j=!j; p=!p;" class="inline" sortType="string" sortBy="name" storeName="roles"></table-sort>
