@@ -4,6 +4,7 @@ import store from '@/store/index.js'
 
 import { defineAsyncComponent } from 'vue'
 import SkeletonCard from '../skeletons/SkeletonCard.vue'
+import NotFound from '@/components/NotFound.vue'
 
 const UsersList = defineAsyncComponent({ 
   loader: () => import("@/components/UserList.vue"), 
@@ -268,6 +269,11 @@ const routes = [{
         protected: true
       },
     }]
+  }, 
+  { 
+    path: '/:pathMatch(.*)', 
+    name: 'not-found', 
+    component: NotFound
   }
 ]    
       
@@ -288,6 +294,7 @@ router.beforeEach((to)=>{
     if (!allow) return { name: 'no_access'}
   }
 })
+
 
 
 export default router
