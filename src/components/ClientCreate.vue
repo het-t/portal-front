@@ -7,8 +7,8 @@
                 <button @click="openTab($event, 'contact')" class="button neutral tab">contact</button>
             </div>
 
-            <form class="mr16 ml16 mt16 mb16 pr16 pl16">
-                <div class="fg-wrapper">
+            <form class="mt16 pb32 pr16 pl16">
+                <div class="fg-wrapper pl16">
                     <div class="hide fg" :ref="('client'+uk)">
                         <div class="row mt8">
                             <label for="client-cli-llpin" class="labels c1">CIN/LLPIN</label>
@@ -53,7 +53,7 @@
                     </div>
                 </div>
 
-                <div class="fg-wrapper">
+                <div class="fg-wrapper pl16">
                     <div class="hide fg" :ref="('contact'+uk)">
                         <div class="row mt8">
                             <label for="contact-name" class="labels c1">name</label>
@@ -72,7 +72,7 @@
                     </div>
                 </div>
 
-                <button @click.prevent="proceed()" class="green mt16 button">save</button>
+                <button @click.prevent="proceed()" class="green mt16 ml16 button">save</button>
                 <button @click.prevent="canceled()" class="neutral ml8 mt16 button">cancel</button>
 
             </form>

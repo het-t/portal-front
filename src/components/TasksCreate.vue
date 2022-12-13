@@ -7,7 +7,7 @@
                 <button @click="openTab($event, 'logs')" class="button neutral tab">logs</button>
             </div>
 
-            <div class="fg-wrapper mt16 mb16 pr16 pl16 hide" :ref='"details"+uk'>
+            <div class="fg-wrapper mt16 pb16 pr16 pl16 hide" :ref='"details"+uk'>
                 <div class="fg pl16">
                     <form class="mb16">
                         <div>
@@ -78,8 +78,8 @@
                             <label :for="'save-task-template'+uk">save task template for future use </label>
                         </div>
 
-                        <button @click.prevent="proceed()" class="green mt16 button">save</button>
-                        <button @click.prevent="canceled()" class="neutral ml8 mt16 button">cancel</button>
+                        <button @click.prevent="proceed()" :disabled="disabled" class="green mt16 button">save</button>
+                        <button @click.prevent="canceled()" :disabled="disabled" class="neutral ml8 mt16 button">cancel</button>
                     </form>
                 </div>
                 <div class="vr"></div>
@@ -213,6 +213,8 @@
                 taskRepeatOn: '',
 
                 taskLogs: [],
+
+                disabled: true
             }
         },
         computed: {
@@ -296,6 +298,7 @@
                 this.taskMasterId = taskMasterId
             },
             proceed() {
+                this.disabled = true
                 const args = {
                         saved: new Number(this.save),
                         taskId: this.editTaskId,
@@ -327,6 +330,7 @@
                         context: this
                     })
                 } 
+                // this.disabled = false
             },
             canceled() {
                 swal({
@@ -391,6 +395,7 @@
 </script>
 
 <style scoped>
+
 .add-st {
     width: 13px;
     height: 13px;

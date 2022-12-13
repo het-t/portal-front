@@ -186,7 +186,7 @@
                 else this.$refs[rowIndex][0].classList.add('hide')
 
                 if (rightCheck('edit_client')) {
-                    this.componentId = 'SkeletonForm'
+                    this.componentId = 'ClientCreate'
                 }
             },
             menu(e, {client, clientId, visibility}) {
