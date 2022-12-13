@@ -86,16 +86,27 @@
                     </tr>
                     <tr class="tr tr-hidden hide" :ref="('row'+index)">
                         <td colspan="3" class="p0 m0">
-                            <user-create 
+                            <!-- <user-create 
                                 v-if="(allow[user.id] == true)"
                                 :editUserId="user.id"
                                 :uk="index"
                                 @editingCompleted="[editUser('row'+index, user.id), showSwal($event)]"
                                 class="user-create"
-                            ></user-create>
-                            <skeleton-form v-else 
+                            ></user-create> -->
+                            <!-- v-if="(allow[user.id] == true)" -->
+
+                            <component 
+                                :is="componentId"
+                                :editUserId="user.id"
+                                :uk="index"
+                                @editingCompleted="[editUser('row'+index, user.id), showSwal($event)]"
+                                class="user-create"
                                 :buttonsIndex=2    
-                            ></skeleton-form>
+                            ></component>
+
+                            <!-- <skeleton-form v-else 
+                                :buttonsIndex=2    
+                            ></skeleton-form> -->
                         </td>
                     </tr>
                 </template>
@@ -113,17 +124,18 @@
 </template>
 
 <script>
+    import NoAccess from "./NoAccess.vue";
+    import rightCheck from "@/helpers/RightCheck";
     import swal from "sweetalert"
     import UserCreate from './UserCreate.vue';
     import {users} from '../api/index.js'
     import TableMain from './TableMain.vue';
     import DotsImg from './DotsImg.vue';
     import DotsMenu from './DotsMenu.vue'
-    // import TableFilter from './TableFilter.vue';
     import SkeletonForm from '../skeletons/SkeletonForm.vue';
 
     import { defineAsyncComponent } from '@vue/runtime-core';
-import TableSort from './TableSort.vue';
+    import TableSort from './TableSort.vue';
 
     const TablePagination = defineAsyncComponent(
         () => import('./TablePagination.vue'),
@@ -145,7 +157,9 @@ export default {
 
             i:0, j:0, k:0, p:0,
 
-            filterFor: ['', '', ''] //0-name, 1-email, 2-rights
+            filterFor: ['', '', ''], //0-name, 1-email, 2-rights
+
+            componentId: 'NoAccess'
         };
     },
     methods: {
@@ -154,12 +168,17 @@ export default {
             if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
             else this.$refs[rowIndex][0].classList.add('hide')
 
-            Promise.all([
-                this.$store.dispatch('users/usersDataSet', {userId})
-            ])
-            .then(() => {
-                this.allow[userId] = true
-            })
+
+            if (rightCheck('edit_user')) {
+                this.componentId = 'SkeletonForm'
+                Promise.all([
+                    this.$store.dispatch('users/usersDataSet', {userId})
+                ])
+                .then(() => {
+                    this.allow[userId] = true
+                    this.componentId = 'UserCreate'
+                })
+            }
         },
         showSwal({editing, user}) {
             if (editing) {
@@ -171,14 +190,6 @@ export default {
                 })
             }
         },
-        // usersListToDisplay() {
-        //     if (this.filteredUsersList != undefined) {
-        //         return this.filteredUsersList
-        //     } 
-        //     else {
-        //         return this.usersList
-        //     }
-        // },
         deleteUser(userId, userName) {
             console.log('deleted user1', userName)
             swal({
@@ -223,7 +234,8 @@ export default {
         DotsMenu, 
         UserCreate,
         SkeletonForm,
-        TableSort
+        TableSort,
+        NoAccess
     }
 }
 </script>,

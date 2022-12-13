@@ -94,7 +94,7 @@
 
                         <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
                             <td class="p0" colspan="5">
-                                <tasks-create 
+                                <!-- <tasks-create 
                                     v-if="(allow[task.id] == true)"
                                     :editTaskId="task.id"
                                     displayHead='false' 
@@ -104,9 +104,21 @@
                                     editing="true" 
                                 />
                                 <skeleton-form v-else
-                                    displayHead="false"
                                     :buttonsIndex="2"
-                                ></skeleton-form>
+                                ></skeleton-form> -->
+
+                                <!-- v-if="(allow[task.id] == true)" -->
+
+                                <component :is="componentId"
+                                    :editTaskId="task.id"
+                                    displayHead='false' 
+                                    :uk="index" 
+                                    @editingCompleted="[editTask('row'+index, task.id), showSwal($event)]"
+                                    class="tasks-create" 
+                                    editing="true"
+                                    :buttonsIndex="2"
+                                >
+                                </component>
                             </td>
                         </tr>
                     <!-- </div> -->
@@ -128,13 +140,14 @@ import useDeleteSwal from '@/helpers/swalDelete';
 import TasksCreate from './TasksCreate.vue';
 import TasksProgress from './TasksProgress.vue';
 import TableMain from './TableMain.vue';
-// import TableActionPlus from './TableActionPlus.vue';
 import DotsImg from './DotsImg.vue';
 import DotsMenu from './DotsMenu.vue'
 import TablePagination from './TablePagination.vue';
 import SkeletonForm from '../skeletons/SkeletonForm.vue';
 import { tasks } from '../api';
 import TableSort from './TableSort.vue';
+import NoAccess from './NoAccess.vue';
+import rightCheck from '@/helpers/RightCheck';
 
 export default {
     name: "TasksList",
@@ -148,7 +161,9 @@ export default {
 
             i:0, j:0, k:0, l:0, p:0,
 
-            filterFor: ['', '', '']
+            filterFor: ['', '', ''],
+
+            componentId: 'NoAccess'
         };
     },
     methods: {
@@ -185,20 +200,37 @@ export default {
 
             //get taskData and subTask to edit if not available in store
             //and after getting data render corresponding taskcreate component
-            Promise.all([
-                this.$store.dispatch('tasks/tasksDataSet', {taskId}),
-                this.$store.dispatch('tasks/subTasksDataSet', {taskId})
-            ])
-            .then(() => {
-                console.log("allowed")
-                this.allow[taskId] = true
-            })
+            
+            if (rightCheck('edit_task')){
+
+                this.componentId = 'SkeletonForm'
+
+                Promise.all([
+                    this.$store.dispatch('tasks/tasksDataSet', {taskId}),
+                    this.$store.dispatch('tasks/subTasksDataSet', {taskId})
+                ])
+                .then(() => {
+                    console.log("allowed")
+                    this.componentId = 'TasksCreate'
+                    // this.allow[taskId] = true
+                })
+            }
         },
         sort() {
             this.p = !this.p
         }
     },
-    components: { DotsMenu, TasksProgress, TasksCreate, TableMain, DotsImg, TablePagination, SkeletonForm, TableSort }
+    components: { 
+        DotsMenu, 
+        TasksProgress, 
+        TasksCreate, 
+        TableMain, 
+        DotsImg, 
+        TablePagination, 
+        SkeletonForm, 
+        TableSort,
+        NoAccess
+    }
 }
 </script>
 

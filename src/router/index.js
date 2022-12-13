@@ -194,8 +194,9 @@ const routes = [{
               text: 'create',
               route: '/u/clients/create-client'
             }]
-        }
-      }}
+          },
+          protected: true,
+        }}
     ]}, {
       path: 'tasks',
       name: 'tasks',
@@ -229,7 +230,8 @@ const routes = [{
               text: 'create',
               route: '/u/tasks/create-task'
             }]
-          }
+          },
+          protected: true
         }
       }]
     }, {

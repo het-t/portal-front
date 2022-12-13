@@ -115,11 +115,17 @@
                     </tr>
                     <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
                         <td colspan="5" class="p0">
-                            <client-create 
+                            <!-- <client-create 
                                 :uk="index"
                                 :clientData="JSON.stringify(client)" 
                                 @editingCompleted="editClient('row'+index)"
-                            ></client-create>
+                            ></client-create> -->
+
+                            <component :is="componentId"
+                                :uk="index"
+                                :clientData="JSON.stringify(client)" 
+                                @editingCompleted="editClient('row'+index)"
+                            ></component>
                         </td>
                     </tr>
                 </template>
@@ -135,6 +141,7 @@
 </template>
 
 <script>
+    import NoAccess from './NoAccess.vue'
     import ClientCreate from './ClientCreate.vue'
     import TableMain from './TableMain.vue'
     import DotsImg from './DotsImg.vue'
@@ -143,9 +150,18 @@
     import { clients } from '../api'
     import swal from 'sweetalert'
     import TableSort from './TableSort.vue'
+    import rightCheck from '@/helpers/RightCheck'
 
     export default {
-        components: { ClientCreate, TableMain, DotsImg, TablePagination, DotsMenu, TableSort },
+        components: { 
+            ClientCreate, 
+            TableMain, 
+            DotsImg, 
+            TablePagination, 
+            DotsMenu, 
+            TableSort,
+            NoAccess
+        },
         name: 'ClientList',
         data() {
             return {
@@ -158,7 +174,9 @@
 
                 i:0, j:0, k:0, l:0, p:0,
 
-                filterFor: ['', '', '', '']
+                filterFor: ['', '', '', ''],
+
+                componentId: 'NoAccess'
             }
         },
         methods: {
@@ -166,6 +184,10 @@
                 const show = this.$refs[rowIndex][0].classList.contains('hide')
                 if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
                 else this.$refs[rowIndex][0].classList.add('hide')
+
+                if (rightCheck('edit_client')) {
+                    this.componentId = 'SkeletonForm'
+                }
             },
             menu(e, {client, clientId, visibility}) {
                 this.menuVisibisility = visibility

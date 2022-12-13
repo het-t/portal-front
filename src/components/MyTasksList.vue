@@ -52,8 +52,7 @@ import useEditSwal from '../helpers/swalEdit'
 import TableMain from './TableMain.vue'
 import TablePagination from './TablePagination.vue'
 import TableSort from './TableSort.vue'
-// import TableSort from './TableSort.vue';
-// import TableFilter from './TableFilter.vue';
+
 export default {
     components: { TableMain, TablePagination, TableSort },
     name: "MyTasksList",
