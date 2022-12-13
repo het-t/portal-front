@@ -87,10 +87,11 @@ const actions = {
     rolesDataSet({getters, commit}, {roleId}) {
         const res = getters['rolesDataGet']?.(roleId)
         
+        console.log("rolesDataSet called")
         return new Promise((resolve, reject) => {
             if (res == undefined || res == '') {
                 roles.getData({
-                    editRoleId: roleId
+                    roleId
                 })
                 .then((res) => {
                     commit('rolesDataSet', {index: roleId, data: res.data.roleData})

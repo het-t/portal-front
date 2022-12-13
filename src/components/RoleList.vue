@@ -46,22 +46,42 @@
                         <th></th>
                     </tr>
 
-                    <tr class="tr" v-for="role in roleListToDisplay()" :key="role.id">                        
-                        <td>
-                            {{role?.name}}
-                        </td>
+                    <template v-for="(role, index) in rolesList" :key="role.id">
 
-                        <td>
-                            {{role?.rights}}
-                        </td>
+                        <tr class="tr edit-role-tr"
+                            tabindex="0"
+                            @keyup.enter="editRole('row'+index, role.id)"
+                            @click.prevent="editRole('row'+index, role.id)"    
+                        >                        
+                            <td>
+                                {{role?.name}}
+                            </td>
 
-                        <!--      -->
-                        <!-- @hideMenu="menu($event, {roleName: role.name, roleId: role.id, visibility: true})"" -->
-                        <DotsImg 
-                            @openMenu="menu($event, {roleName: role.name, roleId: role.id, visibility: true})"
-                            @hideMenu="menu($event, {roleName: role.name, roleId: role.id, visibility: false})"
-                        />
-                    </tr>
+                            <td>
+                                {{role?.rights}}
+                            </td>
+
+                            <!--      -->
+                            <!-- @hideMenu="menu($event, {roleName: role.name, roleId: role.id, visibility: true})"" -->
+                            <DotsImg 
+                                @openMenu="menu($event, {roleName: role.name, roleId: role.id, visibility: true})"
+                                @hideMenu="menu($event, {roleName: role.name, roleId: role.id, visibility: false})"
+                            />
+                        </tr>
+
+                        <tr class="tr tr-hidden hide" :ref="('row'+index)">
+                            <td colspan="2" class="p0 m0">
+                                <component
+                                    :is="componentId"
+                                    :editRoleId="role.id"
+                                    :uk="index"
+                                    :buttonsIndex="1"
+                                    @editingCompleted="editRole('row'+index, role.id)"
+                                ></component>
+                            </td>
+                        </tr>
+                    </template>
+
                 </table>
                 <TablePagination @tableData="rolesList = $event"
                     :key="p"
@@ -80,6 +100,10 @@ import DotsImg from './DotsImg.vue'
 import swal from 'sweetalert'
 import TablePagination from './TablePagination.vue'
 import TableSort from './TableSort.vue'
+import RoleCreate from './RoleCreate.vue'
+import rightCheck from '@/helpers/RightCheck'
+import SkeletonForm from '@/skeletons/SkeletonForm.vue'
+import NoAccess from './NoAccess.vue'
 
     export default {
     name: "EditRoleList",
@@ -88,16 +112,28 @@ import TableSort from './TableSort.vue'
             menuVisibisility: '',
             rolesList: [],
             editRoleId: '',
-            editRoleName: '',
-            filteredRolesList: undefined,
-            displayAlert: false,
 
             i:0, j:0, p:0,
 
-            filterFor: ['', ''] //0-name, 1-rights
+            filterFor: ['', ''],     //0-name, 1-rights
+            componentId: 'NoAccess'
+            
         };
     },
     methods: {
+        editRole(rowIndex, roleId) {
+            console.log(rowIndex, roleId)
+            const show = this.$refs[rowIndex][0].classList.contains('hide')
+            if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
+            else this.$refs[rowIndex][0].classList.add('hide')
+
+            if (rightCheck('edit_role')) {
+                this.componentId    = 'SkeletonForm'
+                this.$store.dispatch('roles/rolesDataSet', {roleId})
+                // roles.getData({roleId})
+                .then(() => this.componentId = 'RoleCreate')
+            } 
+        },
         deleteRole(roleId, roleName) {
             swal({
                 title: "Alert",
@@ -122,34 +158,28 @@ import TableSort from './TableSort.vue'
                 swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
             )
         },
-        roleListToDisplay() {
-            if (this.filteredRolesList != undefined) {
-                return this.filteredRolesList
-            } 
-            else {
-                return this.rolesList
-            }
-        },
         menu(e, {roleName, roleId, visibility}) {
             this.menuVisibisility = visibility
             this.editRoleId = roleId
             this.editRoleName = roleName
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
         },
-        clear() {
-            this.roleName = "";
-        },
         sort() {
             console.log('sorting', this.filterFor)
             this.p = !this.p
         }
     },
-    components: { TablePagination, DotsMenu, DotsImg, TableSort }
+    components: { TablePagination, DotsMenu, DotsImg, TableSort, RoleCreate, SkeletonForm, NoAccess }
 }
 </script>
 
 <style scoped>
-
+.hide {
+    display: none !important;
+}
+.edit-role-tr {
+    cursor: pointer;
+}
 .flex { 
     display: flex;
     align-items: center;

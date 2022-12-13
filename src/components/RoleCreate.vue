@@ -44,7 +44,7 @@ import useEditSwal from '../helpers/swalEdit'
 
     export default {
         name: 'CreateRole',
-        props: ['editRoleId'],
+        props: ['editRoleId', 'uk'],
         data() {
             return {
                 roleName: '',
@@ -100,21 +100,23 @@ import useEditSwal from '../helpers/swalEdit'
             
             const roleDataStore = this.$store.getters['roles/rolesDataGet'](this.editRoleId)
             
-            if (this.editRoleId != undefined) {
-                this.$store.dispatch('roles/rolesDataSet', {roleId: this.editRoleId})
-            }
+            console.log("editing", roleDataStore)
+            // if (this.editRoleId != undefined) {
+            //     this.$store.dispatch('roles/rolesDataSet', {roleId: this.editRoleId})
+            // }
             
             if (roleDataStore != undefined && roleDataStore != '') {
+                console.log("coming inside", roleDataStore)
                 this.roleName = roleDataStore[0].roleName
                 this.roleRights = roleDataStore.map(o => o.rightId)
             }
-            else this.$store.subscribe((mutation, state) => {
-                if (mutation.type == "roles/rolesDataSet" && mutation.payload.index == this.editRoleId) {
-                    let roleData = state.roles.rolesData[this.editRoleId]
-                    this.roleName = roleData[0].roleName
-                    this.roleRights = roleData.map(o => o.rightId)
-                }
-            })
+            // else this.$store.subscribe((mutation, state) => {
+            //     if (mutation.type == "roles/rolesDataSet" && mutation.payload.index == this.editRoleId) {
+            //         let roleData = state.roles.rolesData[this.editRoleId]
+            //         this.roleName = roleData[0].roleName
+            //         this.roleRights = roleData.map(o => o.rightId)
+            //     }
+            // })
         },
         mounted() {
             this.$refs['focus'].focus()
