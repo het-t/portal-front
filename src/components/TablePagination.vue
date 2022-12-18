@@ -63,6 +63,7 @@
             },
             pageChange(page) {
                 this.currentPage = page
+                this.$store.commit(`${this.tableName}/currentPageSet`, {index: page})
                 this.getPageData()
             },
             getPageData() {
@@ -89,14 +90,14 @@
                         withCredentials: true
                     })
                     .then((res) => {
-                        this.$emit("tableData", res.data[this.tableName+'List'])
                         this.$store.commit(`${this.tableName}/${this.tableName}List`, {
                             index: this.currentPage, 
                             sortBy, 
                             sortOrder,
                             filters: this.filters,
                             data: res.data[this.tableName+'List']
-                        })                    
+                        })    
+                        this.$emit("tableData", res.data[this.tableName+'List'])                
                     })
                 } 
                 else {
@@ -105,7 +106,7 @@
             },
         },
         created() {
-            console.log("pagination created")
+            this.$store.commit(`${this.tableName}/currentPageSet`, {index: this.currentPage})
             if (this.totalRecords == '') {
                 axios.get(`/u/api/${this.tableName}/count`, {
                     withCredentials: true
@@ -118,9 +119,6 @@
             else {
                 this.getPageData()
             }            
-        },
-        updated() {
-
         }
     }
 </script>

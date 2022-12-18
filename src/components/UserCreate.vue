@@ -90,7 +90,6 @@ import useEditSwal from '../helpers/swalEdit'
             }
         },
         mounted() {
-
             const rolesList = this.$store.getters['roles/allRoles']
 
             if (rolesList != undefined && rolesList != '') {
@@ -152,7 +151,9 @@ import useEditSwal from '../helpers/swalEdit'
                     useCreateSwal({
                         text: args.firstName + ' ' + args.lastName,
                         url: '/u/users/list',
-                        mutationFnName: 'users/RESET_STATE',
+                        // mutationFnName: 'users/RESET_STATE',
+                        mutationFnName: 'users/userEdit',
+                        mutationArgs: {userId: this.userId},
                         promise: () => users.create(args),
                         context: this
                     })

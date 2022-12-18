@@ -19,7 +19,7 @@
                 <tr class="table-heading">
                     <th>
                         <div class="flex">
-                            <table-sort class="inline" @clicked="l=!l; j=!j; k=!k; p=!p;" :key="i" sortBy="name" sortType="string" storeName="clients"></table-sort>
+                            <table-sort @clicked="l=!l; j=!j; k=!k; p=!p;" :key="i" sortBy="name" sortType="string" storeName="clients"></table-sort>
 
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="nameH" type="text" class="header p0" required>
@@ -32,7 +32,7 @@
                     </th>
                     <th>
                         <div class="flex">
-                            <table-sort class="inline" @clicked="l=!l;k=!k; i=!i; p=!p;" :key="j" sortBy="type" sortType="string" storeName="clients"></table-sort>
+                            <table-sort @clicked="l=!l;k=!k; i=!i; p=!p;" :key="j" sortBy="type" sortType="string" storeName="clients"></table-sort>
 
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="typeH" type="text" class="header p0" required>
@@ -42,7 +42,7 @@
                     </th>
                     <th>
                         <div class="flex">
-                            <table-sort class="inline" @clicked="l=!l; j=!j; i=!i; p=!p;" :key="k" sortBy="ca" sortType="string" storeName="clients"></table-sort>
+                            <table-sort @clicked="l=!l; j=!j; i=!i; p=!p;" :key="k" sortBy="ca" sortType="string" storeName="clients"></table-sort>
 
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[2]" ref="caH" type="text" class="header p0" required>
@@ -53,7 +53,7 @@
                     </th>
                     <th>
                         <div class="flex">
-                            <table-sort class="inline" @clicked="i=!i; j=!j; k=!k; p=!p;" :key="l" sortBy="con" sortType="string" storeName="clients"></table-sort>
+                            <table-sort @clicked="i=!i; j=!j; k=!k; p=!p;" :key="l" sortBy="con" sortType="string" storeName="clients"></table-sort>
 
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[3]" ref="conH" type="text" class="header p0" required>
@@ -148,9 +148,9 @@
     import TablePagination from './TablePagination.vue'
     import DotsMenu from './DotsMenu.vue'
     import { clients } from '../api'
-    import swal from 'sweetalert'
     import TableSort from './TableSort.vue'
     import rightCheck from '@/helpers/RightCheck'
+    import useDeleteSwal from '@/helpers/swalDelete'
 
     export default {
         components: { 
@@ -196,28 +196,35 @@
                 if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
             },
             deleteClient(clientId, client) {
-                swal({
-                    title: "Alert",
-                    text: `do you really want to delete "${client}"`,
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true
+                useDeleteSwal({
+                    text: client,
+                    promise: () => clients.delete({clientId}),
+                    mutationFn: 'clients/deleteClient',
+                    mutationArgs: {clientId, filters:this.filterFor},
+                    context: this
                 })
-                .then((value) => {
-                    if (value == null) throw null 
-                    return clients.delete({clientId})
-                })
-                .then(() => {
-                    swal({
-                        title: "Success",
-                        text: `Deleted "${client}"`,
-                        icon: 'success',
-                        button: 'ok'
-                    })
-                })
-                .catch(err => 
-                    swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
-                )
+                // swal({
+                //     title: "Alert",
+                //     text: `do you really want to delete "${client}"`,
+                //     icon: "warning",
+                //     buttons: true,
+                //     dangerMode: true
+                // })
+                // .then((value) => {
+                //     if (value == null) throw null 
+                //     return clients.delete({clientId})
+                // })
+                // .then(() => {
+                //     swal({
+                //         title: "Success",
+                //         text: `Deleted "${client}"`,
+                //         icon: 'success',
+                //         button: 'ok'
+                //     })
+                // })
+                // .catch(err => 
+                //     swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
+                // )
             },
             sort() {
                 this.p = !this.p
@@ -227,9 +234,6 @@
 </script>
 
 <style scoped>
-    .inline {
-        display: inline !important;
-    }
     .flex {
         display: flex;
     }

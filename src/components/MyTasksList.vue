@@ -6,7 +6,7 @@
                 <tr class="table-heading">
                     <th>
                         <div class="flex">
-                            <table-sort :key="i" @clicked="j=!j; k=!k; p=!p;" class="inline" sortType="string" sortBy="title" storeName="myTasks"></table-sort>
+                            <table-sort :key="i" @clicked="j=!j; k=!k; p=!p;" sortType="string" sortBy="title" storeName="myTasks"></table-sort>
 
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="taskH" class="header p0" type="text" required>
@@ -17,7 +17,7 @@
 
                     <th>
                         <div class="flex">
-                            <table-sort :key="j" @clicked="i=!i; k=!k; p=!p;" class="inline" sortType="string" sortBy="desc" storeName="myTasks"></table-sort>
+                            <table-sort :key="j" @clicked="i=!i; k=!k; p=!p;" sortType="string" sortBy="desc" storeName="myTasks"></table-sort>
 
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="descH" class="header p0" type="text" required>
@@ -28,7 +28,7 @@
 
                     <th>
                         <div class="flex">
-                            <table-sort :key="k" @clicked="i=!i; j=!k; p=!p;" class="inline" sortType="string" sortBy="deadline" storeName="myTasks"></table-sort>
+                            <table-sort :key="k" @clicked="i=!i; j=!k; p=!p;" sortType="string" sortBy="deadline" storeName="myTasks"></table-sort>
 
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[2]" ref="deadlineH" class="header p0" type="text" required>
@@ -107,12 +107,8 @@ export default {
 </script>
 
 <style scoped>
-.flex { 
-    display: flex;
-    align-items: center;
-}
-    .inline {
-        display: inline;
+    .flex { 
+        display: flex;
     }
     select {
         width: fit-content;

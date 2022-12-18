@@ -6,7 +6,8 @@ const state = {
     clientsCount: '',
     allClients: [],     //list of all clients
     sortBy: 'id',
-    sortOrder: 0    //0-desc, 1-asc
+    sortOrder: 0,    //0-desc, 1-asc
+    currentPage: ''
 }
 
 const getters = {
@@ -36,6 +37,10 @@ const mutations = {
         state.clientsCount = ''
         state.allClients = []
     },
+    deleteClient(state, {clientId, filters}) {
+        const path = state.currentPage+'_'+state.sortBy+'_'+state.sortOrder+'_'+filters[0]+'_'+filters[1]+'_'+filters[2]+'_'+filters[3]
+        state.clients[path].splice(state.clients[path].findIndex(client => client.id == clientId), 1)
+    },
     setAllTypesList(state, typesList) {
         state.clientTypes = typesList
     },
@@ -56,6 +61,9 @@ const mutations = {
     sortSet(state, {sortBy, sortOrder}) {
         state.sortBy = sortBy
         state.sortOrder = sortOrder
+    },
+    currentPageSet(state, {index}) {
+        state.currentPage = index
     }
 }
 

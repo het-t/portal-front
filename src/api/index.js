@@ -14,7 +14,9 @@ const users = {
     get: (args) => makeGetReq(endpoints.getAllUsers, args),
     getData: (args) => makeGetReq(endpoints.getUserData, args),
     create: (args) => makePostReq(endpoints.createUser, args),
-    edit: (args) => makePostReq(endpoints.editUser, args),
+    edit: (args) => {
+        console.log("in user edit", args)
+        makePostReq(endpoints.editUser, args)},
     delete: (args) => makePostReq(endpoints.deleteUser, args)
 }
 

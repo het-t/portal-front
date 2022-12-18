@@ -64,7 +64,7 @@
             </template>
 
             <template #tbody>
-                <template v-for="(task, index) of tasksList" :key="task.id">
+                <template v-for="(task, index) of tasks" :key="task.id">
 
                     <!-- <div> -->
                         <tr
@@ -166,21 +166,26 @@ export default {
             componentId: 'NoAccess'
         };
     },
+    computed: {
+        tasks() {
+            if (this.tasksList?.length != 0) return this.tasksList
+            return this.$store.getters['tasks/tasksListGet'](1, 'id', 0, this.filterFor)
+        }
+    },
     methods: {
         menu(e, {taskId, task, visibility}) {
             this.menuVisibisility = visibility
             this.selectedTaskId = taskId
             this.selectedTask = task
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
-            console.log(taskId, task, this.selectedTask, this.selectedTaskId)
         },
         deleteTask(taskId, task) {
             useDeleteSwal({
                 text: task,
                 promise: () => tasks.delete({taskId}),
                 context: this,
-                mutationFn: 'tasks/RESET_STATE',
-                mutationArgs: {isMaster: true}
+                mutationFn: 'tasks/deleteTask',
+                mutationArgs: {taskId, filters: this.filterFor}
             })
         },
         showSwal({editing, task}) {
@@ -210,7 +215,6 @@ export default {
                     this.$store.dispatch('tasks/subTasksDataSet', {taskId})
                 ])
                 .then(() => {
-                    console.log("allowed")
                     this.componentId = 'TasksCreate'
                     // this.allow[taskId] = true
                 })
@@ -246,7 +250,7 @@ export default {
     }
     .flex {
         display: flex;
-        align-items: center;
+        /* align-items: center; */
     }
     .edit-task-tr {
         cursor: pointer;

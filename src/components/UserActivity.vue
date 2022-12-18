@@ -8,7 +8,7 @@
                     <tr>
                         <th>
                             <div class="flex">
-                                <table-sort class="inline" @clicked="i=!i; k=!k; m=!m; n=!n; o=!o; p=!p;" :key="j" sortBy="id" sortType="number" storeName="activity"></table-sort>
+                                <table-sort @clicked="i=!i; k=!k; m=!m; n=!n; o=!o; p=!p;" :key="j" sortBy="id" sortType="number" storeName="activity"></table-sort>
 
                                 <div class="floating-container">
                                     id
@@ -17,7 +17,7 @@
                         </th>
                         <th>
                             <div class="flex">
-                                <table-sort class="inline" @clicked="j=!j; k=!k; m=!m; n=!n; o=!o; p=!p;" :key="i" sortBy="user" sortType="string" storeName="activity"></table-sort>
+                                <table-sort @clicked="j=!j; k=!k; m=!m; n=!n; o=!o; p=!p;" :key="i" sortBy="user" sortType="string" storeName="activity"></table-sort>
 
                                 <div class="floating-container">
                                     <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="userH" type="text" class="header p0" required>
@@ -27,7 +27,7 @@
                         </th>
                         <th>
                             <div class="flex">
-                                <table-sort class="inline" @clicked="i=!i; j=!j; m=!m; n=!n; o=!o; p=!p;" :key="k" sortBy="act" sortType="string" storeName="activity"></table-sort>
+                                <table-sort @clicked="i=!i; j=!j; m=!m; n=!n; o=!o; p=!p;" :key="k" sortBy="act" sortType="string" storeName="activity"></table-sort>
 
                                 <div class="floating-container">
                                     <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="activityH" type="text" class="header p0" required>
@@ -37,7 +37,7 @@
                         </th>
                         <th>
                             <div class="flex">
-                                <table-sort class="inline" @clicked="i=!i; j=!j; k=!k; n=!n; o=!o; p=!p;" :key="m" sortBy="table" sortType="string" storeName="activity"></table-sort>
+                                <table-sort @clicked="i=!i; j=!j; k=!k; n=!n; o=!o; p=!p;" :key="m" sortBy="table" sortType="string" storeName="activity"></table-sort>
 
                                 <div class="floating-container">
                                     <input v-debounce:700ms.lock="sort" v-model="filterFor[2]" ref="tableH" type="text" class="header p0" required>
@@ -55,7 +55,7 @@
                         </th>
                         <th>
                             <div class="flex">
-                                <table-sort class="inline" @clicked="i=!i; j=!j; k=!k; m=!m; o=!o; p=!p;" :key="n" sortBy="details" sortType="string" storeName="activity"></table-sort>
+                                <table-sort @clicked="i=!i; j=!j; k=!k; m=!m; o=!o; p=!p;" :key="n" sortBy="details" sortType="string" storeName="activity"></table-sort>
 
                                 <div class="floating-container">
                                     <input v-debounce:700ms.lock="sort" v-model="filterFor[3]" ref="detailsH" type="text" class="header p0" required>
@@ -66,7 +66,7 @@
                         </th>
                         <th class="w">
                             <div class="flex">
-                                <table-sort class="inline" @clicked="i=!i; j=!j; k=!k; m=!m; n=!n; p=!p;" :key="o" sortBy="time" sortType="number" storeName="activity"></table-sort>
+                                <table-sort @clicked="i=!i; j=!j; k=!k; m=!m; n=!n; p=!p;" :key="o" sortBy="time" sortType="number" storeName="activity"></table-sort>
 
                                 <div class="floating-container">
                                     <input v-debounce:700ms.lock="sort" v-model="filterFor[4]" ref="timeH" type="text" class="header p0" required>
@@ -152,7 +152,6 @@
 <style scoped>
     .flex {
         display: flex;
-        align-items: center;
     }
     .w {
         min-width: 150px;

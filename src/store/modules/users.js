@@ -10,7 +10,8 @@ const state = {
     allUsers: [],   //list of all users
     usersData: {},  //list of data of users selected to edit
     sortBy: 'id',
-    sortOrder: 0    //0-desc, 1-asc
+    sortOrder: 0,    //0-desc, 1-asc
+    currentPage: ''
 }
 
 const getters = {
@@ -41,6 +42,10 @@ const mutations = {
         state.allUsers = []
         state.usersData = {}
     },
+    deleteUser(state, {userId, filters}) {
+        const path = state.currentPage+'_'+state.sortBy+'_'+state.sortOrder+'_'+filters[0]+'_'+filters[1]+'_'+filters[2]
+        state.users[path].splice(state.users[path].findIndex(user => user.id == userId), 1)
+    },
     usersList(state, {index, sortBy, sortOrder, filters, data}) {
         Object.defineProperty(state.users, 
             `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}`, {
@@ -65,6 +70,9 @@ const mutations = {
     sortSet(state, {sortBy, sortOrder}) {
         state.sortBy = sortBy
         state.sortOrder = sortOrder
+    },
+    currentPageSet(state, {index}) {
+        state.currentPage = index
     }
 }
 

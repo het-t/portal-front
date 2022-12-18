@@ -25,7 +25,7 @@
                     <tr>
                         <th>
                             <div class="flex">
-                                <table-sort :key="i" @clicked="j=!j; p=!p;" class="inline" sortType="string" sortBy="name" storeName="roles"></table-sort>
+                                <table-sort :key="i" @clicked="j=!j; p=!p;" sortType="string" sortBy="name" storeName="roles"></table-sort>
 
                                 <div class="floating-container">
                                     <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="nameH" class="header p0" type="text" required>
@@ -35,7 +35,7 @@
                         </th>
                         <th>
                             <div class="flex">
-                                <table-sort :key="j" @clicked="i!=i; p=!p;" class="inline" sortType="number" sortBy="rights" storeName="roles"></table-sort>
+                                <table-sort :key="j" @clicked="i!=i; p=!p;" sortType="number" sortBy="rights" storeName="roles"></table-sort>
 
                                 <div class="floating-container">
                                     <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="rightsH" type="text" class="header p0" required>
@@ -97,13 +97,13 @@
 import {roles} from '@/api/index.js'
 import DotsMenu from './DotsMenu.vue'
 import DotsImg from './DotsImg.vue'
-import swal from 'sweetalert'
 import TablePagination from './TablePagination.vue'
 import TableSort from './TableSort.vue'
 import RoleCreate from './RoleCreate.vue'
 import rightCheck from '@/helpers/RightCheck'
 import SkeletonForm from '@/skeletons/SkeletonForm.vue'
 import NoAccess from './NoAccess.vue'
+import useDeleteSwal from '@/helpers/swalDelete'
 
     export default {
     name: "EditRoleList",
@@ -135,28 +135,13 @@ import NoAccess from './NoAccess.vue'
             } 
         },
         deleteRole(roleId, roleName) {
-            swal({
-                title: "Alert",
-                text: `do you really want to delete "${roleName}"`,
-                icon: "warning",
-                buttons: true,
-                dangerMode: true
+            useDeleteSwal({
+                text: roleName,
+                promise: () => roles.delete({roleId}),
+                context: this,
+                mutationFn: 'roles/deleteRole',
+                mutationArgs: {roleId, filters: this.filterFor}
             })
-            .then((value) => {
-                if (value == null) throw null
-                return roles.delete({roleId})
-            })
-            .then(() => {
-                swal({
-                    title: "Success",
-                    text: `Deleted "${roleName}"`,
-                    icon: 'success',
-                    button: 'ok'
-                })
-            })
-            .catch(err => 
-                swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
-            )
         },
         menu(e, {roleName, roleId, visibility}) {
             this.menuVisibisility = visibility
@@ -182,10 +167,6 @@ import NoAccess from './NoAccess.vue'
 }
 .flex { 
     display: flex;
-    align-items: center;
-}
-.inline {
-    display: inline;
 }
 input {
     width: 50%;

@@ -6,7 +6,8 @@ const state = {
     allRoles: [],   //all roles
     rolesData: {},   //list of data of roles selected to edit
     sortBy: 'id',
-    sortOrder: 0    //0-desc, 1-asc
+    sortOrder: 0,    //0-desc, 1-asc
+    currentPage: ''
 }
 
 const getters = {
@@ -61,6 +62,13 @@ const mutations = {
     sortSet(state, {sortBy, sortOrder}) {
         state.sortBy = sortBy
         state.sortOrder = sortOrder
+    },
+    deleteRole(state, {roleId, filters}) {
+        const path = state.currentPage+'_'+state.sortBy+'_'+state.sortOrder+'_'+filters[0]+'_'+filters[1]
+        state.roles[path].splice(state.roles[path].findIndex(role => role.id == roleId), 1)
+    },
+    currentPageSet(state, {index}) {
+        state.currentPage = index
     }
 }
 

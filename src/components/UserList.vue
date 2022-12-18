@@ -29,7 +29,7 @@
                 <tr>
                     <th>
                         <div class="flex">
-                            <table-sort class="inline" @clicked="i=!i; k=!k; p=!p;" :key="j" sortBy="name" sortType="string" storeName="users"></table-sort>
+                            <table-sort @clicked="i=!i; k=!k; p=!p;" :key="j" sortBy="name" sortType="string" storeName="users"></table-sort>
 
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="nameH" type="text" class="header p0" required>
@@ -39,7 +39,7 @@
                     </th>
                     <th>
                         <div class="flex">
-                            <table-sort class="inline" @clicked="i=!i; j=!j; p=!p;" :key="k" sortBy="email" sortType="string" storeName="users"></table-sort>
+                            <table-sort @clicked="i=!i; j=!j; p=!p;" :key="k" sortBy="email" sortType="string" storeName="users"></table-sort>
 
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="emailH" type="text" class="header p0" required>
@@ -49,7 +49,7 @@
                     </th>
                     <th>
                         <div class="flex">
-                            <table-sort class="inline" @clicked="j=!j; k=!k; p=!p;" :key="i" sortBy="rights" sortType="number" storeName="users"></table-sort>
+                            <table-sort @clicked="j=!j; k=!k; p=!p;" :key="i" sortBy="rights" sortType="number" storeName="users"></table-sort>
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[2]" ref="rightsH" type="text" class="header p0" required>
                                 <span @click="$refs['rightsH'].focus()" class="floating-label">rights</span>
@@ -61,7 +61,7 @@
             </template>
             <!-- v-if="usersList != ''" -->
             <template #tbody>
-                <template v-for="(user, index) in usersList" :key="user?.id">
+                <template v-for="(user, index) in users" :key="user?.id">
                     <tr 
                         class="tr edit-user-tr"
                         tabindex="0"
@@ -136,6 +136,7 @@
 
     import { defineAsyncComponent } from '@vue/runtime-core';
     import TableSort from './TableSort.vue';
+    import useDeleteSwal from "@/helpers/swalDelete";
 
     const TablePagination = defineAsyncComponent(
         () => import('./TablePagination.vue'),
@@ -161,6 +162,12 @@ export default {
 
             componentId: 'NoAccess'
         };
+    },
+    computed: {
+        users() {
+            if (this.usersList?.length != 0) return this.usersList
+            return this.$store.getters['users/usersListGet'](1, 'id', 0, this.filterFor)
+        }
     },
     methods: {
         editUser(rowIndex, userId) {
@@ -191,33 +198,38 @@ export default {
             }
         },
         deleteUser(userId, userName) {
+            useDeleteSwal({
+                text: userName,
+                promise: () => users.delete({userId}),
+                context: this,
+                mutationFn: 'users/deleteUser',
+                mutationArgs: {userId, filters: this.filterFor}
+            })
             console.log('deleted user1', userName)
-            swal({
-                title: "Alert",
-                text: `do you really want to delete "${userName}"`,
-                icon: "warning",
-                buttons: true,
-                dangerMode: true
-            })
-            .then((value) => {
-                if (value == null) throw null
-                return users.delete({userId})
-            })
-            .then(() => {
-                console.log('deleted user2', userName)
-                swal({
-                    title: "Success",
-                    text: `Deleted "${userName}"`,
-                    icon: 'success',
-                    button: 'ok'
-                })
-            })
-            .catch(err => 
-                swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
-            )
+            // swal({
+            //     title: "Alert",
+            //     text: `do you really want to delete "${userName}"`,
+            //     icon: "warning",
+            //     buttons: true,
+            //     dangerMode: true
+            // })
+            // .then((value) => {
+            //     if (value == null) throw null
+            //     return users.delete({userId})
+            // })
+            // .then(() => {
+            //     swal({
+            //         title: "Success",
+            //         text: `Deleted "${userName}"`,
+            //         icon: 'success',
+            //         button: 'ok'
+            //     })
+            // })
+            // .catch(err => 
+            //     swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
+            // )
         },
         menu(e, {userId, userName, visibility}) {
-            console.log("menu called")
             this.menuVisibisility = visibility
             this.selectedUserId = userId
             this.selectedUserName = userName
@@ -243,10 +255,6 @@ export default {
 <style scoped>  
     .flex { 
         display: flex;
-        align-items: center;
-    }
-    .inline {
-        display: inline;
     }
     .edit-user-tr {
         cursor: pointer;

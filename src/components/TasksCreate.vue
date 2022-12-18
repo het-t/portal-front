@@ -78,8 +78,8 @@
                             <label :for="'save-task-template'+uk">save task template for future use </label>
                         </div>
 
-                        <button @click.prevent="proceed()" :disabled="disabled" class="green mt16 button">save</button>
-                        <button @click.prevent="canceled()" :disabled="disabled" class="neutral ml8 mt16 button">cancel</button>
+                        <button @click.prevent="proceed()" class="green mt16 button">save</button>
+                        <button @click.prevent="canceled()" class="neutral ml8 mt16 button">cancel</button>
                     </form>
                 </div>
                 <div class="vr"></div>
@@ -214,7 +214,7 @@
 
                 taskLogs: [],
 
-                disabled: true
+                // disabled: true
             }
         },
         computed: {
@@ -229,9 +229,6 @@
             ...mapGetters('clients', [
                 'allClients'
             ]),
-            ...mapGetters('tasks', [
-                'tasksMasterListGet'
-            ])
         },
         methods: {
             ...mapActions(['promptMessage']),
@@ -298,7 +295,7 @@
                 this.taskMasterId = taskMasterId
             },
             proceed() {
-                this.disabled = true
+                // this.disabled = true
                 const args = {
                         saved: new Number(this.save),
                         taskId: this.editTaskId,
@@ -314,8 +311,9 @@
                 if (this.editing == true) {
                     useEditSwal({
                         text: args.title,
-                        mutationFnName: 'tasks/RESET_STATE',
-                        mutationArgs: {isMaster: this.save},
+                        // mutationFnName: 'tasks/RESET_STATE',
+                        // mutationFnName: 'tasks/editTask',
+                        // mutationArgs: args,
                         context: this,
                         promise: () => tasks.edit(args)
                     })

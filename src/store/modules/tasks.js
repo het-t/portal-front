@@ -2,12 +2,15 @@ import { tasks, tasksMaster } from "@/api"
 
 const state = {
     tasksCount: '', //no. of total tasks
-    tasks: {},      //page data of tasks table
+    tasks: {
+        '1_id_0___': ''
+    },      //page data of tasks table
     tasksData: {},   //data of all tasks opened to edit
     subTasksData: {},    //data of all sub tasks opened to edit
     tasksMaster: [],    //list of all tasks master
     sortBy: 'id',       
-    sortOrder: 0        //0-desc, 1-asc
+    sortOrder: 0,       //0-desc, 1-asc
+    currentPage: ''        
 }
 
 const getters = {
@@ -43,21 +46,24 @@ const mutations = {
         state.subTasksData = {}
         if (isMaster) state.tasksMaster = []
     },
+    deleteTask(state, {taskId, filters}) {
+        const path = state.currentPage+'_'+state.sortBy+'_'+state.sortOrder+'_'+filters[0]+'_'+filters[1]+'_'+filters[2]
+        state.tasks[path].splice(state.tasks[path].findIndex(task => task.id == taskId), 1)
+    },
     tasksDataSet(state, {taskId, taskData}) {
         Object.defineProperty(state.tasksData, taskId, {
             value: taskData,
             writable: true,
             enumerable: true,
-        })    
+        }) 
     },
     tasksCountSet(state, tasksCount) {
         state.tasksCount = tasksCount
     },
     tasksList(state, {index, sortBy, sortOrder, filters, data}) {
         //filters: 0-name, 1-rights
-        console.log(`${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}`)
         Object.defineProperty(state.tasks, 
-            `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}`, {
+            `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}`, {
             value: data,
             writable: true,
             enumerable: true,
@@ -76,6 +82,9 @@ const mutations = {
     sortSet(state, {sortBy, sortOrder}) {
         state.sortBy = sortBy
         state.sortOrder = sortOrder
+    },
+    currentPageSet(state, {index}) {
+        state.currentPage = index
     }
 }
 
