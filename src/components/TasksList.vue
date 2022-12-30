@@ -82,7 +82,9 @@
                         <td>
                             <tasks-progress :total="task.totalSubTasks" :completed="task.doneSubTasks"/>
                         </td>
-                        <td>{{task.status}}</td>
+                        <td>
+                            <div class="task-status" :class="task.status">{{ task.status }}</div>
+                        </td>
                         <div class="dots">
                             <dots-img 
                                 @openMenu="menu($event, {task: task.title, taskId: task.id, visibility: true})" 
@@ -229,5 +231,19 @@ export default {
     }
     .edit-task-tr {
         cursor: pointer;
+    }
+    .task-status {
+        font-size: 12px;
+        border: solid 1px grey;
+        padding: 4px 12px;
+        border-radius: 12px;
+    }   
+    .Unbilled {
+        border-color: red;
+        color: red;
+    }
+    .Billed {
+        border-color: green;
+        color: green;
     }
 </style>

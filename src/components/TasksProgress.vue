@@ -1,6 +1,6 @@
 <template>
     <div class="prg">
-        <circle-progress class="progress" :percent="prg"></circle-progress>
+        <circle-progress class="progress" :percent="prg" fill-color="#1baf83"></circle-progress>
         <span>{{ completed }} / {{ total }}</span>
     </div>
 </template>
