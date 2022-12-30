@@ -80,7 +80,7 @@
                         </td>
                         <td>{{task.client}}</td>
                         <td>
-                            <tasks-progress/>
+                            <tasks-progress :total="task.totalSubTasks" :completed="task.doneSubTasks"/>
                         </td>
                         <td>{{task.status}}</td>
                         <div class="dots">

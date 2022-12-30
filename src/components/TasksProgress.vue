@@ -1,92 +1,40 @@
 <template>
-    <vue-ellipse-progress :progress="50"></vue-ellipse-progress>
-    <!-- <div class="flex">
-        <div>
-            <div class="base-timer">
-                <svg
-                class="base-timer__svg"
-                viewBox="0 0 64 64"
-                xmlns="http://www.w3.org/2000/svg"
-                >
-                    <g class="base-timer__circle">
-                        <circle
-                        class="base-timer__path-elapsed"
-                        cx="32"
-                        cy="32"
-                        r="25"
-                        />
-                        <path
-                            :stroke-dasharray="length"
-                            class="base-timer__path-remaining"
-                            d="
-                            M 32, 32
-                                m -25, 0
-                                a 25,25 0 1,0 50,0
-                                a 25,25 0 1,0 -50,0
-                        "></path>
-
-                    </g>
-
-                </svg>
-            </div>
-        </div>
-        <p class="m0 ml16">
-            1/2
-        </p>
-    </div> -->
+    <div class="prg">
+        <circle-progress class="progress" :percent="prg"></circle-progress>
+        <span>{{ completed }} / {{ total }}</span>
+    </div>
 </template>
 
 <script>
-    import VueEllipseProgress from 'vue-ellipse-progress'
+import "vue3-circle-progress/dist/circle-progress.css";
+import CircleProgress from "vue3-circle-progress";
 
     export default {
         name: 'TasksProgress',
         components: {
-            VueEllipseProgress
+            CircleProgress
         },
-        data() {
-            return {
-                length: 2*3.14*12.5
-            }
-        },
+        props: ['total' , 'completed'],
         computed: {
-            circleDasharray() {
-                return 5
-            },
+            prg() {
+                console.log(this.completed*100 / this.total)
+                return this.completed*100 / this.total
+            }
         }
     }
 </script>
 
-<style scoped>
-.flex {
+<style>
+.progress svg {
+    width: 22px;
+    height: 22px;
+}
+.prg {
     display: flex;
-    align-items: center;
+    flex-direction: column;
 }
-.base-timer {
-  position: relative;
-  width: 24px;
-  height: 24px;
+.vue3-circular-progressbar {
+    height: 30px !important;
+    width: 30px !important;
 }
-  .base-timer__circle {
-    fill: none;
-    stroke: none;
-  }
-  .base-timer__path-elapsed {
-    stroke-width: 7px;
-    stroke:#c3c3c3;
-  }
-
-  .base-timer__path-remaining {
-    stroke-width: 7px;
-    stroke-linecap: round;
-    transform: rotate(90deg);
-    transform-origin: center;
-    transition: 1s linear all;
-    stroke: rgb(65, 184, 131);
-  }
-  .base-timer__svg {
-    transform: scaleX(-1);
-  }
-
-
 </style>
