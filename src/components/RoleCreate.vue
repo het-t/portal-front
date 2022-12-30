@@ -1,6 +1,6 @@
 <template>
-    <div class="card">
-        <form class="mr16 ml16 mt16 mb16 pr12 pl12">
+    <div class="card pr16 pl16 pb16">
+        <form class="pr16 pl16 pt16 pb16">
             <div class="row mt8">
                 <label ref="focus" for="role-name" class="labels c1">name</label>
                 <input v-model="roleName" type="text" id="role-name"> 
@@ -11,7 +11,7 @@
             <div class="row mt8">
                 <label class="labels c1">rights</label>
                 <div>
-                    <div class="mt16" v-for="right in rightsList" :key="right">
+                    <div class="mt16 flex" v-for="right in rightsList" :key="right">
                         <input v-model="roleRights" 
                             :id="right.id" 
                             :value="right.id" 
@@ -125,6 +125,11 @@ import useEditSwal from '../helpers/swalEdit'
 </script>
 
 <style scoped>
+    .flex {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
     input[type="text"], input[type="date"] {
         width: 40% !important;
     }

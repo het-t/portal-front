@@ -187,7 +187,19 @@ export default {
         }
 
         if (this.editing != false) {
-            const {id, typeId, name, cin, caFirmName, caAddress, caPan, caEmail, conName, conEmail, conPhone} = JSON.parse(this.clientData)
+            const {
+                id, 
+                typeId, 
+                name, 
+                cin, 
+                caFirmName, 
+                caAddress, 
+                caPan, 
+                caEmail, 
+                conName, 
+                conEmail, 
+                conPhone
+            } = JSON.parse(this.clientData)
 
             this.editClientId = id
             this.clientName = name

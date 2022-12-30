@@ -37,7 +37,7 @@
 
                     <div class="fg hide" :ref="('credentials'+uk)">
                         <div :id="('i5'+uk)" class="row mt8">
-                            <label :for="('user-email'+uk)" class="labels c1">email</label>
+                            <label :for="('user-email'+uk)" class="labels c1">username</label>
                             <input :ref="('credentials'+uk+'focus')" v-model="userEmail" type="text" :id="('user-email'+uk)">
                         </div>
 
@@ -151,9 +151,9 @@ import useEditSwal from '../helpers/swalEdit'
                     useCreateSwal({
                         text: args.firstName + ' ' + args.lastName,
                         url: '/u/users/list',
-                        // mutationFnName: 'users/RESET_STATE',
-                        mutationFnName: 'users/userEdit',
-                        mutationArgs: {userId: this.userId},
+                        mutationFnName: 'users/RESET_STATE',
+                        // mutationFnName: 'users/userEdit',
+                        // mutationArgs: {userId: this.userId},
                         promise: () => users.create(args),
                         context: this
                     })

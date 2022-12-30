@@ -3,6 +3,7 @@ const state = {
     myTasksData: {},    //data of all pages opened in my tasks screen
     sortBy: 'id',       
     sortOrder: 0,       //0-desc, 1-asc
+    currentPage: ''
 }
 
 const getters = {
@@ -37,6 +38,9 @@ const mutations = {
     sortSet(state, {sortBy, sortOrder}) {
         state.sortBy = sortBy
         state.sortOrder = sortOrder
+    },
+    currentPageSet(state, {index}) {
+        state.currentPage = index
     }
 }
 

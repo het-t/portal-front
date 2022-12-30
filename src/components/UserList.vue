@@ -99,7 +99,7 @@
                                 :is="componentId"
                                 :editUserId="user.id"
                                 :uk="index"
-                                @editingCompleted="[editUser('row'+index, user.id), showSwal($event)]"
+                                @editingCompleted="editUser('row'+index, user.id)"
                                 class="user-create"
                                 :buttonsIndex=2    
                             ></component>
@@ -126,7 +126,6 @@
 <script>
     import NoAccess from "./NoAccess.vue";
     import rightCheck from "@/helpers/RightCheck";
-    import swal from "sweetalert"
     import UserCreate from './UserCreate.vue';
     import {users} from '../api/index.js'
     import TableMain from './TableMain.vue';
@@ -187,16 +186,16 @@ export default {
                 })
             }
         },
-        showSwal({editing, user}) {
-            if (editing) {
-                swal({
-                    title: "Success",
-                    text: `Edited "${user}"`,
-                    icon: "success",
-                    button: "Ok"
-                })
-            }
-        },
+        // showSwal({editing, user}) {
+        //     if (editing) {
+        //         swal({
+        //             title: "Success",
+        //             text: `Edited "${user}"`,
+        //             icon: "success",
+        //             button: "Ok"
+        //         })
+        //     }
+        // },
         deleteUser(userId, userName) {
             useDeleteSwal({
                 text: userName,
@@ -205,29 +204,6 @@ export default {
                 mutationFn: 'users/deleteUser',
                 mutationArgs: {userId, filters: this.filterFor}
             })
-            console.log('deleted user1', userName)
-            // swal({
-            //     title: "Alert",
-            //     text: `do you really want to delete "${userName}"`,
-            //     icon: "warning",
-            //     buttons: true,
-            //     dangerMode: true
-            // })
-            // .then((value) => {
-            //     if (value == null) throw null
-            //     return users.delete({userId})
-            // })
-            // .then(() => {
-            //     swal({
-            //         title: "Success",
-            //         text: `Deleted "${userName}"`,
-            //         icon: 'success',
-            //         button: 'ok'
-            //     })
-            // })
-            // .catch(err => 
-            //     swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
-            // )
         },
         menu(e, {userId, userName, visibility}) {
             this.menuVisibisility = visibility

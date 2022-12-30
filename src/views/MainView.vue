@@ -118,6 +118,8 @@ import TheBreadcrumb from '../components/TheBreadcrumb.vue'
 </script>
 
 <style>
+  @import '../assets/stylesheet/multiselect.css';
+  
   .lessWidth {
     width: fit-content !important;
   }
@@ -128,3 +130,5 @@ import TheBreadcrumb from '../components/TheBreadcrumb.vue'
     border: solid 1px #c2c2c2 !important;
   }
 </style>
+
+<style src="vue-multiselect/dist/vue-multiselect.css"></style>

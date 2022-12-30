@@ -66,62 +66,45 @@
             <template #tbody>
                 <template v-for="(task, index) of tasks" :key="task.id">
 
-                    <!-- <div> -->
-                        <tr
-                            class="tr edit-task-tr" 
-                            tabindex="0"
-                            @keyup.enter="editTask('row'+index, task.id)"
-                            @click.prevent="editTask('row'+index, task.id)"
-                        >
-                            <td>
-                                {{task.title}}
-                            </td>
-                            <td>
-                                {{task.description}}
-                            </td>
-                            <td>{{task.client}}</td>
-                            <td>
-                                <tasks-progress/>
-                            </td>
-                            <td>{{task.status}}</td>
-                            <div class="dots">
-                                <dots-img 
-                                    @openMenu="menu($event, {task: task.title, taskId: task.id, visibility: true})" 
-                                    @hideMenu="menu($event, {visibility: false}, '')" 
-                                />
-                            </div>
-                        </tr>
+                    <tr
+                        class="tr edit-task-tr" 
+                        tabindex="0"
+                        @keyup.enter="editTask('row'+index, task.id)"
+                        @click.prevent="editTask('row'+index, task.id)"
+                    >
+                        <td>
+                            {{task.title}}
+                        </td>
+                        <td>
+                            {{task.description}}
+                        </td>
+                        <td>{{task.client}}</td>
+                        <td>
+                            <tasks-progress/>
+                        </td>
+                        <td>{{task.status}}</td>
+                        <div class="dots">
+                            <dots-img 
+                                @openMenu="menu($event, {task: task.title, taskId: task.id, visibility: true})" 
+                                @hideMenu="menu($event, {visibility: false}, '')" 
+                            />
+                        </div>
+                    </tr>
 
-                        <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
-                            <td class="p0" colspan="5">
-                                <!-- <tasks-create 
-                                    v-if="(allow[task.id] == true)"
-                                    :editTaskId="task.id"
-                                    displayHead='false' 
-                                    :uk="index" 
-                                    @editingCompleted="[editTask('row'+index, task.id), showSwal($event)]"
-                                    class="tasks-create" 
-                                    editing="true" 
-                                />
-                                <skeleton-form v-else
-                                    :buttonsIndex="2"
-                                ></skeleton-form> -->
-
-                                <!-- v-if="(allow[task.id] == true)" -->
-
-                                <component :is="componentId"
-                                    :editTaskId="task.id"
-                                    displayHead='false' 
-                                    :uk="index" 
-                                    @editingCompleted="[editTask('row'+index, task.id), showSwal($event)]"
-                                    class="tasks-create" 
-                                    editing="true"
-                                    :buttonsIndex="2"
-                                >
-                                </component>
-                            </td>
-                        </tr>
-                    <!-- </div> -->
+                    <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
+                        <td class="p0" colspan="5">
+                            <component :is="componentId"
+                                :editTaskId="task.id"
+                                displayHead='false' 
+                                :uk="index" 
+                                @editingCompleted="editTask('row'+index, task.id)"
+                                class="tasks-create" 
+                                editing="true"
+                                :buttonsIndex="2"
+                            >
+                            </component>
+                        </td>
+                    </tr>
 
                 </template>
             </template>
@@ -135,7 +118,6 @@
 </template>
 
 <script>
-import swal from 'sweetalert'
 import useDeleteSwal from '@/helpers/swalDelete';
 import TasksCreate from './TasksCreate.vue';
 import TasksProgress from './TasksProgress.vue';
@@ -188,16 +170,6 @@ export default {
                 mutationArgs: {taskId, filters: this.filterFor}
             })
         },
-        showSwal({editing, task}) {
-            if (editing) {
-                swal({
-                    title: "Success",
-                    text: `Edited "${task}"`,
-                    icon: "success",
-                    button: "Ok"
-                })
-            }
-        },
         editTask(rowIndex, taskId) {
             const show = this.$refs[rowIndex][0].classList.contains('hide')
             if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
@@ -223,6 +195,9 @@ export default {
         sort() {
             this.p = !this.p
         }
+    }, 
+    created() {
+        console.log(this.$store.getters['users/allUsers'])
     },
     components: { 
         DotsMenu, 

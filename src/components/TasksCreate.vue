@@ -18,40 +18,52 @@
                             
                             <div class="row mt8">
                                 <label :for="'task-client'+uk" class="labels c1">client</label>
-                                <select v-model="taskClient" :id='"task-client"+uk'>
-                                    <option value="/u/clients/create-client">create new client</option>
-                                    <option v-for="(client, index) in allClients" :value="client.id" :key="index.toString()+uk">
-                                        {{client.name}}
-                                    </option>
-                                </select>
+                                <vue-multiselect :id="'task-client'+uk" v-model="taskClient" :options="allClients" :custom-label="labelForClient" track-by="id" placeholder="Select Slient">
+                                    <template #noResult>
+                                        Oops! No client found. Consider creating new client
+                                    </template>
+                                </vue-multiselect>
                             </div>
 
-                            <div class="row mt8">
-                                <label :for="'task-status'+uk" class="labels c1">status</label>
-                                <input v-model="taskStatus" type="text" :id='"task-status"+uk'>
-                            </div>
+                            <template v-if="editing">
+                                <div class="row mt8">
+                                    <label :for="'contactEmail'+uk" class="labels c1">Contact Email: </label>
+                                    <input :value="clientContact.conEmail" :id="'contactEmail'+uk">
+                                    <!-- <span class="ml8">{{ clientContact.conPhone }}</span> -->
+                                </div>
+
+                                <div class="row mt8">
+                                    <label :for="'contactPhone'+uk" class="labels c1">Contact Phone: </label>
+                                    <input :value="clientContact.conPhone" :id="'contactPhone'+uk" type="text">
+                                </div>
+
+                                <div class="row mt8">
+                                    <label :for="'task-status'+uk" class="labels c1">status</label>
+                                    <input v-model="taskStatus" type="text" :id='"task-status"+uk'>
+                                </div>
+                            </template>
 
                             <div class="row mt8">
                                 <label :for="'task-coordinator'+uk" class="labels c1">co-ordinator</label>
-                                <select v-model="taskCoordinator" name="task-coordinator" :id='"task-coordinator"+uk'>
-                                    <option v-for="(user, index) in allUsers" :key="index.toString()+uk" :value="user.id">
-                                        {{user.firstName}} {{user.lastName}}
-                                    </option>
-                                </select>
+                                <vue-multiselect :id="'task-coordinator'+uk" v-model="taskCoordinator" placeholder="Select Coordinator" :options="allUsers" :custom-label="labelForCoordinator" track-by="id">
+                                    <template #noResult>
+                                        Oops! No user found. Consider creating new user
+                                    </template>
+                                </vue-multiselect>
                             </div>
 
                             <div class="row mt8">
                                 <label :for="'task-tasks'+uk" class="labels c1">task</label>
-                                <select @change="taskMasterSelected" v-model="taskMasterId" :id='"task-tasks"+uk'>
-                                    <option v-for="taskMaster of tasksMasterListGet" :key="taskMaster.id" :value="taskMaster.id">
-                                        {{taskMaster.title}}
-                                    </option>
-                                </select>
+                                <vue-multiselect :id="'task-tasks'+uk" v-model="taskMasterId" @change="taskMasterSelected" placeholder="Select Task-Master" :options="tasksMasterListGet" :custom-label="labelForTaskMaster" track-by="id">
+                                    <template #noResult>
+                                        Oops! No task-master found. Consider creating new task-master
+                                    </template>
+                                </vue-multiselect>
                             </div>
 
                             
                             <div class="row mt8">
-                                <label :for="'task-cost'+uk" class="labels c1">cost</label>
+                                <label :for="'task-cost'+uk" class="labels c1">fees</label>
                                 <input type="number" v-model="taskCost" :id="'task-cost'+uk">
                             </div>
 
@@ -127,12 +139,11 @@
                                 </div>
 
                                 <div class="ml16">
-                                    <select v-model="task.assignedTo" name="assigned-to" class="sub-task-extra">
-                                        <option value="" disabled selected hidden>assign</option>
-                                        <option v-for="(user, index) in allUsers" :key="index.toString()+uk" :value="user.id">
-                                            {{user.firstName}} {{user.lastName}}
-                                        </option>
-                                    </select>
+                                    <vue-multiselect v-model="task.assignedTo" :options="allUsers" :custom-label="labelForCoordinator" track-by="id" placeholder="Assigend To" class="sub-task-extra">
+                                        <template #noResult>
+                                            Oops! No user found. Consider creating new user
+                                        </template>
+                                    </vue-multiselect>
                                 </div>
                                 
                                 <div class="ml16">
@@ -159,7 +170,8 @@
                         <th>sub-task</th>
                         <th>date</th>
                     </tr>
-                    <tr v-for="(logObj, index) in taskLogs" :key="index"
+
+                    <tr v-for="(logObj, index) in taskData(editTaskId)?.tasksLogs" :key="index"
                         class="tr">
                         <td>{{logObj.user}}</td>
                         <td>
@@ -172,8 +184,7 @@
                             </span>
                         </td>
                         <td>{{logObj.subTask ? logObj.subTask : "Not Available"}}</td>
-                        <td>{{logObj.timestamp}}</td>
-                        <!-- new Date(logObj.timestamp).toLocaleDateString() -->
+                        <td>{{ new Date(logObj.timestamp).toLocaleString() }}</td>
                     </tr>
                 </table>
             </div>
@@ -187,10 +198,14 @@
     import swal from 'sweetalert'
     import useEditSwal from '../helpers/swalEdit'
     import useCreateSwal from '@/helpers/swalCreate'
+    import VueMultiselect from 'vue-multiselect'
 
     export default {
         name: 'TasksCreate',
         props: ['editTaskId', 'uk'],
+        components: {
+            VueMultiselect,
+        },
         data() {
             return {
                 editing: false,
@@ -211,17 +226,17 @@
                 save: false,
                 taskRepeat: '',
                 taskRepeatOn: '',
+                clientContact: '',
 
                 taskLogs: [],
-
                 // disabled: true
             }
         },
         computed: {
-            ...mapGetters([
-                'tasks/taskData',
-                'tasks/subTasksData',
-                'tasks/tasksMasterListGet'
+            ...mapGetters('tasks', [
+                'taskData',
+                'subTasksData',
+                'tasksMasterListGet'
             ]),
             ...mapGetters('users', [
                 'allUsers'
@@ -232,8 +247,17 @@
         },
         methods: {
             ...mapActions(['promptMessage']),
+            labelForCoordinator({firstName, lastName, id}) {
+                return `${firstName} ${lastName} (${id})`
+            },
+            labelForClient({name, id}) {
+                return `${name} (${id})`
+            },
+            labelForTaskMaster({title, id}) {
+                return `${title} (${id})`
+            },
             taskMasterSelected() {
-                const selectedTaskMaster = this['tasks/tasksMasterListGet'].find((o) => o.id == this.taskMasterId)
+                const selectedTaskMaster = this['tasksMasterListGet'].find((o) => o.id == this.taskMasterId)
                 subTasksMaster.get({taskMasterId: this.taskMasterId})
                 .then((results) => {
                     this.subTasks = (results.data.subTasksMasterList)
@@ -286,34 +310,50 @@
                     coordinatorId,
                     clientId
                 } = data
-
+                const clientData = this.allClients.find(client => client.id == clientId)
                 this.taskTitle = title
                 this.taskDescription = description
                 this.taskCost = cost
-                this.taskCoordinator = coordinatorId
-                this.taskClient = clientId
-                this.taskMasterId = taskMasterId
+                this.taskCoordinator = this.allUsers.find(user => user.id == coordinatorId)
+                this.taskClient = clientData
+                this.taskMasterId = this.tasksMasterListGet.find(task => task.id == taskMasterId)
+                this.clientContact = clientData
             },
             proceed() {
                 // this.disabled = true
+                this.subTasks?.map((subTask) => {
+                    subTask.assignedTo = subTask.assignedTo?.id
+                })
+                
                 const args = {
-                        saved: new Number(this.save),
-                        taskId: this.editTaskId,
-                        taskMasterId: this.taskMasterId,
-                        title: this.taskTitle,
-                        description: this.taskDescription,
-                        cost: this.taskCost,
-                        clientId: this.taskClient,
-                        coordinatorId: this.taskCoordinator,
-                        subTasks: JSON.stringify(this.subTasks),
-                        removedSubTasks: JSON.stringify(this.removedSubTasksId)
-                    }
+                    saved: new Number(this.save),
+                    taskId: this.editTaskId,
+                    taskMasterId: this.taskMasterId,
+                    title: this.taskTitle,
+                    description: this.taskDescription,
+                    cost: this.taskCost,
+                    clientId: this.taskClient,
+                    coordinatorId: this.taskCoordinator,
+                    subTasks: JSON.stringify(this.subTasks),
+                    removedSubTasks: JSON.stringify(this.removedSubTasksId),
+                }
+
+                if (args.coordinatorId?.id) {
+                    args.coordinatorId = args.coordinatorId?.id
+                }
+                if (args.clientId?.id) {
+                    args.clientId = args.clientId?.id
+                }
+                if (args.taskMasterId?.id) {
+                    args.taskMasterId = args.taskMasterId.id
+                }
+
                 if (this.editing == true) {
                     useEditSwal({
                         text: args.title,
-                        // mutationFnName: 'tasks/RESET_STATE',
+                        mutationFnName: 'tasks/RESET_STATE',
                         // mutationFnName: 'tasks/editTask',
-                        // mutationArgs: args,
+                        mutationArgs: {isMaster: this.save},
                         context: this,
                         promise: () => tasks.edit(args)
                     })
@@ -342,10 +382,7 @@
                     if (value != null) throw null
                 })
                 .catch(() => {
-                    if (this.editing == true) this.$emit("editingCompleted", {
-                        editing: 0,
-                        task: this.taskTitle
-                    })
+                    if (this.editing == true) this.$emit("editingCompleted")
                     else this.$router.push('/u/tasks/list')
                 })
             }
@@ -372,18 +409,20 @@
             }
         },
         mounted() {
+            console.log("tasksCreate mounted")
             if (this.editing == true) {
-
-                const taskData = (this['tasks/taskData'])(this.editTaskId)?.taskData[0]
-                const taskLogs = (this['tasks/taskData'])(this.editTaskId)?.taskLogs
-                const subTasksData = this['tasks/subTasksData'](this.editTaskId)
+                const taskData = (this['taskData'])(this.editTaskId)?.taskData[0]
+                const taskLogs = (this['taskData'])(this.editTaskId)?.taskLogs
+                const subTasksData = this['subTasksData'](this.editTaskId)
                 if (taskData != undefined && taskData != '') {
                     this.populateDataProperties(taskData)
                     this.taskLogs = taskLogs
                 }
                 if (subTasksData != undefined && subTasksData != '') {
-                    console.log(subTasksData)
-                    this.subTasks = subTasksData 
+                    for(let i =0; i<subTasksData.length; i++) {
+                        subTasksData[i].assignedTo = this.allUsers.find(user => user.id == subTasksData[i].assignedTo)
+                    }          
+                    this.subTasks = subTasksData
                 }
             }
 
@@ -446,7 +485,7 @@ input, select {
 .sub-task-extra {
     width: 80% !important;
     border: none;
-    border-bottom: solid 1px #e7eaec;
+    border-bottom: solid 1px #e7eaec !important;
 }
 .grid-wrapper {
     width: 100%;

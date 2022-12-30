@@ -1,5 +1,6 @@
 <template>
-    <div class="flex">
+    <vue-ellipse-progress :progress="50"></vue-ellipse-progress>
+    <!-- <div class="flex">
         <div>
             <div class="base-timer">
                 <svg
@@ -32,12 +33,17 @@
         <p class="m0 ml16">
             1/2
         </p>
-    </div>
+    </div> -->
 </template>
 
 <script>
+    import VueEllipseProgress from 'vue-ellipse-progress'
+
     export default {
         name: 'TasksProgress',
+        components: {
+            VueEllipseProgress
+        },
         data() {
             return {
                 length: 2*3.14*12.5

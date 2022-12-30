@@ -15,9 +15,7 @@ export default function useEditSwal({text, mutationFnName, mutationArgs, promise
     })
     .then(() => {
         store.commit(mutationFnName, mutationArgs)
-        setTimeout(() => {
-            context.$emit('editingCompleted') //to toggle hidden-tr
-        }, 1)
+        context.$emit('editingCompleted') //to toggle hidden-tr
         return swal({
             title: "Success",
             text: `Edited "${text}"`,
