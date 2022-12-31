@@ -26,7 +26,8 @@ const endpoints = {
     editTaskMaster: '/u/api/tasks/edit-task-master',
     deleteClient: '/u/api/clients/delete-client',
     deleteTask: '/u/api/tasks/delete-task',
-    changeStatusMyTask: '/u/api/myTasks/change-status'
+    changeStatusMyTask: '/u/api/myTasks/change-status',
+    changeTaskStatus: '/u/api/tasks/change-status'
 }
 
 export default endpoints

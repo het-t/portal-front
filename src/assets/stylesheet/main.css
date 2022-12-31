@@ -142,6 +142,7 @@ a {
     border: solid 1px #e7eaec;
     width: 100%;
     color: #676a6c;
+    overflow-x: auto;
 }
 table, th, td {
     border-collapse: collapse;

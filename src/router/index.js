@@ -280,7 +280,6 @@ const routes = [{
     
 
 const router = createRouter({
-  // mode: 'hash',
   base: 'portal-deploy',
   history: createWebHistory(process.env.BASE_URL),
   routes
@@ -288,9 +287,9 @@ const router = createRouter({
 
 
 router.beforeEach((to)=>{
-  if (to?.meta.protected) {
+  if (to?.meta?.protected) {
     const userRights = store.getters['rights/getUserRights']
-    const allow = userRights.some((right) => right.code_name == to.name)
+    const allow = userRights?.some((right) => right?.code_name == to?.name)
     if (!allow) return { name: 'no_access'}
   }
 })

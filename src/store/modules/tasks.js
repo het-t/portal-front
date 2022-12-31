@@ -2,9 +2,7 @@ import { tasks, tasksMaster } from "@/api"
 
 const state = {
     tasksCount: '', //no. of total tasks
-    tasks: {
-        '1_id_0___': ''
-    },      //page data of tasks table
+    tasks: {},      //page data of tasks table
     tasksData: {},   //data of all tasks opened to edit
     subTasksData: {},    //data of all sub tasks opened to edit
     tasksMaster: [],    //list of all tasks master
@@ -19,7 +17,7 @@ const getters = {
     },
     tasksListGet: (state) => (index, sortBy, sortOrder, filters) => {
         //filters=> 0-name, 1-rights
-        return state.tasks[`${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}`]
+        return state.tasks[`${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}_${filters[3]}_${filters[4]}`]
     },
     tasksCountGet (state) {
         return state.tasksCount
@@ -63,7 +61,7 @@ const mutations = {
     tasksList(state, {index, sortBy, sortOrder, filters, data}) {
         //filters: 0-name, 1-rights
         Object.defineProperty(state.tasks, 
-            `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}`, {
+            `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}_${filters[3]}_${filters[4]}`, {
             value: data,
             writable: true,
             enumerable: true,
@@ -141,7 +139,7 @@ const actions = {
             } 
             else resolve()
         })
-    }
+    },
 }
 
 export default {

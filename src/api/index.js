@@ -34,7 +34,8 @@ const tasks = {
     create: (args) => makeGetReq(endpoints.createTask, args),
     edit: (args) => makeGetReq(endpoints.editTask, args),
     getSubTasks: (args) => makeGetReq(endpoints.getSubTasks, args),
-    delete: (args) => makePostReq(endpoints.deleteTask, args)
+    delete: (args) => makePostReq(endpoints.deleteTask, args),
+    changeStatus: (args) => makePostReq(endpoints.changeTaskStatus, args)
 }
 
 const tasksMaster = {

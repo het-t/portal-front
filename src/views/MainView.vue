@@ -33,6 +33,13 @@
         </div>
 
         <div class="link-list">
+          <router-link to="/u/assigned/list" tabindex="-1" class="pt16 pb16 link">
+            <font-awesome-icon :icon="['fas', 'user-check']" class="pa-icon ml24 mr24"></font-awesome-icon>
+            <span v-if="showLabels">assigned</span>
+          </router-link>
+        </div>
+
+        <div class="link-list">
           <router-link to="/u/my-tasks/list" tabindex="-1" class="pt16 pb16 link">
             <font-awesome-icon :icon="['fas', 'sun']" class="pa-icon ml24 mr24"></font-awesome-icon>
             <span v-if="showLabels">my tasks</span>
@@ -103,9 +110,6 @@ import TheBreadcrumb from '../components/TheBreadcrumb.vue'
       }
     },
     created() {
-      this.$store.subscribe((mutations, state) => {
-        console.log(mutations, state)
-      })
       if (this.$store.getters['rights/getUserRights'] == '') {
         getUserRights()
         .then((res) => {

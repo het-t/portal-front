@@ -29,7 +29,6 @@
                                 <div class="row mt8">
                                     <label :for="'contactEmail'+uk" class="labels c1">Contact Email: </label>
                                     <input :value="clientContact.conEmail" :id="'contactEmail'+uk">
-                                    <!-- <span class="ml8">{{ clientContact.conPhone }}</span> -->
                                 </div>
 
                                 <div class="row mt8">

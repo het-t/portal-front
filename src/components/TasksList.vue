@@ -3,7 +3,34 @@
         <div ref="menu">
             <dots-menu v-if="menuVisibisility == true">
                 <template #links>
-                    <li>
+                    <li title="change status to billed">
+                        <font-awesome-icon
+                        @click="changeTaskStatus(3)"
+                            class="menu-icons"
+                            :icon="['fas', 'dollar-sign']"
+                        ></font-awesome-icon>
+                    </li>
+
+                    <li title="change status to unbilled" @click="changeTaskStatus(2)" class="fa-stack fa-2x">
+                        <font-awesome-icon
+                            class="menu-icons fa-stack-2x"
+                            :icon="['fas', 'dollar-sign']"
+                        ></font-awesome-icon>
+                        <font-awesome-icon
+                            class="menu-icons fa-stack-1x"
+                            :icon="['fas', 'slash']"
+                        ></font-awesome-icon>
+                    </li>
+
+                    <li title="change status to in progress">
+                        <font-awesome-icon
+                        @click="changeTaskStatus(1)"
+                            class="menu-icons"
+                            :icon="['fas', 'hand']"
+                        ></font-awesome-icon>
+                    </li>
+
+                    <li title="delete task">
                         <font-awesome-icon 
                         @click="deleteTask(selectedTaskId, selectedTask)"
                             class="menu-icons" 
@@ -20,7 +47,7 @@
                 <tr class="table-heading">
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="l=!l; j=!j; k=!k; p=!p;" :key="i" sortBy="title" sortType="string" storeName="tasks"></table-sort>
+                            <table-sort @clicked="l=!l; j=!j; k=!k; p=!p; m=!m;" :key="i" sortBy="title" sortType="string" storeName="tasks"></table-sort>
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="nameH" type="text" class="header p0" required>
                                 <span @click="$refs['nameH'].focus()" class="floating-label">name</span>
@@ -30,7 +57,7 @@
 
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="i=!i; l=!l; k=!k; p=!p;" :key="j" sortBy="description" sortType="string" storeName="tasks"></table-sort>
+                            <table-sort @clicked="i=!i; l=!l; k=!k; p=!p; m=!m;" :key="j" sortBy="description" sortType="string" storeName="tasks"></table-sort>
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="desH" type="text" class="header p0" required>
                                 <span @click="$refs['desH'].focus()" class="floating-label">description</span>
@@ -40,7 +67,7 @@
 
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="i=!i; j=!j; l=!l; p=!p;" :key="k" sortBy="client" sortType="string" storeName="tasks"></table-sort>
+                            <table-sort @clicked="i=!i; j=!j; l=!l; p=!p; m=!m;" :key="k" sortBy="client" sortType="string" storeName="tasks"></table-sort>
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[2]" ref="clientH" type="text" class="header p0" required>
                                 <span @click="$refs['clientH'].focus()" class="floating-label">client</span>
@@ -50,15 +77,23 @@
                     
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="i=!i; j=!j; k=!k; p=!p;" :key="l" sortBy="progress" sortType="number" storeName="tasks"></table-sort>
+                            <table-sort @clicked="i=!i; j=!j; k=!k; p=!p; m=!m;" :key="l" sortBy="progress" sortType="number" storeName="tasks"></table-sort>
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" ref="progH" type="text" class="header p0" required>
+                                <input v-debounce:700ms.lock="sort" v-model="filterFor[4]" ref="progH" type="text" class="header p0" required>
                                 <span @click="$refs['progH'].focus()" class="floating-label">progress</span>
                             </div>
                         </div>
                     </th>
 
-                    <th>status</th>
+                    <th>
+                        <div class="flex">
+                            <table-sort @clicked="i=!i; j=!j; k=!k; p=!p; l=!l;" :key="m" sortBy="status" sortType="number" storeName="tasks"></table-sort>
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filterFor[3]" ref="statusH" type="text" class="header p0" required>
+                                <span @click="$refs['statusH'].focus()" class="floating-label">status</span>
+                            </div>
+                        </div>
+                    </th>
                     <div></div>
                 </tr>
             </template>
@@ -67,6 +102,7 @@
                 <template v-for="(task, index) of tasks" :key="task.id">
 
                     <tr
+                        v-show="task.id"
                         class="tr edit-task-tr" 
                         tabindex="0"
                         @keyup.enter="editTask('row'+index, task.id)"
@@ -132,6 +168,7 @@ import { tasks } from '../api';
 import TableSort from './TableSort.vue';
 import NoAccess from './NoAccess.vue';
 import rightCheck from '@/helpers/RightCheck';
+import useEditSwal from '../helpers/swalEdit';
 
 export default {
     name: "TasksList",
@@ -143,9 +180,9 @@ export default {
             selectedTaskId: '',
             selectedTask: '',
 
-            i:0, j:0, k:0, l:0, p:0,
+            i:0, j:0, k:0, l:0, m:0, p:0,
 
-            filterFor: ['', '', ''],
+            filterFor: ['', '', '', '', ''],
 
             componentId: 'NoAccess'
         };
@@ -154,7 +191,7 @@ export default {
         tasks() {
             if (this.tasksList?.length != 0) return this.tasksList
             return this.$store.getters['tasks/tasksListGet'](1, 'id', 0, this.filterFor)
-        }
+        },
     },
     methods: {
         menu(e, {taskId, task, visibility}) {
@@ -162,6 +199,23 @@ export default {
             this.selectedTaskId = taskId
             this.selectedTask = task
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
+        },
+        changeTaskStatus(statusId) {
+            let status;
+            if (statusId == 1) status = 'In Progress'
+            else if (statusId == 2) status = 'Unbilled'
+            else status = 'Billed'
+
+            useEditSwal({
+                text: `status of task ${this.selectedTask} to ${status}`,
+                context: this,
+                mutationFnName: 'tasks/RESET_STATE',
+                mutationArgs: {is_master: true},
+                promise: () => tasks.changeStatus({
+                    taskId: this.selectedTaskId,
+                    statusId,
+                })
+            })
         },
         deleteTask(taskId, task) {
             useDeleteSwal({
@@ -198,9 +252,6 @@ export default {
             this.p = !this.p
         }
     }, 
-    created() {
-        console.log(this.$store.getters['users/allUsers'])
-    },
     components: { 
         DotsMenu, 
         TasksProgress, 
@@ -237,6 +288,7 @@ export default {
         border: solid 1px grey;
         padding: 4px 12px;
         border-radius: 12px;
+        width: fit-content;
     }   
     .Unbilled {
         border-color: red;

@@ -31,7 +31,11 @@ import { faListCheck,
         faArrowUpAZ,
         faArrowDownAZ,
         faArrowUp19,
-        faArrowDown19
+        faArrowDown19,
+        faDollarSign,
+        faSlash,
+        faHand,
+        faUserCheck
     } from '@fortawesome/free-solid-svg-icons'
 
 
@@ -54,7 +58,11 @@ library.add(
     faArrowUpAZ,
     faArrowDownAZ,
     faArrowUp19,
-    faArrowDown19
+    faArrowDown19,
+    faDollarSign,
+    faSlash,
+    faHand,
+    faUserCheck
 )
 
 let app = createApp(App)
