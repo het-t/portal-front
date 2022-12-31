@@ -89,7 +89,12 @@
                         <div class="flex">
                             <table-sort @clicked="i=!i; j=!j; k=!k; p=!p; l=!l;" :key="m" sortBy="status" sortType="number" storeName="tasks"></table-sort>
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" v-model="filterFor[3]" ref="statusH" type="text" class="header p0" required>
+                                <!-- <input v-debounce:700ms.lock="sort" v-model="filterFor[3]" ref="statusH" type="text" class="header p0" required> -->
+                                <select @change="sort" v-model="filterFor[3]" ref="statusH" class="header p0" required>
+                                    <option value="1">InProgress</option>
+                                    <option value="2">Unbilled</option>
+                                    <option value="3">Billed</option>
+                                </select>
                                 <span @click="$refs['statusH'].focus()" class="floating-label">status</span>
                             </div>
                         </div>
@@ -184,7 +189,7 @@ export default {
 
             filterFor: ['', '', '', '', ''],
 
-            componentId: 'NoAccess'
+            componentId: 'NoAccess',
         };
     },
     computed: {
@@ -261,7 +266,8 @@ export default {
         TablePagination, 
         SkeletonForm, 
         TableSort,
-        NoAccess
+        NoAccess,
+        // VueMultiselect
     }
 }
 </script>
@@ -278,14 +284,15 @@ export default {
     }
     .flex {
         display: flex;
-        /* align-items: center; */
+        align-items: center;
     }
     .edit-task-tr {
         cursor: pointer;
     }
     .task-status {
         font-size: 12px;
-        border: solid 1px grey;
+        border: solid 1px #a0a0a0;
+        color: #a0a0a0;
         padding: 4px 12px;
         border-radius: 12px;
         width: fit-content;

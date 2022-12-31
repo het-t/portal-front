@@ -2,7 +2,8 @@ const state = {
     activityCount: '', //no. of activity
     activity: {},      //table data of visited pages
     sortBy: 'id',
-    sortOrder: 0        //0-desc, 1-asc
+    sortOrder: 0,        //0-desc, 1-asc
+    currentPage: ''
 }
 
 const getters = {
@@ -39,6 +40,9 @@ const mutations = {
     sortSet(state, {sortBy, sortOrder}) {
         state.sortBy = sortBy
         state.sortOrder = sortOrder
+    },
+    currentPageSet(state, {index}) {
+        state.currentPage = index
     }
 }
 

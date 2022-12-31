@@ -28,12 +28,12 @@
                             <template v-if="editing">
                                 <div class="row mt8">
                                     <label :for="'contactEmail'+uk" class="labels c1">Contact Email: </label>
-                                    <input :value="clientContact.conEmail" :id="'contactEmail'+uk">
+                                    <input :value="clientContact?.conEmail" :id="'contactEmail'+uk">
                                 </div>
 
                                 <div class="row mt8">
                                     <label :for="'contactPhone'+uk" class="labels c1">Contact Phone: </label>
-                                    <input :value="clientContact.conPhone" :id="'contactPhone'+uk" type="text">
+                                    <input :value="clientContact?.conPhone" :id="'contactPhone'+uk" type="text">
                                 </div>
 
                                 <div class="row mt8">
@@ -95,7 +95,7 @@
                 </div>
                 <div class="vr"></div>
 
-                <div class="fg pr16">
+                <div class="fg pr16 sub-tasks-scroll">
                     <div>
                         <div class="row mt8">
                             <label :for="'task-sub-task'+uk" class="labels c1">sub task</label>
@@ -290,6 +290,7 @@
                 this.newSubTask = ''
             },
             removeSubTask(index) {
+                console.log(this.subTasks, "some")
                 const rmSubTask = this.subTasks.splice(index, 1)
                 if (rmSubTask[0]?.id) {
                     this.removedSubTasksId.push(rmSubTask[0]?.id)
@@ -510,5 +511,9 @@ input, select {
     width: fit-content;
     border: none;
     border-bottom: solid 1px #e7eaec;
+}
+.sub-tasks-scroll {
+    max-height: 720px;
+    overflow-y: auto;
 }
 </style>

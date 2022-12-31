@@ -1,7 +1,10 @@
 <template>
     <div class="prg">
-        <circle-progress class="progress" :percent="prg" fill-color="#1baf83"></circle-progress>
-        <span>{{ completed }} / {{ total }}</span>
+        <div class="flex" :title="parseFloat(completed * 100 / total).toFixed(2)+'%'">
+            <circle-progress class="progress" :percent="prg" fill-color="#1baf83"></circle-progress>
+            <span style="font-size: 12px;">{{ completed }} / {{ total }}</span>
+        </div>
+
     </div>
 </template>
 
@@ -26,8 +29,8 @@ import CircleProgress from "vue3-circle-progress";
 
 <style>
 .progress svg {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
 }
 .prg {
     display: flex;
@@ -36,5 +39,11 @@ import CircleProgress from "vue3-circle-progress";
 .vue3-circular-progressbar {
     height: 30px !important;
     width: 30px !important;
+}
+.flex {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
 }
 </style>

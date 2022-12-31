@@ -45,7 +45,7 @@ const mutations = {
         if (isMaster) state.tasksMaster = []
     },
     deleteTask(state, {taskId, filters}) {
-        const path = state.currentPage+'_'+state.sortBy+'_'+state.sortOrder+'_'+filters[0]+'_'+filters[1]+'_'+filters[2]
+        const path = state.currentPage+'_'+state.sortBy+'_'+state.sortOrder+'_'+filters[0]+'_'+filters[1]+'_'+filters[2]+'_'+filters[3]+'_'+filters[4]
         state.tasks[path].splice(state.tasks[path].findIndex(task => task.id == taskId), 1)
     },
     tasksDataSet(state, {taskId, taskData}) {
@@ -87,6 +87,28 @@ const mutations = {
 }
 
 const actions = {
+    tasksList({getters, commit}, {index, from, filters}) {
+        const {sortBy, sortOrder} = getters['sortGet']
+        const res = getters['tasksListGet'](index, sortBy, sortOrder, filters)
+        if (res?.length) {
+            tasks.get({
+                from,
+                recordsPerPage: 10,
+                sortBy,
+                sortOrder,
+                filters       
+            })
+            .then(results => {
+                commit('tasksList', {
+                    index,
+                    sortBy,
+                    sortOrder,
+                    filters,
+                    data: results.data.tasksList
+                })
+            })
+        } 
+    },
     tasksDataSet({getters, commit}, {taskId}) {
         const res = getters['taskData']?.(taskId)
         return new Promise((resolve, reject) => {
