@@ -8,7 +8,8 @@ const state = {
     tasksMaster: [],    //list of all tasks master
     sortBy: 'id',       
     sortOrder: 0,       //0-desc, 1-asc
-    currentPage: ''        
+    currentPage: '',
+    paginationKey: 0
 }
 
 const getters = {
@@ -33,6 +34,9 @@ const getters = {
             sortBy: state.sortBy,
             sortOrder: state.sortOrder
         }
+    },
+    getKey(state) {
+        return state.paginationKey
     }
 }
 
@@ -83,6 +87,14 @@ const mutations = {
     },
     currentPageSet(state, {index}) {
         state.currentPage = index
+    },
+    refetch(state) {
+        state.tasks = {}
+        state.tasksData = {}
+        state.subTasksData = {}
+        console.log("instore ", getters['getKey'], state.paginationKey)
+        if(state.paginationKey == 0) state.paginationKey = 1
+        else if (state.paginationKey == 1) state.paginationKey = 0
     }
 }
 

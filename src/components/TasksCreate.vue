@@ -18,7 +18,7 @@
                             
                             <div class="row mt8">
                                 <label :for="'task-client'+uk" class="labels c1">client</label>
-                                <vue-multiselect :id="'task-client'+uk" v-model="taskClient" :options="allClients" :custom-label="labelForClient" track-by="id" placeholder="Select Slient">
+                                <vue-multiselect :id="'task-client'+uk" v-model="taskClient" :options="allClients" :custom-label="labelForClient" track-by="id" placeholder="Select Client">
                                     <template #noResult>
                                         Oops! No client found. Consider creating new client
                                     </template>
@@ -38,7 +38,11 @@
 
                                 <div class="row mt8">
                                     <label :for="'task-status'+uk" class="labels c1">status</label>
-                                    <input v-model="taskStatus" type="text" :id='"task-status"+uk'>
+                                    <select v-model="taskStatus" :id='"task-status"+uk'>
+                                        <option value="1">InProgress</option>
+                                        <option value="2">Unbilled</option>
+                                        <option value="3">Billed</option>
+                                    </select>
                                 </div>
                             </template>
 
@@ -273,12 +277,7 @@
                 this.$refs[newTab+this.uk]?.classList?.remove('hide')
                 this.$refs['details'+this.uk+'focus'].focus()
             },
-            getTaskStatus(subTasks) {
-                let o = subTasks?.find(o => o?.subTaskStatus != "done")
-                typeof o == 'undefined' ? this.taskStatus = 'unbilled' : this.taskStatus = o?.subTaskStatus 
-            },
             addSubTask() {
-                console.log("subtasks", this.subTasks)
                 this.subTasks.push({
                     description: this.newSubTask,
                     statusId: 2,
@@ -290,7 +289,6 @@
                 this.newSubTask = ''
             },
             removeSubTask(index) {
-                console.log(this.subTasks, "some")
                 const rmSubTask = this.subTasks.splice(index, 1)
                 if (rmSubTask[0]?.id) {
                     this.removedSubTasksId.push(rmSubTask[0]?.id)
@@ -308,7 +306,8 @@
                     description,
                     cost,
                     coordinatorId,
-                    clientId
+                    clientId,
+                    status
                 } = data
                 const clientData = this.allClients.find(client => client.id == clientId)
                 this.taskTitle = title
@@ -318,6 +317,7 @@
                 this.taskClient = clientData
                 this.taskMasterId = this.tasksMasterListGet.find(task => task.id == taskMasterId)
                 this.clientContact = clientData
+                this.taskStatus = status
             },
             proceed() {
                 // this.disabled = true
@@ -351,11 +351,13 @@
                 if (this.editing == true) {
                     useEditSwal({
                         text: args.title,
-                        mutationFnName: 'tasks/RESET_STATE',
+                        mutationFnName: 'tasks/refetch',
                         // mutationFnName: 'tasks/editTask',
                         mutationArgs: {isMaster: this.save},
                         context: this,
-                        promise: () => tasks.edit(args)
+                        promise: () => {
+                            return tasks.edit(args)
+                        }
                     })
                 }
                 else {
@@ -401,15 +403,12 @@
 
             if (window.history.state.taskId != undefined){ 
                 this.editing = true  
-                this.getTaskStatus(this.subTasks)
             }
             else if (this.editTaskId != undefined) {
                 this.editing = true
-                this.getTaskStatus(this.subTasks)
             }
         },
         mounted() {
-            console.log("tasksCreate mounted")
             if (this.editing == true) {
                 const taskData = (this['taskData'])(this.editTaskId)?.taskData[0]
                 const taskLogs = (this['taskData'])(this.editTaskId)?.taskLogs

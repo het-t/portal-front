@@ -15,7 +15,7 @@ html {
     font-family: 'Open Sans', sans-serif;
     font-size: 13px;
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
     background-color: #293846;
 }
 body, #app {
@@ -184,6 +184,9 @@ th:hover .tr-th img, .tr-th button:focus img {
 .table-action {
     border: solid 1px white;
 }
+/* tr  th:not(:nth-last-child(2)) , tr td:not(:nth-last-child(2)){
+    border-right: solid 1px #e7eaec;
+} */
 /* .table-action:hover, .table-action:focus {
     border: solid 1px #d2d2d2;
 } */

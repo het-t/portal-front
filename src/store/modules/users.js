@@ -11,7 +11,8 @@ const state = {
     usersData: {},  //list of data of users selected to edit
     sortBy: 'id',
     sortOrder: 0,    //0-desc, 1-asc
-    currentPage: ''
+    currentPage: '',
+    paginationKey: 0
 }
 
 const getters = {
@@ -32,6 +33,9 @@ const getters = {
             sortBy: state.sortBy,
             sortOrder: state.sortOrder
         }
+    },
+    getKey(state) {
+        return state.paginationKey
     }
 }
 
@@ -73,6 +77,11 @@ const mutations = {
     },
     currentPageSet(state, {index}) {
         state.currentPage = index
+    },
+    refetch(state) {
+        state.users = {}
+        state.usersData = {}
+        state.paginationKey = !getters['getKey']
     }
 }
 

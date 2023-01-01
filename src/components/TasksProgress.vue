@@ -20,7 +20,6 @@ import CircleProgress from "vue3-circle-progress";
         props: ['total' , 'completed'],
         computed: {
             prg() {
-                console.log(this.completed*100 / this.total)
                 return this.completed*100 / this.total
             }
         }

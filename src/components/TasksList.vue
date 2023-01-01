@@ -47,7 +47,8 @@
                 <tr class="table-heading">
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="l=!l; j=!j; k=!k; p=!p; m=!m;" :key="i" sortBy="title" sortType="string" storeName="tasks"></table-sort>
+                            <!-- l=!l; j=!j; k=!k; p=!p; m=!m;  -->
+                            <table-sort @clicked="j=!j; l=!l; k=!k; m=!m; sort()" :key="i" sortBy="title" sortType="string" storeName="tasks"></table-sort>
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="nameH" type="text" class="header p0" required>
                                 <span @click="$refs['nameH'].focus()" class="floating-label">name</span>
@@ -57,7 +58,7 @@
 
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="i=!i; l=!l; k=!k; p=!p; m=!m;" :key="j" sortBy="description" sortType="string" storeName="tasks"></table-sort>
+                            <table-sort @clicked="i=!i; l=!l; k=!k; m=!m; sort()" :key="j" sortBy="description" sortType="string" storeName="tasks"></table-sort>
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="desH" type="text" class="header p0" required>
                                 <span @click="$refs['desH'].focus()" class="floating-label">description</span>
@@ -67,7 +68,7 @@
 
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="i=!i; j=!j; l=!l; p=!p; m=!m;" :key="k" sortBy="client" sortType="string" storeName="tasks"></table-sort>
+                            <table-sort @clicked="i=!i; j=!j; l=!l; m=!m; sort()" :key="k" sortBy="client" sortType="string" storeName="tasks"></table-sort>
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[2]" ref="clientH" type="text" class="header p0" required>
                                 <span @click="$refs['clientH'].focus()" class="floating-label">client</span>
@@ -77,17 +78,22 @@
                     
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="i=!i; j=!j; k=!k; p=!p; m=!m;" :key="l" sortBy="progress" sortType="number" storeName="tasks"></table-sort>
+                            <table-sort @clicked="i=!i; j=!j; k=!k; m=!m; sort()" :key="l" sortBy="progress" sortType="number" storeName="tasks"></table-sort>
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[4]" ref="progH" type="text" class="header p0" required>
                                 <span @click="$refs['progH'].focus()" class="floating-label">progress</span>
                             </div>
                         </div>
                     </th>
-
+                    
+                    <th title="cost of all sub-tasks + fees">
+                        <div class="flex">
+                            total
+                        </div>
+                    </th>
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="i=!i; j=!j; k=!k; p=!p; l=!l;" :key="m" sortBy="status" sortType="number" storeName="tasks"></table-sort>
+                            <table-sort @clicked="i=!i; j=!j; k=!k; l=!l; sort()" :key="m" sortBy="status" sortType="number" storeName="tasks"></table-sort>
                             <div class="floating-container">
                                 <!-- <input v-debounce:700ms.lock="sort" v-model="filterFor[3]" ref="statusH" type="text" class="header p0" required> -->
                                 <select @change="sort" v-model="filterFor[3]" ref="statusH" class="header p0" required>
@@ -99,7 +105,7 @@
                             </div>
                         </div>
                     </th>
-                    <div></div>
+                    <div style="border: none !important;"></div>
                 </tr>
             </template>
 
@@ -124,6 +130,9 @@
                             <tasks-progress :total="task.totalSubTasks" :completed="task.doneSubTasks"/>
                         </td>
                         <td>
+                            {{task?.total}}
+                        </td>
+                        <td>
                             <div class="task-status" :class="task.status">{{ task.status }}</div>
                         </td>
                         <div class="dots">
@@ -135,7 +144,7 @@
                     </tr>
 
                     <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
-                        <td class="p0" colspan="5">
+                        <td class="p0" colspan="6">
                             <component :is="componentId"
                                 :editTaskId="task.id"
                                 displayHead='false' 
@@ -152,7 +161,7 @@
                 </template>
             </template>
 
-            <table-pagination @tableData="tasksList = $event" :key="p"
+            <table-pagination @tableData="tasksList = $event" :key="$store.getters['tasks/getKey']"
                 :filters="filterFor"
                 tableName="tasks"                
             />
@@ -179,26 +188,28 @@ export default {
     name: "TasksList",
     data() {
         return {
-            allow: {},
             tasksList: [],
             menuVisibisility: '',
             selectedTaskId: '',
             selectedTask: '',
 
-            i:0, j:0, k:0, l:0, m:0, p:0,
+            i:0, j:0, k:0, l:0, m:0,
 
             filterFor: ['', '', '', '', ''],
 
-            componentId: 'NoAccess',
+            componentId: {},
         };
     },
     computed: {
         tasks() {
-            if (this.tasksList?.length != 0) return this.tasksList
+            if (this.tasksList?.length != 0) {
+                return this.tasksList
+            }
             return this.$store.getters['tasks/tasksListGet'](1, 'id', 0, this.filterFor)
         },
     },
     methods: {
+    
         menu(e, {taskId, task, visibility}) {
             this.menuVisibisility = visibility
             this.selectedTaskId = taskId
@@ -214,12 +225,14 @@ export default {
             useEditSwal({
                 text: `status of task ${this.selectedTask} to ${status}`,
                 context: this,
-                mutationFnName: 'tasks/RESET_STATE',
+                mutationFnName: 'tasks/refetch',
                 mutationArgs: {is_master: true},
-                promise: () => tasks.changeStatus({
-                    taskId: this.selectedTaskId,
-                    statusId,
-                })
+                promise: () => {
+                    return tasks.changeStatus({
+                        taskId: this.selectedTaskId,
+                        statusId,
+                    })
+                }
             })
         },
         deleteTask(taskId, task) {
@@ -249,12 +262,11 @@ export default {
                 ])
                 .then(() => {
                     this.componentId = 'TasksCreate'
-                    // this.allow[taskId] = true
                 })
             }
         },
         sort() {
-            this.p = !this.p
+            this.$store.commit('tasks/refetch')
         }
     }, 
     components: { 
@@ -267,12 +279,12 @@ export default {
         SkeletonForm, 
         TableSort,
         NoAccess,
-        // VueMultiselect
     }
 }
 </script>
 
 <style scoped>
+
     .tr:hover .dots img {
         visibility: visible !important;
     }
@@ -296,6 +308,7 @@ export default {
         padding: 4px 12px;
         border-radius: 12px;
         width: fit-content;
+        margin: auto;
     }   
     .Unbilled {
         border-color: red;
