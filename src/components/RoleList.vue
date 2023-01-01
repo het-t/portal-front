@@ -72,12 +72,17 @@
                         <tr class="tr tr-hidden hide" :ref="('row'+index)">
                             <td colspan="2" class="p0 m0">
                                 <component
-                                    :is="componentId"
+                                    v-if="componentId?.[role.id]"
+                                    :is="componentId?.[role.id]"
                                     :editRoleId="role.id"
                                     :uk="index"
                                     :buttonsIndex="1"
                                     @editingCompleted="editRole('row'+index, role.id)"
                                 ></component>
+
+                                <skeleton-form v-else
+                                    :buttonsIndex=2    
+                                ></skeleton-form>
                             </td>
                         </tr>
                     </template>
@@ -116,7 +121,7 @@ import useDeleteSwal from '@/helpers/swalDelete'
             i:0, j:0, p:0,
 
             filterFor: ['', ''],     //0-name, 1-rights
-            componentId: 'NoAccess'
+            componentId: {}
             
         };
     },
@@ -128,10 +133,10 @@ import useDeleteSwal from '@/helpers/swalDelete'
             else this.$refs[rowIndex][0].classList.add('hide')
 
             if (rightCheck('edit_role')) {
-                this.componentId    = 'SkeletonForm'
+                this.componentId[roleId]    = 'SkeletonForm'
                 this.$store.dispatch('roles/rolesDataSet', {roleId})
                 // roles.getData({roleId})
-                .then(() => this.componentId = 'RoleCreate')
+                .then(() => this.componentId[roleId] = 'RoleCreate')
             } 
         },
         deleteRole(roleId, roleName) {

@@ -85,7 +85,7 @@
                         </td>
                     </tr>
                     <tr class="tr tr-hidden hide" :ref="('row'+index)">
-                        <td colspan="3" class="p0 m0">
+                       <td colspan="3" class="p0 m0">
                             <!-- <user-create 
                                 v-if="(allow[user.id] == true)"
                                 :editUserId="user.id"
@@ -95,8 +95,8 @@
                             ></user-create> -->
                             <!-- v-if="(allow[user.id] == true)" -->
 
-                            <component 
-                                :is="componentId"
+                            <component v-if="componentId?.[user.id]" 
+                                :is="componentId?.[user.id]"
                                 :editUserId="user.id"
                                 :uk="index"
                                 @editingCompleted="editUser('row'+index, user.id)"
@@ -104,9 +104,9 @@
                                 :buttonsIndex=2    
                             ></component>
 
-                            <!-- <skeleton-form v-else 
+                            <skeleton-form v-else
                                 :buttonsIndex=2    
-                            ></skeleton-form> -->
+                            ></skeleton-form>
                         </td>
                     </tr>
                 </template>
@@ -159,7 +159,7 @@ export default {
 
             filterFor: ['', '', ''], //0-name, 1-email, 2-rights
 
-            componentId: 'NoAccess'
+            componentId: {}
         };
     },
     computed: {
@@ -176,26 +176,18 @@ export default {
 
 
             if (rightCheck('edit_user')) {
-                this.componentId = 'SkeletonForm'
+                this.componentId[userId] = 'SkeletonForm'
                 Promise.all([
                     this.$store.dispatch('users/usersDataSet', {userId})
                 ])
                 .then(() => {
                     this.allow[userId] = true
-                    this.componentId = 'UserCreate'
+                    this.componentId[userId] = 'UserCreate'
+            console.log(this.componentId)
                 })
             }
+
         },
-        // showSwal({editing, user}) {
-        //     if (editing) {
-        //         swal({
-        //             title: "Success",
-        //             text: `Edited "${user}"`,
-        //             icon: "success",
-        //             button: "Ok"
-        //         })
-        //     }
-        // },
         deleteUser(userId, userName) {
             useDeleteSwal({
                 text: userName,

@@ -69,8 +69,8 @@
                 <template v-for="(client, index) in clientList" :key="index">
                     <tr class="tr hidden-tr-parent" 
                         tabindex="0" 
-                        @click.stop="editClient('row'+index)"
-                        @keyup.enter="editClient('row'+index)"
+                        @click.stop="editClient('row'+index, client.id)"
+                        @keyup.enter="editClient('row'+index, client.id)"
                     >
                         <td>
                             {{client.name}}
@@ -115,16 +115,12 @@
                     </tr>
                     <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
                         <td colspan="5" class="p0">
-                            <!-- <client-create 
+                            <component 
+                                v-if="componentId?.[client.id]"
+                                :is="componentId?.[client.id]"
                                 :uk="index"
                                 :clientData="JSON.stringify(client)" 
-                                @editingCompleted="editClient('row'+index)"
-                            ></client-create> -->
-
-                            <component :is="componentId"
-                                :uk="index"
-                                :clientData="JSON.stringify(client)" 
-                                @editingCompleted="editClient('row'+index)"
+                                @editingCompleted="editClient('row'+index, client.id)"
                             ></component>
                         </td>
                     </tr>
@@ -160,9 +156,8 @@
             TablePagination, 
             DotsMenu, 
             TableSort,
-            NoAccess
+            NoAccess,
         },
-        name: 'ClientList',
         data() {
             return {
                 clientList: '',
@@ -176,17 +171,17 @@
 
                 filterFor: ['', '', '', ''],
 
-                componentId: 'NoAccess'
+                componentId: {}
             }
         },
         methods: {
-            editClient(rowIndex) {
+            editClient(rowIndex, clientId) {
                 const show = this.$refs[rowIndex][0].classList.contains('hide')
                 if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
                 else this.$refs[rowIndex][0].classList.add('hide')
 
                 if (rightCheck('edit_client')) {
-                    this.componentId = 'ClientCreate'
+                    this.componentId[clientId] = 'ClientCreate'
                 }
             },
             menu(e, {client, clientId, visibility}) {
@@ -203,28 +198,6 @@
                     mutationArgs: {clientId, filters:this.filterFor},
                     context: this
                 })
-                // swal({
-                //     title: "Alert",
-                //     text: `do you really want to delete "${client}"`,
-                //     icon: "warning",
-                //     buttons: true,
-                //     dangerMode: true
-                // })
-                // .then((value) => {
-                //     if (value == null) throw null 
-                //     return clients.delete({clientId})
-                // })
-                // .then(() => {
-                //     swal({
-                //         title: "Success",
-                //         text: `Deleted "${client}"`,
-                //         icon: 'success',
-                //         button: 'ok'
-                //     })
-                // })
-                // .catch(err => 
-                //     swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
-                // )
             },
             sort() {
                 this.p = !this.p
