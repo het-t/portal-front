@@ -196,7 +196,7 @@
 </template>
 
 <script>
-    import { mapActions, mapGetters } from 'vuex'
+    import { mapGetters } from 'vuex'
     import { tasks, subTasksMaster } from '@/api/index.js'
     import swal from 'sweetalert'
     import useEditSwal from '../helpers/swalEdit'
@@ -249,7 +249,6 @@
             ]),
         },
         methods: {
-            ...mapActions(['promptMessage']),
             labelForCoordinator({firstName, lastName, id}) {
                 return `${firstName} ${lastName} (${id})`
             },
@@ -352,21 +351,18 @@
                     useEditSwal({
                         text: args.title,
                         mutationFnName: 'tasks/refetch',
-                        // mutationFnName: 'tasks/editTask',
-                        mutationArgs: {isMaster: this.save},
+                        mutationArgs: {saved: args.saved, taskId: args.taskId},
+                        promise: tasks.edit(args),
                         context: this,
-                        promise: () => {
-                            return tasks.edit(args)
-                        }
                     })
                 }
                 else {
                     useCreateSwal({
                         text: args.title,
-                        mutationFnName: 'tasks/RESET_STATE',
-                        mutationArgs: {isMaster: this.save},
-                        promise: () => tasks.create(args),
+                        mutationFnName: 'tasks/refetch',
+                        mutationArgs: {saved: args.saved},
                         url: '/u/tasks/list',
+                        promise: tasks.create(args),
                         context: this
                     })
                 } 
@@ -410,12 +406,16 @@
         },
         mounted() {
             if (this.editing == true) {
-                const taskData = (this['taskData'])(this.editTaskId)?.taskData[0]
+                console.log(this['taskData'](this.editTaskId)?.taskData, "as task data")
+                const taskData = (this['taskData'])(this.editTaskId)?.taskData?.[0]
                 const taskLogs = (this['taskData'])(this.editTaskId)?.taskLogs
                 const subTasksData = this['subTasksData'](this.editTaskId)
                 if (taskData != undefined && taskData != '') {
                     this.populateDataProperties(taskData)
                     this.taskLogs = taskLogs
+                }
+                else {
+                    // this.$store.dispatch()
                 }
                 if (subTasksData != undefined && subTasksData != '') {
                     for(let i =0; i<subTasksData.length; i++) {

@@ -110,7 +110,7 @@
             </template>
 
             <template #tbody>
-                <template v-for="(task, index) of tasks" :key="task.id">
+                <template v-for="(task, index) of tasks()" :key="task.id">
 
                     <tr
                         v-show="task.id"
@@ -145,7 +145,8 @@
 
                     <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
                         <td class="p0" colspan="6">
-                            <component :is="componentId"
+                            <component
+                                :is="componentId[task.id]"
                                 :editTaskId="task.id"
                                 displayHead='false' 
                                 :uk="index" 
@@ -161,7 +162,9 @@
                 </template>
             </template>
 
-            <table-pagination @tableData="tasksList = $event" :key="$store.getters['tasks/getKey']"
+            <table-pagination 
+                @tableData="tasksList = $event" 
+                :key="$store.getters['tasks/getKey']"
                 :filters="filterFor"
                 tableName="tasks"                
             />
@@ -200,16 +203,16 @@ export default {
             componentId: {},
         };
     },
-    computed: {
+    // computed: {
+
+    // },
+    methods: {
         tasks() {
             if (this.tasksList?.length != 0) {
                 return this.tasksList
             }
             return this.$store.getters['tasks/tasksListGet'](1, 'id', 0, this.filterFor)
         },
-    },
-    methods: {
-    
         menu(e, {taskId, task, visibility}) {
             this.menuVisibisility = visibility
             this.selectedTaskId = taskId
@@ -222,46 +225,47 @@ export default {
             else if (statusId == 2) status = 'Unbilled'
             else status = 'Billed'
 
-            useEditSwal({
-                text: `status of task ${this.selectedTask} to ${status}`,
-                context: this,
-                mutationFnName: 'tasks/refetch',
-                mutationArgs: {is_master: true},
-                promise: () => {
-                    return tasks.changeStatus({
-                        taskId: this.selectedTaskId,
-                        statusId,
-                    })
-                }
+            tasks.changeStatus({
+                taskId: this.selectedTaskId,
+                statusId,               
             })
+            .then(() => 
+                useEditSwal({
+                    text: `status of task ${this.selectedTask} to ${status}`,
+                    context: this,
+                    mutationFnName: 'tasks/refetch',
+                })
+            )
         },
         deleteTask(taskId, task) {
-            useDeleteSwal({
-                text: task,
-                promise: () => tasks.delete({taskId}),
-                context: this,
-                mutationFn: 'tasks/deleteTask',
-                mutationArgs: {taskId, filters: this.filterFor}
-            })
+            tasks.delete({taskId})
+            .then(() => 
+                useDeleteSwal({
+                    text: task,
+                    context: this,
+                    mutationFn: 'tasks/deleteTask',
+                    mutationArgs: {taskId, filters: this.filterFor}
+                })
+            )
         },
         editTask(rowIndex, taskId) {
             const show = this.$refs[rowIndex][0].classList.contains('hide')
             if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
             else this.$refs[rowIndex][0].classList.add('hide')
-
+            console.log("inside tasksList")
             //get taskData and subTask to edit if not available in store
             //and after getting data render corresponding taskcreate component
             
             if (rightCheck('edit_task')){
 
-                this.componentId = 'SkeletonForm'
+                this.componentId[taskId] = 'SkeletonForm'
 
                 Promise.all([
                     this.$store.dispatch('tasks/tasksDataSet', {taskId}),
                     this.$store.dispatch('tasks/subTasksDataSet', {taskId})
                 ])
                 .then(() => {
-                    this.componentId = 'TasksCreate'
+                    this.componentId[taskId] = 'TasksCreate'
                 })
             }
         },
@@ -284,7 +288,6 @@ export default {
 </script>
 
 <style scoped>
-
     .tr:hover .dots img {
         visibility: visible !important;
     }

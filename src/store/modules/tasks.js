@@ -88,11 +88,22 @@ const mutations = {
     currentPageSet(state, {index}) {
         state.currentPage = index
     },
-    refetch(state) {
+    refetch(state, {taskId, saved}) {
+        console.log("inside refetch tasks", taskId, saved)
         state.tasks = {}
-        state.tasksData = {}
-        state.subTasksData = {}
-        console.log("instore ", getters['getKey'], state.paginationKey)
+        
+        if (taskId) {
+            state.tasksData[taskId] = undefined
+            state.subTasksData[taskId] = undefined
+        }
+        else {
+            state.tasksCount = undefined
+            state.tasksData = {}
+            state.subTasksData = {}
+        }
+
+        if (saved == true) state.tasksMaster = []
+
         if(state.paginationKey == 0) state.paginationKey = 1
         else if (state.paginationKey == 1) state.paginationKey = 0
     }
@@ -123,6 +134,7 @@ const actions = {
     },
     tasksDataSet({getters, commit}, {taskId}) {
         const res = getters['taskData']?.(taskId)
+        console.log("taskData", res)
         return new Promise((resolve, reject) => {
             if (res == undefined || res == '') {
                 tasks.getData({taskId})
