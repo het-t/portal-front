@@ -1,12 +1,8 @@
 <template>
-    <div class="card">
-
-        <div class="card-head m0 pb16 pt16 pr16 pl16">
-            <h5 class="table-head m0">{{formHead}}</h5>
-        </div>
-        <form class="mr16 ml16 mt16 mb16 pr12 pl12">
+    <div class="card pr16 pl16 pb16">
+        <form class="pr16 pl16 pt16 pb16">
             <div class="row mt8">
-                <label for="role-name" class="labels c1">name</label>
+                <label ref="focus" for="role-name" class="labels c1">name</label>
                 <input v-model="roleName" type="text" id="role-name"> 
             </div>
                 
@@ -15,106 +11,125 @@
             <div class="row mt8">
                 <label class="labels c1">rights</label>
                 <div>
-                    <div class="mt16" v-for="right in dbRights" :key="right">
-                        <input v-model="roleRights" :id="right.name" :value="right.name" class="m0 mr16" type="checkbox" :name="right.name" :title="right?.description">
-                        <label :for="right.name">{{right.name}}</label>
+                    <div class="mt16 flex" v-for="right in rightsList" :key="right">
+                        <input v-model="roleRights" 
+                            :id="right.id" 
+                            :value="right.id" 
+                            class="m0 mr16" 
+                            type="checkbox" 
+                            :name="right.name" 
+                            :title="right?.description"
+                        >
+                        <label :for="right.id">{{right.name}}</label>
                     </div>
                 </div>
             </div>
 
             <div class="hr"></div>
 
-            <button @click.prevent="clear()" class="neutral button">cancel</button>
-            <button @click.prevent="proceed(), clear()" class="green ml8 button">{{proceedBtn}}</button>
+            <button 
+                @click.prevent="(editRoleId == undefined || editRoleId == '') ? createRole({roleName, roleRights}) : editRole()" 
+                class="green button"
+            >save</button>
+            <button @click.prevent="canceled()" class="neutral ml8 button">cancel</button>
         </form>
     </div>
 </template>
 
 <script>
-    import axios from 'axios'
-import { mapActions } from 'vuex'
+import { roles } from '@/api'
+import useCreateSwal from '@/helpers/swalCreate'
+import swal from 'sweetalert'
+import useEditSwal from '../helpers/swalEdit'
 
     export default {
         name: 'CreateRole',
-        props: ['editRoleName'],
+        props: ['editRoleId', 'uk'],
         data() {
             return {
                 roleName: '',
                 roleRights: [],
-                dbRights: [],
-                formHead: 'create role',
-                proceedBtn: 'create',
+                rightsList: [],
             }
         },
         methods: {
-            ...mapActions(['promptMessage']),
-            proceed() {
-                this.$router.push('/u/roles/list')
-                this.promptMessage({
-                    title: 'Role Created',
-                    msg: 'successfully'
-                })
-                if (this.editRoleName != undefined) this.editRole()
-                else this.createRole()
-            },
-            createRole() {
-                console.log(this.roleRights)
-                axios.get('/u/api/roles/create-role',{
-                    withCredentials: true,
-                    params: {
-                        role_name: this.roleName,
-                        role_rights: this.roleRights
-                    }
-                })
+            createRole({roleName, roleRights}) {
+                useCreateSwal({
+                    text: roleName,
+                    mutationFnName: 'roles/RESET_STATE',
+                    promise: () => roles.create({roleName, roleRights}),
+                    context: this,
+                    url: '/u/roles/list'
+                }) 
             },
             editRole() {
-                axios.post('/u/api/roles/edit-role', {
-                    params: {
-                        role_name: this.roleName,
-                        role_rights: this.roleRights
-                    }
-                }, {
-                    withCredentials: true
+                const args = {
+                    roleId: this.editRoleId,
+                    roleName: this.roleName,
+                    roleRights: this.roleRights
+                }
+                useEditSwal({
+                    text: args.roleName,
+                    promise: () => roles.edit(args),
+                    mutationFnName: 'roles/RESET_STATE',
+                    context: this
                 })
             },
-            clear() {
-                this.roleName = ''
-                this.roleRights = []
+            canceled() {
+                swal({
+                    title: "Do you really want to cancel editing?", 
+                    text: "All changes will be reverted",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true
+                })
+                .then((value) => {
+                    if (value != null) throw null
+                })
+                .catch(() => {
+                    if (this.editing == true) this.$emit("editingCompleted", {
+                        editing: 0,
+                        role: this.roleName
+                    })
+                    else this.$router.push('/u/roles/list')
+                })
             }
         },
-        created() {            
-            if (this.editRoleName != undefined) {
-                this.formHead = 'edit role'
-                this.proceedBtn = 'save'
-                console.log("editing role", this.editRoleName)
-                axios.get('/u/api/roles/edit', {
-                    withCredentials: true,
-                    params: {
-                        editRoleName: this.editRoleName
-                    }
-                })
-                .then((roleData) => {
-                    const editRoleData = roleData.data
-                    this.roleName = editRoleData.name
-                    this.roleRights = editRoleData.rights.split(',')
-                    console.log(this.roleRights)
-                })
-            }
+        created() {                       
+            this.rightsList = this.$store.getters['rights/getAllRightsList']    //action invoked in rolesview.js
             
-            {
-                axios.get('/u/api/roles/get-rights',{
-                    withCredentials: true,
-                })
-                .then((rights) => {
-                    console.log("rights => ", rights.data)
-                    this.dbRights = rights.data
-                })
+            const roleDataStore = this.$store.getters['roles/rolesDataGet'](this.editRoleId)
+            
+            console.log("editing", roleDataStore)
+            // if (this.editRoleId != undefined) {
+            //     this.$store.dispatch('roles/rolesDataSet', {roleId: this.editRoleId})
+            // }
+            
+            if (roleDataStore != undefined && roleDataStore != '') {
+                console.log("coming inside", roleDataStore)
+                this.roleName = roleDataStore[0].roleName
+                this.roleRights = roleDataStore.map(o => o.rightId)
             }
+            // else this.$store.subscribe((mutation, state) => {
+            //     if (mutation.type == "roles/rolesDataSet" && mutation.payload.index == this.editRoleId) {
+            //         let roleData = state.roles.rolesData[this.editRoleId]
+            //         this.roleName = roleData[0].roleName
+            //         this.roleRights = roleData.map(o => o.rightId)
+            //     }
+            // })
+        },
+        mounted() {
+            this.$refs['focus'].focus()
         }
     }
 </script>
 
 <style scoped>
+    .flex {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
     input[type="text"], input[type="date"] {
         width: 40% !important;
     }

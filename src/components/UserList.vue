@@ -1,119 +1,239 @@
 <template>
     <div>
-        <AlertC v-show="displayAlert" 
-            :msg="alertData.msg"
-            :fn="deleteUser"
-            :fnParam="alertData.params"
-            v-on:close-alert="displayAlert = false"
-        />
-        <div class="card">
-            <div class="card-head m0 pb16 pt16 pr16 pl16">
-                <h5 class="table-head m0">users</h5>
-                <router-link class="table-action" to="/u/users/create-user">
-                    create user
-                </router-link>
-            </div>
+        <div ref="menu">
+            <dots-menu v-if="menuVisibisility == true">
+                <template #links>
+                    <li>
+                        <router-link :to="{
+                            name: 'edit_user', 
+                            params : {
+                                editUserId: selectedUserId
+                            }
+                        }">
+                            <font-awesome-icon class="menu-icons" :icon="['fas', 'pencil']"></font-awesome-icon> 
+                        </router-link>
+                    </li>
+                    <li>
+                        <font-awesome-icon @click.prevent="deleteUser(selectedUserId, selectedUserName)"
+                            class="menu-icons" 
+                            :icon="['fas', 'trash']"
+                        ></font-awesome-icon>
+                    </li>
+                </template>
+            </dots-menu>
+        </div>
 
-            <TableFilter :tableData="usersList" @filtered="filteredUsersList = $event" class="mr16 ml16 mt16 actions"/>
-            <div class="mr16 ml16 mt16">
-                <table>
-                    <tr>
-                        <th>name</th>
-                        <th>rights</th>
-                        <th>actions</th>
-                    </tr>
+        <table-main>
 
-                    <tr class="tr" v-for="user in usersListToDisplay()" :key="user?.id">
+            <template #thead>
+                <tr>
+                    <th>
+                        <div class="flex">
+                            <table-sort @clicked="i=!i; k=!k; p=!p;" :key="j" sortBy="name" sortType="string" storeName="users"></table-sort>
+
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="nameH" type="text" class="header p0" required>
+                                <span @click="$refs['nameH'].focus()" class="floating-label">name</span>
+                            </div>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="flex">
+                            <table-sort @clicked="i=!i; j=!j; p=!p;" :key="k" sortBy="email" sortType="string" storeName="users"></table-sort>
+
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="emailH" type="text" class="header p0" required>
+                                <span @click="$refs['emailH'].focus()" class="floating-label">email</span>
+                            </div>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="flex">
+                            <table-sort @clicked="j=!j; k=!k; p=!p;" :key="i" sortBy="rights" sortType="number" storeName="users"></table-sort>
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filterFor[2]" ref="rightsH" type="text" class="header p0" required>
+                                <span @click="$refs['rightsH'].focus()" class="floating-label">rights</span>
+                            </div>
+                        </div>
+                    </th>
+                    <th></th>
+                </tr>
+            </template>
+            <!-- v-if="usersList != ''" -->
+            <template #tbody>
+                <template v-for="(user, index) in users" :key="user?.id">
+                    <tr 
+                        class="tr edit-user-tr"
+                        tabindex="0"
+                        @keyup.enter="editUser('row'+index, user.id)"
+                        @click.prevent="editUser('row'+index, user.id)"    
+                    >
                         <td>
-                            {{user.first_name + ' ' + user.last_name}}
+                            {{user.firstName + ' ' + user.lastName}}
+                        </td>
+                        <td>
+                            {{user.email}}
                         </td>
                         <td>
                             {{user.rights}}
                         </td>
-                        <td class="actions">
-                            <router-link :to="{
-                                name: 'edit_user', 
-                                params : {
-                                    editUserId: user.id
-                                }
-                            }">
-                                edit
-                            </router-link>
-                            <p class="delete m0 ml8" @click="alert(`do you want to delete ${user.id} user`, user.id)">
-                            delete</p>
+                        <td>
+                            <dots-img
+                                @openMenu="menu($event, {userName: user.firstName + ' ' + user.lastName, userId: user.id, visibility: true})"
+                                @hideMenu="menu($event, {userName: user.firstName + ' ' + user.lastName, userId: user.id, visibility: false})" 
+                            ></dots-img>
                         </td>
                     </tr>
-                </table>
-                <TablePagination @tableData="usersList = $event"
-                    tableName="users"
-                />            
-            </div>
-        </div>
-        <router-view :editUser="$route.params.editUser"></router-view>
+                    <tr class="tr tr-hidden hide" :ref="('row'+index)">
+                       <td colspan="3" class="p0 m0">
+                            <!-- <user-create 
+                                v-if="(allow[user.id] == true)"
+                                :editUserId="user.id"
+                                :uk="index"
+                                @editingCompleted="[editUser('row'+index, user.id), showSwal($event)]"
+                                class="user-create"
+                            ></user-create> -->
+                            <!-- v-if="(allow[user.id] == true)" -->
+
+                            <component v-if="componentId?.[user.id]" 
+                                :is="componentId?.[user.id]"
+                                :editUserId="user.id"
+                                :uk="index"
+                                @editingCompleted="editUser('row'+index, user.id)"
+                                class="user-create"
+                                :buttonsIndex=2    
+                            ></component>
+
+                            <skeleton-form v-else
+                                :buttonsIndex=2    
+                            ></skeleton-form>
+                        </td>
+                    </tr>
+                </template>
+            </template>
+            
+            <table-pagination :key="p"
+                :filters="filterFor"
+                @tableData="usersList = $event"
+                tableName="users"
+            ></table-pagination>
+        </table-main>
+
+            <!-- <TableFilter :tableData="usersList" @filtered="filteredUsersList = $event" class="mr16 ml16 mt16 actions"/> -->
     </div>
 </template>
 
 <script>
-    import axios from 'axios'
-    import AlertC from './AlertC.vue'
-    import TablePagination from './TablePagination.vue'
-    import TableFilter from './TableFilter.vue';
+    import NoAccess from "./NoAccess.vue";
+    import rightCheck from "@/helpers/RightCheck";
+    import UserCreate from './UserCreate.vue';
+    import {users} from '../api/index.js'
+    import TableMain from './TableMain.vue';
+    import DotsImg from './DotsImg.vue';
+    import DotsMenu from './DotsMenu.vue'
+    import SkeletonForm from '../skeletons/SkeletonForm.vue';
 
-    export default {
+    import { defineAsyncComponent } from '@vue/runtime-core';
+    import TableSort from './TableSort.vue';
+    import useDeleteSwal from "@/helpers/swalDelete";
+
+    const TablePagination = defineAsyncComponent(
+        () => import('./TablePagination.vue'),
+    )
+
+export default {
     name: "UserList",
     data() {
         return {
-            alertData: {
-                params: [{
-                    user_id: ''
-                }],
-                msg: '',
-            },
             usersList: "",
+
+            selectedUserId: '',
+            selectedUserName: '',
+
             filteredUsersList: undefined,
             displayAlert: false,
+            menuVisibisility: '',
+            allow: {},
+
+            i:0, j:0, k:0, p:0,
+
+            filterFor: ['', '', ''], //0-name, 1-email, 2-rights
+
+            componentId: {}
         };
     },
-    methods: {
-        usersListToDisplay() {
-            if (this.filteredUsersList != undefined) {
-                console.log("filtered")
-                return this.filteredUsersList
-            } 
-            else {
-                console.log("original")
-                return this.usersList
-            }
-        },
-        deleteUser(params) {
-            axios.post('/u/api/users/delete-user', {
-                ...params,
-            }, {
-                withCredentials: true
-            })
-            .then((results) => {
-                console.log("deleteUser", results.data)
-            })
-        },
-        alert(msg, userId) {
-            this.displayAlert = true
-            this.alertData.params[0].user_id = userId
-            this.alertData.msg = msg
+    computed: {
+        users() {
+            if (this.usersList?.length != 0) return this.usersList
+            return this.$store.getters['users/usersListGet'](1, 'id', 0, this.filterFor)
         }
     },
-    components: { AlertC, TablePagination, TableFilter }
+    methods: {
+        editUser(rowIndex, userId) {
+            const show = this.$refs[rowIndex][0].classList.contains('hide')
+            if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
+            else this.$refs[rowIndex][0].classList.add('hide')
+
+
+            if (rightCheck('edit_user')) {
+                this.componentId[userId] = 'SkeletonForm'
+                Promise.all([
+                    this.$store.dispatch('users/usersDataSet', {userId})
+                ])
+                .then(() => {
+                    this.allow[userId] = true
+                    this.componentId[userId] = 'UserCreate'
+            console.log(this.componentId)
+                })
+            }
+
+        },
+        deleteUser(userId, userName) {
+            useDeleteSwal({
+                text: userName,
+                promise: () => users.delete({userId}),
+                context: this,
+                mutationFn: 'users/deleteUser',
+                mutationArgs: {userId, filters: this.filterFor}
+            })
+        },
+        menu(e, {userId, userName, visibility}) {
+            this.menuVisibisility = visibility
+            this.selectedUserId = userId
+            this.selectedUserName = userName
+            if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
+        },
+        sort() {
+            this.p = !this.p
+        }
+    },
+    components: { 
+        TablePagination, 
+        TableMain,
+        DotsImg, 
+        DotsMenu, 
+        UserCreate,
+        SkeletonForm,
+        TableSort,
+        NoAccess
+    }
 }
-</script>
+</script>,
 
 <style scoped>  
+    .flex { 
+        display: flex;
+    }
+    .edit-user-tr {
+        cursor: pointer;
+    }
+    .hide {
+        display: none !important;
+    }
     table {
         width: 100%;
     }
     th, tr, td {
         padding: 12px;
-    }
-    .actions {
-        display: flex;
-        flex-direction: horizontal;
     }
 </style>

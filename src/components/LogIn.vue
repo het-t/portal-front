@@ -3,7 +3,7 @@
     <div class="login-main">
         <form>
             <p id="banner">Login</p>
-            <input v-model="email" placeholder="E-Mail" id="email" type="text" name="email"><br>
+            <input ref="focus" v-model="email" placeholder="Username" id="email" type="text" name="email"><br>
             <input v-model="pwd" placeholder="Password" id="pwd" type="password" name="password"><br>
 
             <button class="green button" @click.prevent="login(), clear()">login</button>
@@ -13,8 +13,13 @@
 </template>
 
 <script>
+<<<<<<< HEAD
 // import axios from 'axios'
 import { mapActions } from 'vuex'
+=======
+import axios from '../api/axiosInstance.js'
+
+>>>>>>> initial
     export default {
         name: 'LogIn',
         data() {
@@ -24,8 +29,8 @@ import { mapActions } from 'vuex'
             }
         },
         methods: {
-            ...mapActions(['rights']),
             login() {
+<<<<<<< HEAD
                 this.$router.push({name: 'u'})
 
                 // axios.post('api/login', {
@@ -43,11 +48,31 @@ import { mapActions } from 'vuex'
                 //         this.$router.push({name: 'login'})
                 //     }
                 // })
+=======
+                // this.$router.push({name: 'u'})
+                axios.post('api/login', {
+                    email: this.email,
+                    password: this.pwd
+                }, {
+                    withCredentials: true,
+                })
+                .then((results) => {
+                    if (results?.data?.login == 1) {
+                        this.$router.push({name: 'u'})
+                    }
+                    else {
+                        this.$router.push({name: 'login'})
+                    }
+                })
+>>>>>>> initial
             },
             clear() {
                 this.email = ''
                 this.pwd = ''
             }
+        },
+        mounted() {
+            this.$refs['focus'].focus()
         }
     }
 

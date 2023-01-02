@@ -1,10 +1,7 @@
 <template>
-  <div>
-    <button @click.prevent="logout()" class="mt8 mb8 neutral button">
-      logout
-      <!-- <img src="../assets/icons/logout-icon.png" alt=""> -->
+    <button @click.prevent="logout()" tabindex="-1" class="mt8 mb8">
+      <font-awesome-icon :icon="['fas', 'power-off']" class="top-nav-icons"></font-awesome-icon>
     </button>
-  </div>
 </template>
 
 <script>
@@ -38,15 +35,9 @@
 </script>
 
 <style scoped>
-img {
-  background-color: rgba(255, 255, 255, 0);
-  width: 20px;
-  height: 20px;
-}
 button {
-  background-color: rgba(255, 255, 255, .4);
-}
-button:hover img, button:hover {
-  background-color: white;
+  padding: 0 4px;
+  border: none;
+  border: solid 1px #f3f3f4;
 }
 </style>

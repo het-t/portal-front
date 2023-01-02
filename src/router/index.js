@@ -1,6 +1,45 @@
+<<<<<<< HEAD
 import { createRouter, createWebHistory } from 'vue-router'
+=======
+import { createRouter, createWebHashHistory } from 'vue-router'
+>>>>>>> initial
 import InitialView from '../views/InitialView.vue'
-import store from '@/store'
+import store from '@/store/index.js'
+
+import { defineAsyncComponent } from 'vue'
+import SkeletonCard from '../skeletons/SkeletonCard.vue'
+import NotFound from '@/components/NotFound.vue'
+
+const UsersList = defineAsyncComponent({ 
+  loader: () => import("@/components/UserList.vue"), 
+  loadingComponent: SkeletonCard,
+  delay: 0
+})
+const RolesList = defineAsyncComponent({
+  loader: () => import('../components/RoleList.vue'),
+  loadingComponent: SkeletonCard,
+  delay: 0
+})
+const ClientsList = defineAsyncComponent({
+  loader: () => import('../components/ClientsList.vue'),
+  loadingComponent: SkeletonCard,
+  delay: 0
+})
+const TasksList = defineAsyncComponent({
+  loader: () => import('../components/TasksList.vue'),
+  loadingComponent: SkeletonCard,
+  delay: 0
+})
+const MyTasksList = defineAsyncComponent({
+  loader: () => import('../components/MyTasksList.vue'),
+  loadingComponent: SkeletonCard,
+  delay: 0
+})
+const ActivityList = defineAsyncComponent({
+  loader: () => import('../components/UserActivity.vue'),
+  loadingComponent: SkeletonCard,
+  delay: 0
+})
 
 const routes = [{
     path: '/',
@@ -31,13 +70,36 @@ const routes = [{
       children: [{
           path: 'create-user',
           name: 'create_user',
-          meta: {protected: true},
-          component: () => import('../components/UserCreate.vue')
+          component: () => import('../components/UserCreate.vue'),
+          meta: {
+            protected: true,
+            breadcrumb: {
+              title: 'create user',
+              path: [{
+                text: 'list',
+                route: '/u/users/list'
+              }, {
+                text: 'create',
+                route: '/u/users/create-user'
+              }]
+            }
+          },
         }, {
           path: 'list',
           alias: '',
           name: 'users_list',
-          component: () => import('../components/UserList.vue'),
+          component: UsersList,
+          meta: {
+            breadcrumb: {
+              title: 'users',
+              action: true,
+              actionUrl: '/u/users/create-user',
+              path: [{
+                text: 'list',
+                route: '/u/users/list'
+              }]
+            }
+          }
         }, 
         {
           path: 'edit/:editUserId',
@@ -54,34 +116,56 @@ const routes = [{
       children: [{
         path: 'create-role',
         name: 'create_role',
-        meta: {protected: true},
-        component: () => import('../components/RoleCreate.vue')
+        component: () => import('../components/RoleCreate.vue'),
+        meta: {
+          breadcrumb: {
+            title: 'roles',
+            path: [{
+              text: 'list',
+              route: '/u/roles/list'
+            }, {
+              text: 'create',
+              route: '/u/roles/create-role'
+            }]
+          },
+          protected: true
+        },
       }, {
         path: 'list',
         alias: '',
         name: 'roles_list',
-        component: () => import('../components/RoleList.vue'),
+        component: RolesList,
+        meta: {
+          breadcrumb: {
+            title: 'roles',
+            action: true,
+            actionUrl: '/u/roles/create-role',
+            path: [{
+              text: 'list',
+              route: '/u/roles/list'
+            }]
+          }
+        }
       }, {
-        path: 'edit/:editRoleName',
+        path: 'edit/:editRoleId',
         name: 'edit_role',
-        meta: {protected: true},
+        meta: {
+          breadcrumb: [{
+            title: 'edit role',
+            path: [{
+              text: 'list',
+              route: '/u/roles/list'
+            }, {
+              text: 'edit',
+              route: '/u/roles/edit/:editRoleId',
+            }]
+          }],
+          protected: true
+        },
         component: () => import('../components/RoleCreate.vue'),
         props: true
       }]
     },{
-      path: 'projects',
-      component: () => import('../views/ProjectsView.vue'),
-      children: [{
-        path: 'list',
-        alias: '',
-        name: 'projects_list',
-        component: () => import('../components/ProjectsList.vue')
-      }, {
-        path: 'create',
-        name: 'create_project',
-        component: () => import('../components/ProjectsCreate.vue')
-      }]
-    }, {
       path: 'clients',
       name: 'clients_list',
       component: () => import('../views/ClientView.vue'),
@@ -89,29 +173,71 @@ const routes = [{
         path: 'list',
         alias: '',
         name: 'clients_list',
-        component: () => import('../components/ClientsList.vue')
+        component: ClientsList,
+        meta: {
+          breadcrumb: {
+            title: 'clients',
+            action: true,
+            actionUrl: '/u/clients/create-client',
+            path: [{
+              text: 'list',
+              route: '/u/clients/list'  
+            }]
+          }
+        }
       }, {
         path: 'create-client',
         name: 'create_client',
-        component: () => import('../components/ClientCreate.vue')
-      }]
-    }, {
+        component: () => import('../components/ClientCreate.vue'),
+        meta: {
+          breadcrumb: {
+            title: 'create client',
+            path: [{
+              text: 'list',
+              route: '/u/clients/list'
+            }, {
+              text: 'create',
+              route: '/u/clients/create-client'
+            }]
+          },
+          protected: true,
+        }}
+    ]}, {
       path: 'tasks',
       name: 'tasks',
       component: () => import('../views/TasksView.vue'),
       children: [{
         path: 'list',
         alias: '',
-        component: () => import('../components/TasksList.vue')
+        component: TasksList,
+        meta: {
+          breadcrumb: {
+            title: 'tasks',
+            action: true,
+            actionUrl: '/u/tasks/create-task',
+            path: [{
+              text: 'list',
+              route: '/u/tasks/list'
+            }]
+          }
+        }
       }, {
         path: 'create-task',
         name: 'create_task',
-        component: () => import('../components/TasksCreate.vue')
-      }, {
-        path: 'edit-task',
-        name: 'edit_task',
         component: () => import('../components/TasksCreate.vue'),
-        props: true,        
+        meta: {
+          breadcrumb: {
+            title: 'create task',
+            path: [{
+              text: 'list',
+              route: '/u/tasks/list'
+            }, {
+              text: 'create',
+              route: '/u/tasks/create-task'
+            }]
+          },
+          protected: true
+        }
       }]
     }, {
       path: 'my-tasks',
@@ -121,35 +247,60 @@ const routes = [{
         path: 'list',
         alias: '',
         name: 'my_tasks_list',
-        component: () => import('../components/MyTasksList.vue')
+        component: MyTasksList,
+        meta: {
+          breadcrumb: {
+            title: 'my tasks',
+            path: [{
+              text: 'list',
+              route: '/u/my-tasks/list'
+            }]
+          }
+        }
       }]
     }, {
       path: 'activity',
       name: 'activity',
-      meta: {protected: true},
-      component: () => import('../components/UserActivity.vue')
+      component: ActivityList,
+      meta: {
+        breadcrumb: {
+          title: 'activity',
+          path: [{
+            text: 'list',
+            route: '/u/activity/'
+          }]
+        },
+        protected: true
+      },
     }]
+  }, 
+  { 
+    path: '/:pathMatch(.*)', 
+    name: 'not-found', 
+    component: NotFound
   }
 ]    
       
     
 
 const router = createRouter({
+<<<<<<< HEAD
   history: createWebHistory(process.env.BASE_URL),
+=======
+  history: createWebHashHistory(process.env.BASE_URL),
+>>>>>>> initial
   routes
 })
 
 
 router.beforeEach((to)=>{
-  if (to?.meta.protected) {
-    console.log(to?.name, to?.meta)
-    console.log(to?.meta.protected, store.state.rights)
-    const allow = store.state.rights.some((right) => right == to.name)
-    if (!allow) {
-      return { name: 'no_access'}
-    }
+  if (to?.meta?.protected) {
+    const userRights = store.getters['rights/getUserRights']
+    const allow = userRights?.some((right) => right?.code_name == to?.name)
+    if (!allow) return { name: 'no_access'}
   }
 })
+
 
 
 export default router

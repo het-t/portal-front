@@ -1,0 +1,38 @@
+.floating-container {
+    height: 22px;
+}
+
+.floating-label {
+    cursor: pointer;
+}
+
+.floating-container .header {
+    border: none;
+}
+
+.floating-container .floating-label {
+    position: relative;
+    bottom: 16px;
+}
+
+.floating-container :focus ~ .floating-label,
+.floating-container :not(:focus):valid ~ .floating-label {
+    font-size: 12px;
+    bottom: 40px;
+    opacity: 0.5;
+    transition: 0.2s ease all;
+}
+
+.floating-container :not(:focus):valid {
+    border-bottom: solid 1px #2F4050 !important;
+}
+
+.header {
+    width: fit-content !important;
+}
+
+.header:focus {
+    outline: none;
+    border: none;
+    border-bottom: solid 1px #2F4050 !important;
+}

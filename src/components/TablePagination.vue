@@ -2,22 +2,22 @@
     <div class="flex">
         <div class="recordsPerPage">
             <label for="recordsPerPage">entries</label>
-            <select @change="getPageData()" id="recordsPerPage" v-model="recordsPerPage" type="number" class="ml8"> 
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
+            <select @change="getPageData()" id="recordsPerPage" v-model="recordsPerPage" class="ml8"> 
+                <option :value=10>10</option>
+                <option :value=20>20</option>
+                <option :value=50>50</option>
+                <option :value="100">100</option>
             </select>
         </div>
         <ul>
             <li class="neutral">
-                <a href="#" @click="pageChange(1)">&lt;&lt;</a>
+                <a href="#" @click="pageChange(1)">&lt;</a>
             </li>
-            <li class="neutral" v-for="n in showPage" :key="n">
+            <li class="neutral" v-for="n in showPage()" :key="n">
                 <a href="#" :class="(n == currentPage) ? 'green' : ''" @click="pageChange(n)">{{n}}</a>
             </li>
             <li class="neutral">
-                <a href="#" @click="pageChange(pageCount)">&gt;&gt;</a>
+                <a href="#" @click="pageChange(pageCount)">&gt;</a>
             </li>
         </ul>
     </div>
@@ -31,56 +31,94 @@
         data() {
             return {
                 pageData: '',
-                totalRecords: '',
                 currentPage: 1,
                 recordsPerPage: 10,
                 pageCount: '',
             }
         },
         computed: {
-            showPage() {
-                let numShown = 5;
-                numShown = Math.min(numShown, this.pageCount)
-                let first = this.currentPage - Math.floor(numShown / 2)
-                first = Math.max(first, 1)
-                first = Math.min(first, this.pageCount - numShown + 1)
-                return [...Array(numShown)].map((k,i) => i + first)
-            }
+            totalRecords() {
+                return this.$store.getters[`${this.tableName}/${this.tableName}CountGet`]
+            },
         },
         props: {
             tableName: String,
+            sortBy: String,
+            sortOrder: Number,
+            filters: Array
         },
         methods: {
+            showPage() {
+                if (!isNaN(this.pageCount)) {
+                    let numShown = 5;
+                    numShown = Math.min(numShown, this.pageCount)
+                    let first = this.currentPage - Math.floor(numShown / 2)
+                    first = Math.max(first, 1)
+                    first = Math.min(first, this.pageCount - numShown + 1)
+                    return [...Array(numShown)].map((k,i) => i + first)
+                }
+                else {
+                    return 0
+                }
+            },
             pageChange(page) {
                 this.currentPage = page
+                this.$store.commit(`${this.tableName}/currentPageSet`, {index: page})
                 this.getPageData()
             },
             getPageData() {
                 this.pageCount = Math.ceil(this.totalRecords / this.recordsPerPage)
-                axios.get(`/u/api/${this.tableName}`, {
-                    params: {
-                        from: (this.currentPage-1)*this.recordsPerPage,
-                        records_per_page: this.recordsPerPage,
-                    },
-                    withCredentials: true
-                })
-                .then((activities) => {
-                    this.$emit("tableData", activities.data)
-                    console.log("table data", activities.data)
-                });
+
+                const {sortBy, sortOrder} = this.$store.getters[`${this.tableName}/sortGet`]
+
+                let pageDataStore = this.$store.getters[`${this.tableName}/${this.tableName}ListGet`]?.(this.currentPage, sortBy, sortOrder, this.filters)
+
+                if (
+                    (pageDataStore == undefined) || 
+                    (pageDataStore?.length == 0) || 
+                    (pageDataStore?.length < this.recordsPerPage && pageDataStore?.length >= 10)
+                ) {
+
+                    axios.get(`/u/api/${this.tableName}`, {
+                        params: {
+                            from: (this.currentPage-1)*this.recordsPerPage,
+                            recordsPerPage: this.recordsPerPage,
+                            sortBy,
+                            sortOrder,
+                            filters: this.filters
+                        },
+                        withCredentials: true
+                    })
+                    .then((res) => {
+                        this.$store.commit(`${this.tableName}/${this.tableName}List`, {
+                            index: this.currentPage, 
+                            sortBy, 
+                            sortOrder,
+                            filters: this.filters,
+                            data: res.data[this.tableName+'List']
+                        })    
+                        this.$emit("tableData", res.data[this.tableName+'List'])                
+                    })
+                } 
+                else {
+                    this.$emit("tableData", pageDataStore)
+                }
             },
         },
         created() {
-            axios.get(`/u/api/${this.tableName}/count`, {
-                withCredentials: true
-            })
-            .then((count) => {
-                this.totalRecords = count.data[0].count
-                this.pageCount = Math.ceil(this.totalRecords / this.recordsPerPage)
-                console.log("total records: ", this.totalRecords)
-                console.log("page count:", this.pageCount)
-            })
-            this.getPageData()
+            this.$store.commit(`${this.tableName}/currentPageSet`, {index: this.currentPage})
+            if (this.totalRecords == '') {
+                axios.get(`/u/api/${this.tableName}/count`, {
+                    withCredentials: true
+                })
+                .then((res) => {
+                    this.$store.commit(`${this.tableName}/${this.tableName}CountSet`, res?.data?.count)
+                    this.getPageData()
+                })
+            }
+            else {
+                this.getPageData()
+            }            
         }
     }
 </script>
@@ -107,6 +145,7 @@
     li {
         list-style: none;
         border: solid 1px #e7eaec;
+        margin: 0 1px;
     }
     li a {
         padding: 4px 10px;

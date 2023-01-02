@@ -2,82 +2,110 @@
     <div>
         <div class="card">
 
-            <div class="card-head m0 pb16 pt16 pr16 pl16">
-                <h5 class="table-head m0">{{tableHead}}</h5>
+            <div class="table-tabs">
+                <button @click="openTab($event, 'details')" :ref='"defaultTab"+uk' class="button neutral tab">details</button>
+                <button @click="openTab($event, 'logs')" class="button neutral tab">logs</button>
             </div>
 
-            <div class="fg-wrapper mt16 mb16 pr16 pl16">
+            <div class="fg-wrapper mt16 pb16 pr16 pl16 hide" :ref='"details"+uk'>
                 <div class="fg pl16">
                     <form class="mb16">
                         <div>
                             <div class="row">
-                                <label for="task-title" class="labels c1">title</label>
-                                <input v-model="taskTitle" type="text" id="task-title">
+                                <label :ref="('details'+uk+'focus')" :for="'task-title'+uk" class="labels c1">title</label>
+                                <input v-model="taskTitle" type="text" :id='"task-title"+uk'>
                             </div>
                             
                             <div class="row mt8">
-                                <label for="task-client" class="labels c1">client</label>
-                                <select @change="changeRoute($event)" v-model="taskClient" id="task-client">
-                                    <option value="/u/clients/create-client">create new client</option>
-                                    <option v-for="(client, index) in clientList" :value="client" :key="index">{{client}}</option>
-                                </select>
+                                <label :for="'task-client'+uk" class="labels c1">client</label>
+                                <vue-multiselect :id="'task-client'+uk" v-model="taskClient" :options="allClients" :custom-label="labelForClient" track-by="id" placeholder="Select Client">
+                                    <template #noResult>
+                                        Oops! No client found. Consider creating new client
+                                    </template>
+                                </vue-multiselect>
+                            </div>
+
+                            <template v-if="editing">
+                                <div class="row mt8">
+                                    <label :for="'contactEmail'+uk" class="labels c1">Contact Email: </label>
+                                    <input :value="clientContact?.conEmail" :id="'contactEmail'+uk">
+                                </div>
+
+                                <div class="row mt8">
+                                    <label :for="'contactPhone'+uk" class="labels c1">Contact Phone: </label>
+                                    <input :value="clientContact?.conPhone" :id="'contactPhone'+uk" type="text">
+                                </div>
+
+                                <div class="row mt8">
+                                    <label :for="'task-status'+uk" class="labels c1">status</label>
+                                    <select v-model="taskStatus" :id='"task-status"+uk'>
+                                        <option value="1">InProgress</option>
+                                        <option value="2">Unbilled</option>
+                                        <option value="3">Billed</option>
+                                    </select>
+                                </div>
+                            </template>
+
+                            <div class="row mt8">
+                                <label :for="'task-coordinator'+uk" class="labels c1">co-ordinator</label>
+                                <vue-multiselect :id="'task-coordinator'+uk" v-model="taskCoordinator" placeholder="Select Coordinator" :options="allUsers" :custom-label="labelForCoordinator" track-by="id">
+                                    <template #noResult>
+                                        Oops! No user found. Consider creating new user
+                                    </template>
+                                </vue-multiselect>
                             </div>
 
                             <div class="row mt8">
-                                <label for="task-status" class="labels c1">status</label>
-                                <input v-model="taskStatus" type="text" id="task-status">
+                                <label :for="'task-tasks'+uk" class="labels c1">task</label>
+                                <vue-multiselect :id="'task-tasks'+uk" v-model="taskMasterId" @change="taskMasterSelected" placeholder="Select Task-Master" :options="tasksMasterListGet" :custom-label="labelForTaskMaster" track-by="id">
+                                    <template #noResult>
+                                        Oops! No task-master found. Consider creating new task-master
+                                    </template>
+                                </vue-multiselect>
+                            </div>
+
+                            
+                            <div class="row mt8">
+                                <label :for="'task-cost'+uk" class="labels c1">fees</label>
+                                <input type="number" v-model="taskCost" :id="'task-cost'+uk">
                             </div>
 
                             <div class="row mt8">
-                                <label for="task-coordinator" class="labels c1">co-ordinator</label>
-                                <select v-model="taskCoordinator" name="task-coordinator" id="task-coordinator">
-                                    <option value="Mayur Buha">Mayur Buha</option>
-                                    <option value="Pritul Patel">Pritul Patel</option>
-                                    <option value="Nikhil Pethani">Nikhil Pethani</option>
-                                    <option value="Divya Prajapati">Divya Prajapati</option>
-                                </select>
-                            </div>
-
-                            <div class="row mt8">
-                                <label for="task-tasks" class="labels c1">task</label>
-                                <select @change="changeRoute($event)" type="text" v-model="taskTasks" id="task-tasks">
-                                    <option value="">existing tasks</option>
-                                </select>
+                                <label :for="'task-description'+uk" class="labels c1">description</label>
+                                <textarea v-model="taskDescription" name="task-description" :id="'task-description'+uk" cols="30" rows="5" placeholder="Description"></textarea>
                             </div>
 
                         </div>
 
-                        <div class="flex mt8">
-                            <input v-model="repeat" type="checkbox" id="recurring" class="mt8">
-                            <label for="recurring" class="mt8">recurring</label>
-                            <select v-if="repeat" v-model="taskRepeat" type="text" id="task-repeat" class="p0 ml8 mt8">
+                        <div class="flex mt16">
+                            <input v-model="repeat" type="checkbox" :id='"recurring"+uk' class="recurring">
+                            <label :for="'recurring'+uk">recurring</label>
+                            <select v-if="repeat" v-model="taskRepeat" :id='"task-repeat"+uk' class="task-repeat p0 ml8">
                                 <option value="year">every year</option>
                                 <option value="month">every month</option>
                                 <option value="day">every day</option>
                             </select>
-                            <input v-if="repeat" v-model="taskRepeatOn" type="date" id="task-repeat-on" class="p0 pl8 ml8">
+                            <input v-if="repeat" v-model="taskRepeatOn" type="date" :id='"task-repeat-on"+uk' class="task-repeat p0 pl8 ml8">
                         </div>
 
                         <div class="flex mt16">
-                            <input type="checkbox" id="save-task-template">
-                            <label for="save-task-template">save task template for future use </label>
+                            <input v-model="save" type="checkbox" :id="'save-task-template'+uk" class="save-task-template">
+                            <label :for="'save-task-template'+uk">save task template for future use </label>
                         </div>
 
-                        <button @click.prevent="clear()" class="neutral mt16 button">cancel</button>
-                        <button @click.prevent="proceed(), clear()" class="green ml8 mt16 button">save</button>
+                        <button @click.prevent="proceed()" class="green mt16 button">save</button>
+                        <button @click.prevent="canceled()" class="neutral ml8 mt16 button">cancel</button>
                     </form>
                 </div>
                 <div class="vr"></div>
 
-                <div class="fg pr16">
+                <div class="fg pr16 sub-tasks-scroll">
                     <div>
                         <div class="row mt8">
-                            <label for="task-sub-task" class="labels c1">sub task</label>
-                            <div style="width:80%; display:flex">
-                                <input v-model="newSubTask" style="width: 100%" type="text" id="task-sub-task">
-                                <button @click.prevent="addSubTask" class="ml16 button action-button">
-                                    <img src="../assets/icons/plus-icon.png" class="" alt="">
-                                </button>
+                            <label :for="'task-sub-task'+uk" class="labels c1">sub task</label>
+                            <div style="width:80%; display:flex; align-items: center;">
+                                <input v-model="newSubTask" style="width: 100%" type="text" :id="'task-sub-task'+uk">
+                                <font-awesome-icon tabindex="0" class="icon pointer add-st ml8" @keyup.enter="addSubTask()" @click.prevent="addSubTask()" icon="fa-solid fa-plus"></font-awesome-icon>
                             </div>
                         </div>
                     </div>
@@ -85,48 +113,48 @@
                     <div v-if="subTasks" class="grid-wrapper">
                         <div v-for="(task, index) in subTasks" :key="index" class="mb8">
                             <div class="grid">
-                                <div class="dots">
-                                    <img @click.prevent="toggleDisplaySubTask(index)" class="dots" src="../assets/icons/dots-icon.png" alt="">
-                                </div>
+                                
                                 <div>{{index+1}})</div>
-                                <div>{{task.title}}</div>
 
-                                <button @click.prevent="removeSubTask(index)" class="button action-button">
-                                    <img src="../assets/icons/minus-icon.png" class="" alt="">
-                                </button>
+                                <div class="pointer"
+                                    tabindex="0"
+                                    @keyup.enter="toggleDisplaySubTask(index)"
+                                    @click.prevent="toggleDisplaySubTask(index)"
+                                >
+                                    {{task.description}}
+                                </div>
+
+                                <font-awesome-icon tabindex="0" icon="fa-solid fa-minus"
+                                    @keyup.enter="removeSubTask(index)"
+                                    @click.prevent="removeSubTask(index)" 
+                                    class="pointer icon rmst"
+                                ></font-awesome-icon>
+                                
                             </div>
 
                             <div :ref="'sub-task'+index" class="hide ml24">
                                 <div class="ml16">
-                                    <select v-model="task.subTaskStatus" type="text" class="sub-task-extra">
-                                        <option value="hold">hold</option>
-                                        <option value="to do" selected>to do</option>
-                                        <option value="in progress">in progress</option>
-                                        <option value="pending for approval">pending for approval</option>
-                                        <option value="done">done</option>
-                                        <option value="cancel">cancel</option>
-                                        <option value="pending with client">pending with client</option>
-                                        <option value="pending with signed documents">pending with signed documents</option>
-                                        <option value="pending with DSC">pending with DSC</option>
+                                    <select v-model="task.statusId" class="sub-task-extra">
+                                        <option v-for="(status, index) in subTaskStatuses" :value="status.id" :key="index.toString()+uk">
+                                            {{status.status}}
+                                        </option>
                                     </select>
                                 </div>
 
                                 <div class="ml16">
-                                    <select v-model="task.assignedTo" name="assigned-to" class="sub-task-extra">
-                                        <option value="" disabled selected hidden>assign</option>
-                                        <option value="Mayur Buha">Mayur Buha</option>
-                                        <option value="Pritul Patel">Pritul Patel</option>
-                                        <option value="Nikhil Pethani">Nikhil Pethani</option>
-                                        <option value="Divya Prajapati">Divya Prajapati</option>
-                                    </select>
+                                    <vue-multiselect v-model="task.assignedTo" :options="allUsers" :custom-label="labelForCoordinator" track-by="id" placeholder="Assigend To" class="sub-task-extra">
+                                        <template #noResult>
+                                            Oops! No user found. Consider creating new user
+                                        </template>
+                                    </vue-multiselect>
                                 </div>
                                 
                                 <div class="ml16">
-                                    <input v-model="task.cost" type="text" id="sub-task-cost" placeholder="cost" class="sub-task-extra">
+                                    <input v-model="task.cost" type="number" :id="'sub-task-cost'+uk" placeholder="Cost" class="sub-task-extra">
                                 </div>
 
                                 <div class="ml16">
-                                    <input v-model="task.comments" class="sub-task-extra" type="text" placeholder="comments">
+                                    <input v-model="task.comments" class="sub-task-extra" type="text" placeholder="Comments">
                                 </div>
                             </div>
                         </div>
@@ -136,27 +164,30 @@
 
         </div>
 
-        <div class="card mt16">
-            <div class="card-head m0 pb16 pt16 pr16 pl16">
-                <h5 class="table-head m0">logs</h5>
-            </div>
-            
+        <div class="card hide" :ref="'logs'+uk">            
             <div class="mr16 ml16 mt16">
                 <table>
                     <tr>
                         <th>user</th>
                         <th>action</th>
-                        <th>task</th>
+                        <th>sub-task</th>
+                        <th>date</th>
                     </tr>
-                    <tr class="tr">
-                        <td>Mayur Buha</td>
-                        <td>updated status to done</td>
-                        <td>check name of company</td>
-                    </tr>
-                    <tr class="tr">
-                        <td>Pritul Patel</td>
-                        <td>updated status to done</td>
-                        <td>Draft Main Object of Company</td>
+
+                    <tr v-for="(logObj, index) in taskData(editTaskId)?.tasksLogs" :key="index"
+                        class="tr">
+                        <td>{{logObj.user}}</td>
+                        <td>
+                            {{(logObj.action + ' ' + logObj.key)}}
+                            <span v-if="logObj.after != null">
+                                to {{logObj.after}}
+                            </span>
+                            <span v-if="(logObj.before != null)">
+                                from {{logObj.before}}
+                            </span>
+                        </td>
+                        <td>{{logObj.subTask ? logObj.subTask : "Not Available"}}</td>
+                        <td>{{ new Date(logObj.timestamp).toLocaleString() }}</td>
                     </tr>
                 </table>
             </div>
@@ -165,117 +196,279 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+    import { mapActions, mapGetters } from 'vuex'
+    import { tasks, subTasksMaster } from '@/api/index.js'
+    import swal from 'sweetalert'
+    import useEditSwal from '../helpers/swalEdit'
+    import useCreateSwal from '@/helpers/swalCreate'
+    import VueMultiselect from 'vue-multiselect'
+
     export default {
         name: 'TasksCreate',
+        props: ['editTaskId', 'uk'],
+        components: {
+            VueMultiselect,
+        },
         data() {
             return {
-                tableHead: 'create task',
-                subTasks: [], 
+                editing: false,
+                subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "pending with signed documents"}, {id: 9, status: "pending with DSC"}],
+                
+                subTasks: [],
+                removedSubTasksId: [],
+
+                taskMasterId: '',
                 repeat: false,
-                clientList: ['TechAvidus', 'TechSome'],
                 newSubTask: '',
                 taskStatus: '',
                 taskTitle: '',
+                taskDescription: '',
                 taskClient: '',
-                taskTasks: '',
+                taskCost: '',
+                taskCoordinator: '',
+                save: false,
                 taskRepeat: '',
                 taskRepeatOn: '',
-                taskSubTasks: '',
-                taskData: [{
-                    taskId: 1,
-                    taskTitle: 'Incorporation of Company',
-                    taskClient: 'TechAvidus',
-                    taskCoordinator: 'Mayur Buha',
-                    taskSubTasks: [{
-                        title: 'Check Name of Company',
-                        subTaskStatus: 'done',
-                        assignedTo: 'Mayur Buha',
-                        cost: '50000',
-                        comments: 'XYZ'
-                    }, {
-                        title: 'Draft Main Object of Company',
-                        subTaskStatus: 'pending with client',
-                        assignedTo: 'Pritul Patel',
-                        cost: '0',
-                        comments: 'SRN:T21929139'
-                    }],
-                }, {
-                    taskId: 2,
-                    taskTitle: 'Income Tax return',
-                    taskClient: 'TechSome',
-                    taskCoordinator: 'Pritul Patel',
-                    taskSubTasks: [{
-                        title: 'Collect Documents',
-                        subTaskStatus: 'done',
-                        assignedTo: 'Mayur Buha',
-                        cost: '0',
-                        comments: 'XYZ'
-                    }, {
-                        title: 'Verify documents',
-                        subTaskStatus: 'done',
-                        assignedTo: 'Pritul Patel',
-                        cost: '1000',
-                        comments: ''
-                    }],
-                }]
+                clientContact: '',
+
+                taskLogs: [],
+                // disabled: true
             }
+        },
+        computed: {
+            ...mapGetters('tasks', [
+                'taskData',
+                'subTasksData',
+                'tasksMasterListGet'
+            ]),
+            ...mapGetters('users', [
+                'allUsers'
+            ]),
+            ...mapGetters('clients', [
+                'allClients'
+            ]),
         },
         methods: {
             ...mapActions(['promptMessage']),
-            getTaskStatus(subTasks) {
-                let o = subTasks.find(o => o.subTaskStatus != "done")
-                typeof o == 'undefined' ? this.taskStatus = 'unbilled' : this.taskStatus = o.subTaskStatus 
+            labelForCoordinator({firstName, lastName, id}) {
+                return `${firstName} ${lastName} (${id})`
+            },
+            labelForClient({name, id}) {
+                return `${name} (${id})`
+            },
+            labelForTaskMaster({title, id}) {
+                return `${title} (${id})`
+            },
+            taskMasterSelected() {
+                const selectedTaskMaster = this['tasksMasterListGet'].find((o) => o.id == this.taskMasterId)
+                subTasksMaster.get({taskMasterId: this.taskMasterId})
+                .then((results) => {
+                    this.subTasks = (results.data.subTasksMasterList)
+                    this.taskCost = selectedTaskMaster.cost
+                })
+            },
+            openTab(e, newTab) {
+                var tabs = e.target.parentElement.getElementsByClassName('tab')
+                let curTab = [...tabs].find(tab => tab?.classList?.contains('tab-open') == true)
+                curTab?.classList?.remove('tab-open')
+                e?.target?.classList?.add('tab-open')
+                this.$refs['details'+this.uk]?.classList?.add('hide')
+                this.$refs['logs'+this.uk]?.classList?.add('hide')
+                this.$refs[newTab+this.uk]?.classList?.remove('hide')
+                this.$refs['details'+this.uk+'focus'].focus()
             },
             addSubTask() {
-                console.log("subtasks", this.subTasks)
                 this.subTasks.push({
-                    title: this.newSubTask,
-                    subTaskStatus: 'to do',
+                    description: this.newSubTask,
+                    statusId: 2,
                     assignedTo: '',
                     comments: '',
                     cost: '',
                 })
+                document.getElementById('task-sub-task'+this.uk).focus()
                 this.newSubTask = ''
             },
             removeSubTask(index) {
-                console.log("before", this.$refs)
-                this.subTasks.splice(index, 1)
-                console.log("after", this.$refs)
+                const rmSubTask = this.subTasks.splice(index, 1)
+                if (rmSubTask[0]?.id) {
+                    this.removedSubTasksId.push(rmSubTask[0]?.id)
+                }
             },
             toggleDisplaySubTask(index) {
                 this.$refs['sub-task'+index][0].classList.value.includes('show') ?
                 this.$refs['sub-task'+index][0].classList.remove('show') :
                 this.$refs['sub-task'+index][0].classList.add('show')
             },
+            populateDataProperties(data) {
+                const {
+                    taskMasterId,
+                    title,
+                    description,
+                    cost,
+                    coordinatorId,
+                    clientId,
+                    status
+                } = data
+                const clientData = this.allClients.find(client => client.id == clientId)
+                this.taskTitle = title
+                this.taskDescription = description
+                this.taskCost = cost
+                this.taskCoordinator = this.allUsers.find(user => user.id == coordinatorId)
+                this.taskClient = clientData
+                this.taskMasterId = this.tasksMasterListGet.find(task => task.id == taskMasterId)
+                this.clientContact = clientData
+                this.taskStatus = status
+            },
             proceed() {
-                this.$router.push('/u/tasks/list')
-                this.promptMessage({
-                    title: 'Task Created',
-                    msg: 'successfully'
+                // this.disabled = true
+                this.subTasks?.map((subTask) => {
+                    subTask.assignedTo = subTask.assignedTo?.id
+                })
+                
+                const args = {
+                    saved: new Number(this.save),
+                    taskId: this.editTaskId,
+                    taskMasterId: this.taskMasterId,
+                    title: this.taskTitle,
+                    description: this.taskDescription,
+                    cost: this.taskCost,
+                    clientId: this.taskClient,
+                    coordinatorId: this.taskCoordinator,
+                    subTasks: JSON.stringify(this.subTasks),
+                    removedSubTasks: JSON.stringify(this.removedSubTasksId),
+                }
+
+                if (args.coordinatorId?.id) {
+                    args.coordinatorId = args.coordinatorId?.id
+                }
+                if (args.clientId?.id) {
+                    args.clientId = args.clientId?.id
+                }
+                if (args.taskMasterId?.id) {
+                    args.taskMasterId = args.taskMasterId.id
+                }
+
+                if (this.editing == true) {
+                    useEditSwal({
+                        text: args.title,
+                        mutationFnName: 'tasks/refetch',
+                        // mutationFnName: 'tasks/editTask',
+                        mutationArgs: {isMaster: this.save},
+                        context: this,
+                        promise: () => {
+                            return tasks.edit(args)
+                        }
+                    })
+                }
+                else {
+                    useCreateSwal({
+                        text: args.title,
+                        mutationFnName: 'tasks/RESET_STATE',
+                        mutationArgs: {isMaster: this.save},
+                        promise: () => tasks.create(args),
+                        url: '/u/tasks/list',
+                        context: this
+                    })
+                } 
+                // this.disabled = false
+            },
+            canceled() {
+                swal({
+                    title: "Do you really want to cancel editing?", 
+                    text: "All changes will be reverted",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true
+                })
+                .then((value) => {
+                    if (value != null) throw null
+                })
+                .catch(() => {
+                    if (this.editing == true) this.$emit("editingCompleted")
+                    else this.$router.push('/u/tasks/list')
                 })
             }
         },
         created() {
-            if (window.history.state.taskId != undefined){   
-                this.tableHead = 'edit task'         
-                let taskData = this.taskData.find(o => o.taskId == window.history.state.taskId)
-                this.taskTitle = taskData?.taskTitle
-                this.taskClient = taskData?.taskClient
-                this.taskTasks = taskData?.taskTasks
-                this.taskRepeat = taskData?.taskRepeat
-                this.taskRepeatOn = taskData?.taskRepeatOn
-                this.subTasks = taskData?.taskSubTasks
-                this.taskCoordinator = taskData?.taskCoordinator
-                this.getTaskStatus(this.subTasks)
-                console.log("fetch data of task ", window.history.state.taskId)
+            ////////////////////////////////////////////////////
+                //get all clients if not in store
+                this.$store.dispatch('clients/clientsAll'),
+                
+                //get all tasksMaster if not in store
+                this.$store.dispatch('tasks/tasksMasterListSet'),
+                
+                //get all users if not in store 
+                this.$store.dispatch('users/usersAll')
+            ////////////////////////////////////////////////////
+
+            if (window.history.state.taskId != undefined){ 
+                this.editing = true  
             }
-        }
+            else if (this.editTaskId != undefined) {
+                this.editing = true
+            }
+        },
+        mounted() {
+            if (this.editing == true) {
+                const taskData = (this['taskData'])(this.editTaskId)?.taskData[0]
+                const taskLogs = (this['taskData'])(this.editTaskId)?.taskLogs
+                const subTasksData = this['subTasksData'](this.editTaskId)
+                if (taskData != undefined && taskData != '') {
+                    this.populateDataProperties(taskData)
+                    this.taskLogs = taskLogs
+                }
+                if (subTasksData != undefined && subTasksData != '') {
+                    for(let i =0; i<subTasksData.length; i++) {
+                        subTasksData[i].assignedTo = this.allUsers.find(user => user.id == subTasksData[i].assignedTo)
+                    }          
+                    this.subTasks = subTasksData
+                }
+            }
+
+            this.$refs['defaultTab'+this.uk].click()
+        },
     }
 </script>
 
 <style scoped>
-#save-task-template, #recurring {
+
+.add-st {
+    width: 13px;
+    height: 13px;
+    padding: 8px;
+}
+.rmst {
+    padding: 4px;
+}
+.icon {
+    border-radius: 100%;
+    color: #8888888f;
+    border: solid 1px #e0e0e0;
+}
+.icon:hover {
+    border-color: #c2c2c2;
+}
+.pointer {
+    cursor: pointer;
+}
+option, select {
+    text-transform: capitalize;
+}
+.table-tabs {
+    display: flex;
+}
+.tab {
+    padding: auto;
+    width: 50%;
+    background-color: white;
+    border-radius: 0;
+}
+.tab-open {
+    border: solid 1px #d2d2d2;
+    color:  #e7eaec;
+    background-color: #2F4050;
+}
+.save-task-template, .recurring {
     width: fit-content;
 }
 .hide {display: none;}
@@ -291,40 +484,35 @@ input, select {
 .sub-task-extra {
     width: 80% !important;
     border: none;
-    border-bottom: solid 1px #e7eaec;
+    border-bottom: solid 1px #e7eaec !important;
 }
 .grid-wrapper {
     width: 100%;
 }
 .grid {
     display: grid;
-    grid-template-columns: 13px 10px 80% 22px;
+    /* grid-template-columns: 13px 10px 80% 22px; */
+    grid-template-columns: 10px 80% 22px;
     grid-template-rows: 2;
     column-gap: 12px;
     align-items: center;
     line-height: 1.5rem;
 }
-.action-button>img {
-    width: 22px;
-    height: 22px;
-    padding: 0 !important;
-    filter: invert(0.5);
-}
-.button.action-button {
-    background-color: white;
-    padding: 0;
-    border: none;
-}
-/* .action-button img {display: none;} */
-.grid:hover .dots img {
-    display: inline !important;
+.grid:hover .dots-img {
+    visibility: visible !important;
 }
 .flex {
     display: flex;
     column-gap: 12px;
+    align-items: center;
 }
-#task-repeat, #task-repeat-on {
+.task-repeat {
+    width: fit-content;
     border: none;
     border-bottom: solid 1px #e7eaec;
+}
+.sub-tasks-scroll {
+    max-height: 720px;
+    overflow-y: auto;
 }
 </style>

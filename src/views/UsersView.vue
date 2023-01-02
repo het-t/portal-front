@@ -1,16 +1,22 @@
 <template>
     <div class="ml24 mr24">
-        <router-view></router-view>
+        <router-view v-if="allow"></router-view>
     </div>
 </template>
 
 <script>
-    import { mapGetters } from 'vuex';
-
     export default {
         name: "UserView",
-        computed: {
-            ...mapGetters(["getRights"])
+        data() {
+            return {
+                allow: false
+            }
         },
+        created() {
+            this.$store.dispatch('roles/rolesAll')
+            .then(() => {
+                this.allow = true
+            })
+        }
     }
 </script>

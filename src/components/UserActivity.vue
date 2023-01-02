@@ -1,45 +1,82 @@
 <template>
     <div>
         <div class="card">
-            <div class="card-head m0 pb16 pt16 pr16 pl16">
-                <h5 class="table-head m0">activity</h5>
-            </div>
 
-        <FullFilter :tableData="activityData" :dataFields="filterFields"  @filtered="filteredActivities = $event" :clear="clear" class="mr16 ml16 mt16 actions"/>
 
             <div class="mt16 ml16 mr16">
                 <table>
                     <tr>
                         <th>
-                            <div class="tr-th">
-                                id
-                                <TableSort @sorted="activityData = $event" :tableData="activityData" keyToSort="id" />
+                            <div class="flex">
+                                <table-sort @clicked="i=!i; k=!k; m=!m; n=!n; o=!o; p=!p;" :key="j" sortBy="id" sortType="number" storeName="activity"></table-sort>
+
+                                <div class="floating-container">
+                                    id
+                                </div>
                             </div>
                         </th>
                         <th>
-                            <div class="tr-th">
-                                user
+                            <div class="flex">
+                                <table-sort @clicked="j=!j; k=!k; m=!m; n=!n; o=!o; p=!p;" :key="i" sortBy="user" sortType="string" storeName="activity"></table-sort>
+
+                                <div class="floating-container">
+                                    <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="userH" type="text" class="header p0" required>
+                                    <span @click="$refs['userH'].focus()" class="floating-label">user</span>
+                                </div>
                             </div>
                         </th>
                         <th>
-                            activity
+                            <div class="flex">
+                                <table-sort @clicked="i=!i; j=!j; m=!m; n=!n; o=!o; p=!p;" :key="k" sortBy="act" sortType="string" storeName="activity"></table-sort>
+
+                                <div class="floating-container">
+                                    <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="activityH" type="text" class="header p0" required>
+                                    <span @click="$refs['activityH'].focus()" class="floating-label">activity</span>
+                                </div>
+                            </div>
                         </th>
                         <th>
-                            table
+                            <div class="flex">
+                                <table-sort @clicked="i=!i; j=!j; k=!k; n=!n; o=!o; p=!p;" :key="m" sortBy="table" sortType="string" storeName="activity"></table-sort>
+
+                                <div class="floating-container">
+                                    <input v-debounce:700ms.lock="sort" v-model="filterFor[2]" ref="tableH" type="text" class="header p0" required>
+                                    <span @click="$refs['tableH'].focus()" class="floating-label">table</span>
+                                </div>
+                            </div>
+                            
                         </th>
                         <th>
-                            key
+                            <div class="flex">
+                                <div class="floating-container">
+                                    key
+                                </div>
+                            </div>
                         </th>
-                        <th>details</th>
+                        <th>
+                            <div class="flex">
+                                <table-sort @clicked="i=!i; j=!j; k=!k; m=!m; o=!o; p=!p;" :key="n" sortBy="details" sortType="string" storeName="activity"></table-sort>
+
+                                <div class="floating-container">
+                                    <input v-debounce:700ms.lock="sort" v-model="filterFor[3]" ref="detailsH" type="text" class="header p0" required>
+                                    <span @click="$refs['detailsH'].focus()" class="floating-label">details</span>
+                                </div>
+                            </div>
+                            
+                        </th>
                         <th class="w">
-                            <div class="tr-th">
-                                time
-                                <TableSort  @sorted="activityData = $event" :tableData="activityData" keyToSort="datestamp" />
+                            <div class="flex">
+                                <table-sort @clicked="i=!i; j=!j; k=!k; m=!m; n=!n; p=!p;" :key="o" sortBy="time" sortType="number" storeName="activity"></table-sort>
+
+                                <div class="floating-container">
+                                    <input v-debounce:700ms.lock="sort" v-model="filterFor[4]" ref="timeH" type="text" class="header p0" required>
+                                    <span @click="$refs['timeH'].focus()" class="floating-label">time</span>
+                                </div>
                             </div>
                         </th>
                     </tr>
 
-                    <tr class="tr" v-for="activity in activitiesToDisplay" :key="activity?.id" >
+                    <tr class="tr" v-for="activity in activityData" :key="activity?.id" >
                         <td>
                             {{activity?.id}}
                         </td>
@@ -53,11 +90,11 @@
                         </td>
                         
                         <td>
-                            {{activity?.reference_table}}
+                            {{activity?.referenceTable}}
                         </td>
 
                         <td>
-                            {{activity?.reference_table_pk_id}}
+                            {{activity?.referenceTablePkId}}
                         </td>
 
                         <td>
@@ -72,6 +109,8 @@
             </div>
             <div class="pagination mr16 ml16">
                 <TablePagination @tableData="tablePagination($event)"
+                    :filters="filterFor"
+                    :key="p"
                     tableName="activity"
                 />
             </div>
@@ -82,46 +121,38 @@
 <script>
     import TablePagination from './TablePagination.vue'
     import TableSort from './TableSort.vue'
-    import FullFilter from './TableFullFilter.vue'
 
     export default {
         name: "UserActivity",
         data() {
             return {
-                activityData: '',
-                filterFields: [
-                    {name: 'id', relation: 'exact', type: 'number'},
-                    {name: 'datestamp', relation: 'inequality', type: 'date'},
-                    {name: 'email', relation: 'exact', type: 'text'},
-                    {name: 'activity', relation: 'exact', type: 'select', values: ['login', 'activities']},
-                    {name: 'detail', relation: 'exact', type: 'select', values: ['success', 'error']}
-                ],
-                filteredActivities: undefined,
-                clear: false
+                activityData: [],
+
+                i:0, j:0, k:0, l:0, m:0, n:0, o:0, p:0,
+
+                filterFor: ['', '', '', '', '']
             };
-        },
-        computed: {
-            activitiesToDisplay() {
-                if (this.filteredActivities != undefined) {
-                    return this.filteredActivities
-                } 
-                else {
-                    return this.activityData
-                }
-            }
         },
         methods: {
             tablePagination(event) {
+                console.log("in user activity", event)
                 this.activityData = event
-                this.filteredActivities = undefined
-                this.clear = true
+            },
+            sort() {
+                this.p = !this.p
             }
         },
-        components: { TablePagination, TableSort, FullFilter }
+        components: { 
+            TablePagination,
+            TableSort
+        }
     }
 </script>
 
 <style scoped>
+    .flex {
+        display: flex;
+    }
     .w {
         min-width: 150px;
     }
