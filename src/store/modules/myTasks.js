@@ -19,6 +19,9 @@ const getters = {
             sortBy: state.sortBy,
             sortOrder: state.sortOrder
         }
+    },
+    getKey(state) {
+        return state.paginationKey
     }
 }
 
@@ -41,6 +44,13 @@ const mutations = {
     },
     currentPageSet(state, {index}) {
         state.currentPage = index
+    },
+    refetch(state) {
+        state.myTasksCount = undefined
+        state.myTasksData = {}
+
+        if (state.paginationKey == 0) state.paginationKey = 1
+        else if (state.paginationKey == 1) state.paginationKey = 0
     }
 }
 

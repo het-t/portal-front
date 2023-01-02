@@ -89,7 +89,6 @@ const mutations = {
         state.currentPage = index
     },
     refetch(state, {taskId, saved}) {
-        console.log("inside refetch tasks", taskId, saved)
         state.tasks = {}
         
         if (taskId) {
@@ -132,11 +131,11 @@ const actions = {
             })
         } 
     },
-    tasksDataSet({getters, commit}, {taskId}) {
+    tasksDataSet({getters, commit}, {taskId, force}) {
         const res = getters['taskData']?.(taskId)
         console.log("taskData", res)
         return new Promise((resolve, reject) => {
-            if (res == undefined || res == '') {
+            if (res == undefined || res == '' || force == true) {
                 tasks.getData({taskId})
                 .then((res) => {
                     commit('tasksDataSet',{
@@ -154,7 +153,7 @@ const actions = {
     },
     tasksMasterListSet({getters, commit}) {
         return new Promise((resolve, reject) => {
-            if ((getters['tasksMasterListGet']).length == 0) {
+            if ((getters['tasksMasterListGet'])?.length == 0) {
                 tasksMaster.get()
                 .then((res) => {
                     commit('tasksMasterListSet', res?.data?.tasksMasterList)

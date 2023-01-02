@@ -59,14 +59,14 @@
                     <th></th>
                 </tr>
             </template>
-            <!-- v-if="usersList != ''" -->
+
             <template #tbody>
-                <template v-for="(user, index) in users" :key="user?.id">
+                <template v-for="(user, index) in users()" :key="user?.id">
                     <tr 
                         class="tr edit-user-tr"
                         tabindex="0"
-                        @keyup.enter="editUser('row'+index, user.id)"
-                        @click.prevent="editUser('row'+index, user.id)"    
+                        @keyup.enter="editUser('row'+index, user.id, $event)"
+                        @click.prevent="editUser('row'+index, user.id, $event)"    
                     >
                         <td>
                             {{user.firstName + ' ' + user.lastName}}
@@ -86,20 +86,11 @@
                     </tr>
                     <tr class="tr tr-hidden hide" :ref="('row'+index)">
                        <td colspan="3" class="p0 m0">
-                            <!-- <user-create 
-                                v-if="(allow[user.id] == true)"
-                                :editUserId="user.id"
-                                :uk="index"
-                                @editingCompleted="[editUser('row'+index, user.id), showSwal($event)]"
-                                class="user-create"
-                            ></user-create> -->
-                            <!-- v-if="(allow[user.id] == true)" -->
-
                             <component v-if="componentId?.[user.id]" 
                                 :is="componentId?.[user.id]"
                                 :editUserId="user.id"
                                 :uk="index"
-                                @editingCompleted="editUser('row'+index, user.id)"
+                                @editingCompleted="editUser('row'+index, user.id, $event)"
                                 class="user-create"
                                 :buttonsIndex=2    
                             ></component>
@@ -112,7 +103,8 @@
                 </template>
             </template>
             
-            <table-pagination :key="p"
+            <table-pagination 
+                :key="$store.getters['users/getKey']"
                 :filters="filterFor"
                 @tableData="usersList = $event"
                 tableName="users"
@@ -162,14 +154,12 @@ export default {
             componentId: {}
         };
     },
-    computed: {
+    methods: {
         users() {
             if (this.usersList?.length != 0) return this.usersList
             return this.$store.getters['users/usersListGet'](1, 'id', 0, this.filterFor)
-        }
-    },
-    methods: {
-        editUser(rowIndex, userId) {
+        },
+        editUser(rowIndex, userId, {force}) {
             const show = this.$refs[rowIndex][0].classList.contains('hide')
             if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
             else this.$refs[rowIndex][0].classList.add('hide')
@@ -178,12 +168,11 @@ export default {
             if (rightCheck('edit_user')) {
                 this.componentId[userId] = 'SkeletonForm'
                 Promise.all([
-                    this.$store.dispatch('users/usersDataSet', {userId})
+                    this.$store.dispatch('users/usersDataSet', {userId, force})
                 ])
                 .then(() => {
                     this.allow[userId] = true
                     this.componentId[userId] = 'UserCreate'
-            console.log(this.componentId)
                 })
             }
 

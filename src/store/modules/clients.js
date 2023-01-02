@@ -7,7 +7,8 @@ const state = {
     allClients: [],     //list of all clients
     sortBy: 'id',
     sortOrder: 0,    //0-desc, 1-asc
-    currentPage: ''
+    currentPage: '',
+    paginationKey: 0
 }
 
 const getters = {
@@ -28,6 +29,9 @@ const getters = {
             sortBy: state.sortBy,
             sortOrder: state.sortOrder
         }
+    },
+    getKey(state) {
+        return state.paginationKey
     }
 }
 
@@ -64,6 +68,14 @@ const mutations = {
     },
     currentPageSet(state, {index}) {
         state.currentPage = index
+    },
+    refetch(state) {
+        state.clientsCount = undefined
+        state.clients = {}
+        state.allClients = {}
+
+        if (state.paginationKey == 0) state.paginationKey = 1
+        else if (state.paginationKey == 1) state.paginationKey = 0
     }
 }
 
@@ -85,7 +97,7 @@ const actions = {
     },
     clientsAll({commit, getters}) {
         return new Promise((resolve, reject) => {
-            if (getters['allClients'].length == 0) {
+            if (getters['allClients']?.length == 0) {
                 clients.get({
                     from: null,
                     recordsPerPage: null,

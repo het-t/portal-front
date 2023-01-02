@@ -78,17 +78,23 @@ const mutations = {
     currentPageSet(state, {index}) {
         state.currentPage = index
     },
-    refetch(state) {
+    refetch(state, {userId}) {
         state.users = {}
-        state.usersData = {}
-        state.paginationKey = !getters['getKey']
+        state.usersCount = undefined
+        state.allUsers = undefined
+
+        if (userId) state.usersData[userId] = {}
+        else state.userData = undefined
+        
+        if (state.paginationKey == 0) state.paginationKey = 1
+        else if (state.paginationKey == 1) state.paginationKey = 0
     }
 }
 
 const actions = {
     usersAll({getters, commit}) {
         return new Promise((resolve, reject) => {
-            if (getters['allUsers'].length == 0) {
+            if (getters['allUsers']?.length == 0) {
                 users.get({
                     from: null,
                     recordsPerPage: null,
@@ -105,11 +111,11 @@ const actions = {
             else resolve()
         })
     },
-    usersDataSet({getters, commit}, {userId}) {
+    usersDataSet({getters, commit}, {userId, force}) {
         const res = getters['usersDataGet']?.(userId)
         
         return new Promise((resolve, reject) => {
-            if (res == undefined || res == '') {
+            if (res == undefined || res == '' || force == true) {
                 users.getData({
                     editUserId: userId
                 })

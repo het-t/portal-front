@@ -2,20 +2,10 @@ import store from '@/store/index.js'
 import swal from 'sweetalert'
 
 export default function useEditSwal({text, mutationFnName, mutationArgs, promise, context}) {
-    swal({
-        title: "Alert",
-        text: `Do you really want to edit "${text}"`,
-        icon: 'warning',
-        buttons: true,
-        dangerMode: true
-    })
-    .then((value) => {
-        if (value == null) throw null
-        return promise()
-    })
+    promise
     .then(() => {
-        store.commit(mutationFnName, mutationArgs)
-        context.$emit('editingCompleted') //to toggle hidden-tr
+        if (mutationFnName) store.commit(mutationFnName, mutationArgs)
+        context.$emit('editingCompleted', {}) //to toggle hidden-tr
         return swal({
             title: "Success",
             text: `Edited "${text}"`,

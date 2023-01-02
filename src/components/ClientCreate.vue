@@ -83,7 +83,6 @@
 import {clients} from '@/api/index.js'
 import useEditSwal from '../helpers/swalEdit.js'
 import useCreateSwal from '@/helpers/swalCreate'
-import swal from 'sweetalert'
 
 export default {
     name: 'ClientCreate',
@@ -123,26 +122,9 @@ export default {
                 this.$refs[newTab+this.uk+'focus'].focus()
             },
         canceled() {
-            ////////////////////////////////////////
-            swal({
-                title: "Do you really want to cancel editing?", 
-                text: "All changes will be reverted",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true
-            })
-            .then((value) => {
-                if (value != null) throw null
-            })
-            .catch(() => {
-                // to toggle the hidden-tr visibility
-                if (this.editing == true) this.$emit("editingCompleted", {
-                    editing: 0,
-                    client: `${this.clientName} (${this.firmName})`
-                })
-            //////////////////////////////////////////
-                this.$router.push('/u/clients/list') //prop->path to redirect
-            })
+            // to toggle the hidden-tr visibility
+            if (this.editing == true) this.$emit("editingCompleted")
+            this.$router.push('/u/clients/list') //prop->path to redirect
         },
         proceed() {
             const args = {
@@ -159,21 +141,22 @@ export default {
                 conPhone: this.conPhone
             }
 
-            if (args.clientId != undefined && args.clientId != '') {
+            if (args.clientId != undefined && args.clientId != '') {  
                 useEditSwal({
                     text: args.clientName,
-                    mutationFnName: 'clients/RESET_STATE',
-                    promise: () => clients.edit(args),
+                    mutationFnName: 'clients/refetch',
+                    promise: clients.edit(args),
                     context: this,
                 })
+                    
             }
             else {
                 useCreateSwal({
                     text: args.clientName,
                     url: '/u/clients/list',
+                    promise: clients.create(args),
                     mutationFnName: 'clients/RESET_STATE',
                     mutationArgs: {},
-                    promise: () => clients.create(args),
                     context: this
                 })
             }

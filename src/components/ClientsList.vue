@@ -127,9 +127,10 @@
                 </template>
             </template>
 
-            <table-pagination @tableData="clientList = $event"
-            :filters="filterFor"
-                :key="p"
+            <table-pagination 
+                @tableData="clientList = $event"
+                :filters="filterFor"
+                :key="$store.getters['clients/getKey']"
                 tableName="clients"
             />
         </table-main>
@@ -191,13 +192,15 @@
                 if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
             },
             deleteClient(clientId, client) {
-                useDeleteSwal({
-                    text: client,
-                    promise: () => clients.delete({clientId}),
-                    mutationFn: 'clients/deleteClient',
-                    mutationArgs: {clientId, filters:this.filterFor},
-                    context: this
-                })
+                clients.delete({clientId})
+                .then(() =>
+                    useDeleteSwal({
+                        text: client,
+                        mutationFn: 'clients/deleteClient',
+                        mutationArgs: {clientId, filters:this.filterFor},
+                        context: this
+                    })
+                )
             },
             sort() {
                 this.p = !this.p

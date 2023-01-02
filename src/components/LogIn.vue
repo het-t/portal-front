@@ -13,13 +13,9 @@
 </template>
 
 <script>
-<<<<<<< HEAD
-// import axios from 'axios'
-import { mapActions } from 'vuex'
-=======
+import swal from 'sweetalert'
 import axios from '../api/axiosInstance.js'
 
->>>>>>> initial
     export default {
         name: 'LogIn',
         data() {
@@ -30,26 +26,7 @@ import axios from '../api/axiosInstance.js'
         },
         methods: {
             login() {
-<<<<<<< HEAD
-                this.$router.push({name: 'u'})
-
-                // axios.post('api/login', {
-                //     email: this.email,
-                //     password: this.pwd
-                // }, {
-                //     withCredentials: true,
-                // })
-                // .then((results) => {
-                //     console.log("login() LogIn.vue ",results?.data ,results?.data == 1)
-                //     if (results?.data == 1) {
-                //         this.$router.push({name: 'u'})
-                //     }
-                //     else {
-                //         this.$router.push({name: 'login'})
-                //     }
-                // })
-=======
-                // this.$router.push({name: 'u'})
+                console.log("logincalled")
                 axios.post('api/login', {
                     email: this.email,
                     password: this.pwd
@@ -64,7 +41,11 @@ import axios from '../api/axiosInstance.js'
                         this.$router.push({name: 'login'})
                     }
                 })
->>>>>>> initial
+                .catch(err => 
+                    swal({
+                        text: `Ooops ${err}`
+                    })
+                )
             },
             clear() {
                 this.email = ''

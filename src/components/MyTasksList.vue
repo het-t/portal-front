@@ -49,7 +49,6 @@
                     </th>
 
                     <th>status</th>
-                    <div></div>
                 </tr>
             </template>
 
@@ -109,7 +108,7 @@ export default {
                 text: subTask,
                 mutationFnName: 'tasks/RESET_STATE',
                 mutationArgs: {isMaster: false},
-                promise: () => myTasks.changeStatus({taskId, subTaskId, statusId}),
+                promise: myTasks.changeStatus({taskId, subTaskId, statusId}),
                 context: this
             })
         },
@@ -133,5 +132,8 @@ export default {
         text-transform: capitalize;
         padding-right: 0;
         padding-left: 0;
+    }
+    tr  th:not(:nth-last-child(1)) , tr td:not(:nth-last-child(1)){
+        border-right: solid 1px #e7eaec !important;
     }
 </style>

@@ -35,7 +35,7 @@
         <div class="link-list">
           <router-link to="/u/assigned/list" tabindex="-1" class="pt16 pb16 link">
             <font-awesome-icon :icon="['fas', 'user-check']" class="pa-icon ml24 mr24"></font-awesome-icon>
-            <span v-if="showLabels">Work Dairy</span>
+            <span v-if="showLabels">Work Diary</span>
           </router-link>
         </div>
 

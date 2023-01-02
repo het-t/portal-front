@@ -46,12 +46,12 @@
                         <th></th>
                     </tr>
 
-                    <template v-for="(role, index) in rolesList" :key="role.id">
+                    <template v-for="(role, index) in roles()" :key="role.id">
 
                         <tr class="tr edit-role-tr"
                             tabindex="0"
-                            @keyup.enter="editRole('row'+index, role.id)"
-                            @click.prevent="editRole('row'+index, role.id)"    
+                            @keyup.enter="editRole('row'+index, role.id, {})"
+                            @click.prevent="editRole('row'+index, role.id, {})"    
                         >                        
                             <td>
                                 {{role?.name}}
@@ -77,7 +77,7 @@
                                     :editRoleId="role.id"
                                     :uk="index"
                                     :buttonsIndex="1"
-                                    @editingCompleted="editRole('row'+index, role.id)"
+                                    @editingCompleted="editRole('row'+index, role.id , $event)"
                                 ></component>
 
                                 <skeleton-form v-else
@@ -88,11 +88,13 @@
                     </template>
 
                 </table>
-                <TablePagination @tableData="rolesList = $event"
-                    :key="p"
+
+                <table-pagination 
+                    @tableData="rolesList = $event"
+                    :key="$store.getters['roles/getKey']"
                     :filters="filterFor"
                     tableName="roles"
-                />
+                ></table-pagination>
             </div>
         </div>
     </div>
@@ -126,27 +128,31 @@ import useDeleteSwal from '@/helpers/swalDelete'
         };
     },
     methods: {
-        editRole(rowIndex, roleId) {
-            console.log(rowIndex, roleId)
+        roles() {
+            if (this.rolesList?.length != 0) return this.rolesList
+            return this.$store.getters['roles/rolesListGet'](1, 'id', 0, this.filterFor)
+        },
+        editRole(rowIndex, roleId, {force}) {
             const show = this.$refs[rowIndex][0].classList.contains('hide')
             if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
             else this.$refs[rowIndex][0].classList.add('hide')
 
             if (rightCheck('edit_role')) {
-                this.componentId[roleId]    = 'SkeletonForm'
-                this.$store.dispatch('roles/rolesDataSet', {roleId})
-                // roles.getData({roleId})
+                this.componentId[roleId] = 'SkeletonForm'
+                this.$store.dispatch('roles/rolesDataSet', {roleId, force})
                 .then(() => this.componentId[roleId] = 'RoleCreate')
             } 
         },
         deleteRole(roleId, roleName) {
-            useDeleteSwal({
-                text: roleName,
-                promise: () => roles.delete({roleId}),
-                context: this,
-                mutationFn: 'roles/deleteRole',
-                mutationArgs: {roleId, filters: this.filterFor}
-            })
+            roles.delete({roleId})
+            .then(() => 
+                useDeleteSwal({
+                    text: roleName,
+                    context: this,
+                    mutationFn: 'roles/deleteRole',
+                    mutationArgs: {roleId, filters: this.filterFor}
+                })
+            )
         },
         menu(e, {roleName, roleId, visibility}) {
             this.menuVisibisility = visibility

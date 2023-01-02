@@ -10,8 +10,9 @@ const getters = {
     activityCountGet(state) {
         return state.activityCount
     },
-    activityListGet: (state) => (index, sortBy, sortOrder, filters) => {
-        return state.activity[`${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}_${filters[3]}_${filters[4]}`]
+    activityListGet: () => () => {
+        // state.activity[`${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}_${filters[3]}_${filters[4]}`]
+        return undefined
     },
     sortGet(state) {
         return {
@@ -29,13 +30,13 @@ const mutations = {
     activityCountSet(state, activityCount) {
         state.activityCount = activityCount
     },
-    activityList(state, {index, sortBy, sortOrder, filters, data}) {
-        Object.defineProperty(state.activity, 
-            `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}_${filters[3]}_${filters[4]}`, {
-                value: data,
-                writable: true,
-                enumerable: true,
-        })
+    activityList() {
+    //     Object.defineProperty(state.activity, 
+    //         `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}_${filters[3]}_${filters[4]}`, {
+    //             value: data,
+    //             writable: true,
+    //             enumerable: true,
+    //     })
     },
     sortSet(state, {sortBy, sortOrder}) {
         state.sortBy = sortBy

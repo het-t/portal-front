@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { createRouter, createWebHistory } from 'vue-router'
-=======
 import { createRouter, createWebHashHistory } from 'vue-router'
->>>>>>> initial
 import InitialView from '../views/InitialView.vue'
 import store from '@/store/index.js'
 
@@ -41,14 +37,14 @@ const ActivityList = defineAsyncComponent({
   delay: 0
 })
 
-const routes = [{
+const routes = [
+  {
     path: '/',
-    alias: '/portal-deploy',
     name: 'main',
     component: InitialView,
     children: [{
       path: '/',
-      alias: '/login',
+      alias: 'login',
       name: 'login',
       component: () => import('../components/LogIn.vue')
     }]
@@ -284,17 +280,14 @@ const routes = [{
     
 
 const router = createRouter({
-<<<<<<< HEAD
-  history: createWebHistory(process.env.BASE_URL),
-=======
   history: createWebHashHistory(process.env.BASE_URL),
->>>>>>> initial
   routes
 })
 
 
-router.beforeEach((to)=>{
+router.beforeEach((to, from)=>{
   if (to?.meta?.protected) {
+    console.log(to, from)
     const userRights = store.getters['rights/getUserRights']
     const allow = userRights?.some((right) => right?.code_name == to?.name)
     if (!allow) return { name: 'no_access'}

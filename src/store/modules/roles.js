@@ -7,7 +7,8 @@ const state = {
     rolesData: {},   //list of data of roles selected to edit
     sortBy: 'id',
     sortOrder: 0,    //0-desc, 1-asc
-    currentPage: ''
+    currentPage: '',
+    paginationKey: 0
 }
 
 const getters = {
@@ -28,6 +29,9 @@ const getters = {
             sortBy: state.sortBy,
             sortOrder: state.sortOrder
         }
+    },
+    getKey(state) {
+        return state.paginationKey
     }
 }
 
@@ -69,13 +73,24 @@ const mutations = {
     },
     currentPageSet(state, {index}) {
         state.currentPage = index
+    },
+    refetch(state, {roleId}) {
+        state.roles = {}
+        state.rolesCount = undefined
+        state.allRoles = {}
+
+        if (roleId) state.rolesData[roleId] = undefined
+        else state.rolesData = {}
+
+        if (state.paginationKey == 0) state.paginationKey = 1
+        else if (state.paginationKey == 1) state.paginationKey = 0
     }
 }
 
 const actions = {
     rolesAll({getters, commit}) {
         return new Promise((resolve, reject) => {
-            if (getters['allRoles'].length == 0) {
+            if (getters['allRoles']?.length == 0) {
                 roles.get({
                     from: null,
                     recordsPerPage: null,
@@ -92,12 +107,11 @@ const actions = {
             else resolve()
         })
     },
-    rolesDataSet({getters, commit}, {roleId}) {
+    rolesDataSet({getters, commit}, {roleId, force}) {
         const res = getters['rolesDataGet']?.(roleId)
         
-        console.log("rolesDataSet called")
         return new Promise((resolve, reject) => {
-            if (res == undefined || res == '') {
+            if ((force == true) || (res == undefined) || res == '') {
                 roles.getData({
                     roleId
                 })

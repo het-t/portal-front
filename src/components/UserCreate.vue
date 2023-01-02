@@ -70,7 +70,6 @@
 <script>
 import {users} from '@/api/index.js'
 import useCreateSwal from '@/helpers/swalCreate'
-import swal from 'sweetalert'
 import useEditSwal from '../helpers/swalEdit'
 
     export default {
@@ -118,23 +117,8 @@ import useEditSwal from '../helpers/swalEdit'
                 this.$refs[newTab+this.uk+'focus'].focus()
             },
             canceled() {
-                swal({
-                    title: "Do you really want to cancel editing?", 
-                    text: "All changes will be reverted",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true
-                })
-                .then((value) => {
-                    if (value != null) throw 'Aborted'
-                })
-                .catch(() => {
-                    if (this.editing == true) this.$emit("editingCompleted", {
-                        editing: 0,
-                        user: this.userFirstName + this.userLastName
-                    })
-                    else this.$router.push('/u/users/list')
-                })
+                if (this.editUserId != undefined) this.$emit("editingCompleted", {force: true})
+                else this.$router.push('/u/users/list')
             },
             proceed() {
                 const args = {
@@ -151,18 +135,17 @@ import useEditSwal from '../helpers/swalEdit'
                     useCreateSwal({
                         text: args.firstName + ' ' + args.lastName,
                         url: '/u/users/list',
-                        mutationFnName: 'users/RESET_STATE',
-                        // mutationFnName: 'users/userEdit',
-                        // mutationArgs: {userId: this.userId},
-                        promise: () => users.create(args),
+                        promise: users.create(args),
+                        mutationFnName: 'users/refetch',
                         context: this
                     })
                 }
                 else {
                     useEditSwal({
                         text: args.firstName + ' ' + args.lastName,
-                        mutationFnName: 'users/RESET_STATE',
-                        promise: () => users.edit(args),
+                        mutationFnName: 'users/refetch',
+                        mutationArgs: {userId: args.userId},
+                        promise: users.edit(args),
                         context: this
                     })
                 }

@@ -2,7 +2,10 @@
 import swal from 'sweetalert'
 
 export default function useCreateSwal({text, url, mutationFnName, mutationArgs, promise, context}) {
-    promise()
+    let args = mutationArgs
+    if (args == undefined) args = {}
+
+    promise
     .then(() =>
         swal({
             title: "Success",
@@ -12,7 +15,7 @@ export default function useCreateSwal({text, url, mutationFnName, mutationArgs, 
         })
     )
     .then(() => { 
-        context.$store.commit(mutationFnName, mutationArgs)
+        context.$store.commit(mutationFnName, args)
         setTimeout(() => context.$router.push(url), 1)
     })
     .catch((err) => {

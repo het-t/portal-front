@@ -39,7 +39,6 @@
 <script>
 import { roles } from '@/api'
 import useCreateSwal from '@/helpers/swalCreate'
-import swal from 'sweetalert'
 import useEditSwal from '../helpers/swalEdit'
 
     export default {
@@ -57,7 +56,7 @@ import useEditSwal from '../helpers/swalEdit'
                 useCreateSwal({
                     text: roleName,
                     mutationFnName: 'roles/RESET_STATE',
-                    promise: () => roles.create({roleName, roleRights}),
+                    promise: roles.create({roleName, roleRights}),
                     context: this,
                     url: '/u/roles/list'
                 }) 
@@ -68,31 +67,20 @@ import useEditSwal from '../helpers/swalEdit'
                     roleName: this.roleName,
                     roleRights: this.roleRights
                 }
+                
                 useEditSwal({
                     text: args.roleName,
-                    promise: () => roles.edit(args),
-                    mutationFnName: 'roles/RESET_STATE',
+                    mutationFnName: 'roles/refetch',
+                    mutationArgs: {roleId: args.roleId},
+                    promise: roles.edit(args),
                     context: this
                 })
             },
             canceled() {
-                swal({
-                    title: "Do you really want to cancel editing?", 
-                    text: "All changes will be reverted",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true
-                })
-                .then((value) => {
-                    if (value != null) throw null
-                })
-                .catch(() => {
-                    if (this.editing == true) this.$emit("editingCompleted", {
-                        editing: 0,
-                        role: this.roleName
-                    })
-                    else this.$router.push('/u/roles/list')
-                })
+                if (this.editRoleId != undefined) {
+                    this.$emit("editingCompleted", {force: true})
+                }
+                else this.$router.push('/u/roles/list')
             }
         },
         created() {                       
@@ -101,22 +89,12 @@ import useEditSwal from '../helpers/swalEdit'
             const roleDataStore = this.$store.getters['roles/rolesDataGet'](this.editRoleId)
             
             console.log("editing", roleDataStore)
-            // if (this.editRoleId != undefined) {
-            //     this.$store.dispatch('roles/rolesDataSet', {roleId: this.editRoleId})
-            // }
             
             if (roleDataStore != undefined && roleDataStore != '') {
                 console.log("coming inside", roleDataStore)
                 this.roleName = roleDataStore[0].roleName
                 this.roleRights = roleDataStore.map(o => o.rightId)
             }
-            // else this.$store.subscribe((mutation, state) => {
-            //     if (mutation.type == "roles/rolesDataSet" && mutation.payload.index == this.editRoleId) {
-            //         let roleData = state.roles.rolesData[this.editRoleId]
-            //         this.roleName = roleData[0].roleName
-            //         this.roleRights = roleData.map(o => o.rightId)
-            //     }
-            // })
         },
         mounted() {
             this.$refs['focus'].focus()

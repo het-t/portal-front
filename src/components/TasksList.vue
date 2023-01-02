@@ -116,8 +116,8 @@
                         v-show="task.id"
                         class="tr edit-task-tr" 
                         tabindex="0"
-                        @keyup.enter="editTask('row'+index, task.id)"
-                        @click.prevent="editTask('row'+index, task.id)"
+                        @keyup.enter="editTask('row'+index, task.id, $event)"
+                        @click.prevent="editTask('row'+index, task.id, $event)"
                     >
                         <td>
                             {{task.title}}
@@ -150,7 +150,7 @@
                                 :editTaskId="task.id"
                                 displayHead='false' 
                                 :uk="index" 
-                                @editingCompleted="editTask('row'+index, task.id)"
+                                @editingCompleted="editTask('row'+index, task.id, $event)"
                                 class="tasks-create" 
                                 editing="true"
                                 :buttonsIndex="2"
@@ -248,11 +248,10 @@ export default {
                 })
             )
         },
-        editTask(rowIndex, taskId) {
+        editTask(rowIndex, taskId, {force}) {
             const show = this.$refs[rowIndex][0].classList.contains('hide')
             if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
             else this.$refs[rowIndex][0].classList.add('hide')
-            console.log("inside tasksList")
             //get taskData and subTask to edit if not available in store
             //and after getting data render corresponding taskcreate component
             
@@ -261,8 +260,8 @@ export default {
                 this.componentId[taskId] = 'SkeletonForm'
 
                 Promise.all([
-                    this.$store.dispatch('tasks/tasksDataSet', {taskId}),
-                    this.$store.dispatch('tasks/subTasksDataSet', {taskId})
+                    this.$store.dispatch('tasks/tasksDataSet', {taskId, force}),
+                    this.$store.dispatch('tasks/subTasksDataSet', {taskId, force})
                 ])
                 .then(() => {
                     this.componentId[taskId] = 'TasksCreate'

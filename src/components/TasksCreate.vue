@@ -198,7 +198,6 @@
 <script>
     import { mapGetters } from 'vuex'
     import { tasks, subTasksMaster } from '@/api/index.js'
-    import swal from 'sweetalert'
     import useEditSwal from '../helpers/swalEdit'
     import useCreateSwal from '@/helpers/swalCreate'
     import VueMultiselect from 'vue-multiselect'
@@ -369,20 +368,8 @@
                 // this.disabled = false
             },
             canceled() {
-                swal({
-                    title: "Do you really want to cancel editing?", 
-                    text: "All changes will be reverted",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true
-                })
-                .then((value) => {
-                    if (value != null) throw null
-                })
-                .catch(() => {
-                    if (this.editing == true) this.$emit("editingCompleted")
-                    else this.$router.push('/u/tasks/list')
-                })
+                if (this.editing == true) this.$emit("editingCompleted", {force: true})
+                else this.$router.push('/u/tasks/list')
             }
         },
         created() {
@@ -413,9 +400,6 @@
                 if (taskData != undefined && taskData != '') {
                     this.populateDataProperties(taskData)
                     this.taskLogs = taskLogs
-                }
-                else {
-                    // this.$store.dispatch()
                 }
                 if (subTasksData != undefined && subTasksData != '') {
                     for(let i =0; i<subTasksData.length; i++) {

@@ -162,4 +162,7 @@
         margin: 13px 0;
         align-items: center;
     }
+    tr  th:not(:nth-last-child(1)) , tr td:not(:nth-last-child(1)){
+        border-right: solid 1px #e7eaec !important;
+    }
 </style>
