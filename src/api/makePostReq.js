@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from './axiosInstance.js'
 
 const makePostReq = (url, args) => {
     return axios.post(url, {

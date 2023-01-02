@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import InitialView from '../views/InitialView.vue'
 import store from '@/store/index.js'
 
@@ -280,8 +280,7 @@ const routes = [{
     
 
 const router = createRouter({
-  base: 'portal-deploy',
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHashHistory(process.env.BASE_URL),
   routes
 })
 

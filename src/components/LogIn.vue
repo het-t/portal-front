@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from '../api/axiosInstance.js'
 
     export default {
         name: 'LogIn',
@@ -25,6 +25,7 @@ import axios from 'axios'
         },
         methods: {
             login() {
+                // this.$router.push({name: 'u'})
                 axios.post('api/login', {
                     email: this.email,
                     password: this.pwd
