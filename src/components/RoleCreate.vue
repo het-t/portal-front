@@ -28,10 +28,15 @@
             <div class="hr"></div>
 
             <button 
+                :disabled="disabled === true"
                 @click.prevent="(editRoleId == undefined || editRoleId == '') ? createRole({roleName, roleRights}) : editRole()" 
                 class="green button"
             >save</button>
-            <button @click.prevent="canceled()" class="neutral ml8 button">cancel</button>
+            <button 
+                :disabled="disabled === true" 
+                @click.prevent="canceled()" 
+                class="neutral ml8 button"
+            >cancel</button>
         </form>
     </div>
 </template>
@@ -49,10 +54,12 @@ import useEditSwal from '../helpers/swalEdit'
                 roleName: '',
                 roleRights: [],
                 rightsList: [],
+                disabled: false
             }
         },
         methods: {
             createRole({roleName, roleRights}) {
+                this.disabled = true
                 useCreateSwal({
                     text: roleName,
                     mutationFnName: 'roles/RESET_STATE',
@@ -62,6 +69,7 @@ import useEditSwal from '../helpers/swalEdit'
                 }) 
             },
             editRole() {
+                this.disabled = true
                 const args = {
                     roleId: this.editRoleId,
                     roleName: this.roleName,

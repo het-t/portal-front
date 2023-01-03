@@ -93,8 +93,8 @@
                             <label :for="'save-task-template'+uk">save task template for future use </label>
                         </div>
 
-                        <button @click.prevent="proceed()" class="green mt16 button">save</button>
-                        <button @click.prevent="canceled()" class="neutral ml8 mt16 button">cancel</button>
+                        <button :disabled="disabled === true" @click.prevent="proceed()" class="green mt16 button">save</button>
+                        <button :disabled="disabled === true" @click.prevent="canceled()" class="neutral ml8 mt16 button">cancel</button>
                     </form>
                 </div>
                 <div class="vr"></div>
@@ -231,7 +231,7 @@
                 clientContact: '',
 
                 taskLogs: [],
-                // disabled: true
+                disabled: false
             }
         },
         computed: {
@@ -318,7 +318,7 @@
                 this.taskStatus = status
             },
             proceed() {
-                // this.disabled = true
+                this.disabled = true
                 this.subTasks?.map((subTask) => {
                     subTask.assignedTo = subTask.assignedTo?.id
                 })

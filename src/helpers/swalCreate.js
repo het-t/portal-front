@@ -21,4 +21,7 @@ export default function useCreateSwal({text, url, mutationFnName, mutationArgs, 
     .catch((err) => {
         if (err != null) swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
     })
+    .finally(() => {
+        context.disabled = false
+    })
 }

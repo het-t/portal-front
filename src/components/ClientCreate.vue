@@ -71,9 +71,8 @@
                         </div>
                     </div>
                 </div>
-
-                <button @click.prevent="proceed()" class="green mt16 ml16 button">save</button>
-                <button @click.prevent="canceled()" class="neutral ml8 mt16 button">cancel</button>
+                <button :disabled="disabled === true" @click.prevent="proceed()" class="green mt16 ml16 button">save</button>
+                <button :disabled="disabled === true" @click.prevent="canceled()" class="neutral ml8 mt16 button">cancel</button>
 
             </form>
         </div>
@@ -102,6 +101,8 @@ export default {
             
             editing: false,
             editClientId: '',
+
+            disabled: false
         }
     },
     computed: {
@@ -127,6 +128,7 @@ export default {
             this.$router.push('/u/clients/list') //prop->path to redirect
         },
         proceed() {
+            this.disabled = true
             const args = {
                 clientId: this.editClientId,
                 clientName: this.clientName,

@@ -299,6 +299,10 @@ input, select, textarea {
 
 
 /* buttons */
+.button:disabled {
+    background-color: grey !important;
+    color: white !important;
+}
 .button {
     padding: 8px;
     text-transform: capitalize;

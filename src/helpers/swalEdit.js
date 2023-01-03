@@ -16,4 +16,7 @@ export default function useEditSwal({text, mutationFnName, mutationArgs, promise
     .catch((err) =>{ 
         if (err != null) return swal("Oops!", `We can't perform this action right now please try again\n\n details: ${err}`)
     })
+    .finally(() => {
+        context.disabled = false
+    })
 }

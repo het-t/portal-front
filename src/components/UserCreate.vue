@@ -56,8 +56,8 @@
                         </div>
                     </div>
 
-                    <button @click.prevent="proceed()" class="green mt16 button">save</button>
-                    <button @click.prevent="canceled()" class="neutral ml8 mt16 button">cancel</button>
+                    <button :disabled="disabled === true" @click.prevent="proceed()" class="green mt16 button">save</button>
+                    <button :disabled="disabled === true" @click.prevent="canceled()" class="neutral ml8 mt16 button">cancel</button>
 
                 </div>
             </form>
@@ -86,6 +86,7 @@ import useEditSwal from '../helpers/swalEdit'
                 userPassword: '',
                 dbRoles: [],
                 userId: '',
+                disabled: false
             }
         },
         mounted() {
@@ -121,6 +122,7 @@ import useEditSwal from '../helpers/swalEdit'
                 else this.$router.push('/u/users/list')
             },
             proceed() {
+                this.disabled = true
                 const args = {
                     userId: this.userId,
                     firstName: this.userFirstName,
