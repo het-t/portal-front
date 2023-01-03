@@ -233,20 +233,20 @@ export default {
                 useEditSwal({
                     text: `status of task ${this.selectedTask} to ${status}`,
                     context: this,
+                    promise: Promise.resolve(),
                     mutationFnName: 'tasks/refetch',
+                    mutationArgs: {taskId: this.selectedTaskId}
                 })
             )
         },
         deleteTask(taskId, task) {
-            tasks.delete({taskId})
-            .then(() => 
-                useDeleteSwal({
-                    text: task,
-                    context: this,
-                    mutationFn: 'tasks/deleteTask',
-                    mutationArgs: {taskId, filters: this.filterFor}
-                })
-            )
+            useDeleteSwal({
+                text: task,
+                context: this,
+                mutationFn: 'tasks/deleteTask',
+                promise: () => tasks.delete({taskId}),
+                mutationArgs: {taskId, filters: this.filterFor}
+            })
         },
         editTask(rowIndex, taskId, {force}) {
             const show = this.$refs[rowIndex][0].classList.contains('hide')
