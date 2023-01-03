@@ -144,15 +144,13 @@ import useDeleteSwal from '@/helpers/swalDelete'
             } 
         },
         deleteRole(roleId, roleName) {
-            roles.delete({roleId})
-            .then(() => 
-                useDeleteSwal({
-                    text: roleName,
-                    context: this,
-                    mutationFn: 'roles/deleteRole',
-                    mutationArgs: {roleId, filters: this.filterFor}
-                })
-            )
+            useDeleteSwal({
+                text: roleName,
+                context: this,
+                promise: () => roles.delete({roleId}),
+                mutationFn: 'roles/deleteRole',
+                mutationArgs: {roleId, filters: this.filterFor}
+            })
         },
         menu(e, {roleName, roleId, visibility}) {
             this.menuVisibisility = visibility

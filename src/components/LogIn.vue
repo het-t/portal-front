@@ -26,7 +26,6 @@ import axios from '../api/axiosInstance.js'
         },
         methods: {
             login() {
-                console.log("logincalled")
                 axios.post('api/login', {
                     email: this.email,
                     password: this.pwd
@@ -35,7 +34,7 @@ import axios from '../api/axiosInstance.js'
                 })
                 .then((results) => {
                     if (results?.data?.login == 1) {
-                        this.$router.push({name: 'u'})
+                        this.$router.push({name: 'my_tasks_list'})
                     }
                     else {
                         this.$router.push({name: 'login'})

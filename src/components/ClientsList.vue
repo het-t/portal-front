@@ -192,15 +192,13 @@
                 if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
             },
             deleteClient(clientId, client) {
-                clients.delete({clientId})
-                .then(() =>
-                    useDeleteSwal({
-                        text: client,
-                        mutationFn: 'clients/deleteClient',
-                        mutationArgs: {clientId, filters:this.filterFor},
-                        context: this
-                    })
-                )
+                useDeleteSwal({
+                    text: client,
+                    promise: clients.delete({clientId}),
+                    mutationFn: 'clients/deleteClient',
+                    mutationArgs: {clientId, filters:this.filterFor},
+                    context: this
+                })
             },
             sort() {
                 this.p = !this.p

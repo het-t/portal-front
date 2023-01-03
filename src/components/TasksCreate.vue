@@ -57,7 +57,7 @@
 
                             <div class="row mt8">
                                 <label :for="'task-tasks'+uk" class="labels c1">task</label>
-                                <vue-multiselect :id="'task-tasks'+uk" v-model="taskMasterId" @change="taskMasterSelected" placeholder="Select Task-Master" :options="tasksMasterListGet" :custom-label="labelForTaskMaster" track-by="id">
+                                <vue-multiselect :id="'task-tasks'+uk" v-model="taskMasterId" @input="de" placeholder="Select Task-Master" :options="tasksMasterListGet" :custom-label="labelForTaskMaster" track-by="id">
                                     <template #noResult>
                                         Oops! No task-master found. Consider creating new task-master
                                     </template>
@@ -109,7 +109,7 @@
                             </div>
                         </div>
                     </div>
-
+                    {{ subTasks }}
                     <div v-if="subTasks" class="grid-wrapper">
                         <div v-for="(task, index) in subTasks" :key="index" class="mb8">
                             <div class="grid">
@@ -248,6 +248,7 @@
             ]),
         },
         methods: {
+            de() {console.log("coming")},
             labelForCoordinator({firstName, lastName, id}) {
                 return `${firstName} ${lastName} (${id})`
             },
@@ -258,6 +259,7 @@
                 return `${title} (${id})`
             },
             taskMasterSelected() {
+                console.log("taskMasterSelected")
                 const selectedTaskMaster = this['tasksMasterListGet'].find((o) => o.id == this.taskMasterId)
                 subTasksMaster.get({taskMasterId: this.taskMasterId})
                 .then((results) => {

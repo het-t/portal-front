@@ -26,11 +26,11 @@ const TasksList = defineAsyncComponent({
   loadingComponent: SkeletonCard,
   delay: 0
 })
-const MyTasksList = defineAsyncComponent({
-  loader: () => import('../components/MyTasksList.vue'),
-  loadingComponent: SkeletonCard,
-  delay: 0
-})
+// const MyTasksList = defineAsyncComponent({
+  // loader: () => 
+//   loadingComponent: SkeletonCard,
+//   delay: 0
+// })
 const ActivityList = defineAsyncComponent({
   loader: () => import('../components/UserActivity.vue'),
   loadingComponent: SkeletonCard,
@@ -40,6 +40,7 @@ const ActivityList = defineAsyncComponent({
 const routes = [
   {
     path: '/',
+    alias: '/#',
     name: 'main',
     component: InitialView,
     children: [{
@@ -240,10 +241,10 @@ const routes = [
       name: 'my_tasks',
       component: () => import('../views/MyTasksView.vue'),
       children: [{
-        path: 'list',
-        alias: '',
+        path: '',
+        // alias: '',
         name: 'my_tasks_list',
-        component: MyTasksList,
+        component: () => import('../components/MyTasksList.vue'),
         meta: {
           breadcrumb: {
             title: 'my tasks',
