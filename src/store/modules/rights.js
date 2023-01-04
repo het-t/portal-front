@@ -2,7 +2,7 @@ import { getAllRights } from "@/api"
 
 const state = {
     allRightsList: [],  //list of all rights
-    userRights: []      //list of user's rights
+    userRights: [],      //list of user's rights
 }
 
 const getters = {
@@ -12,6 +12,9 @@ const getters = {
     getUserRights(state) {
         return state.userRights
     },
+    getComponenetsVisibility(state) {
+        return state.userRights.length
+    }
     //define getters to return boolean 
     //for all the rights like createuser, create task template etc...
 }
