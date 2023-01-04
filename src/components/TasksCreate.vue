@@ -57,7 +57,7 @@
 
                             <div class="row mt8">
                                 <label :for="'task-tasks'+uk" class="labels c1">task</label>
-                                <vue-multiselect :id="'task-tasks'+uk" v-model="taskMasterId" @input="de" placeholder="Select Task-Master" :options="tasksMasterListGet" :custom-label="labelForTaskMaster" track-by="id">
+                                <vue-multiselect :id="'task-tasks'+uk" v-model="taskMasterId" placeholder="Select Task-Master" :options="tasksMasterListGet" :custom-label="labelForTaskMaster" track-by="id">
                                     <template #noResult>
                                         Oops! No task-master found. Consider creating new task-master
                                     </template>
@@ -109,7 +109,7 @@
                             </div>
                         </div>
                     </div>
-                    {{ subTasks }}
+
                     <div v-if="subTasks" class="grid-wrapper">
                         <div v-for="(task, index) in subTasks" :key="index" class="mb8">
                             <div class="grid">
@@ -231,7 +231,9 @@
                 clientContact: '',
 
                 taskLogs: [],
-                disabled: false
+                disabled: false,
+
+                i:0
             }
         },
         computed: {
@@ -247,8 +249,20 @@
                 'allClients'
             ]),
         },
+        watch: {
+            taskMasterId(taskMasterId) {
+                console.log(taskMasterId)
+                if (taskMasterId?.id && this.i != 0) {
+                    if (this.subTasks.length != 0) {
+                        let removeSubTasksId = this.subTasks.map(st => st?.id)
+                        this.removedSubTasksId.push(...removeSubTasksId)
+                    }
+                    this.taskMasterSelected(taskMasterId.id)
+                }
+                this.i = this.i + 1
+            }
+        },
         methods: {
-            de() {console.log("coming")},
             labelForCoordinator({firstName, lastName, id}) {
                 return `${firstName} ${lastName} (${id})`
             },
@@ -258,14 +272,21 @@
             labelForTaskMaster({title, id}) {
                 return `${title} (${id})`
             },
-            taskMasterSelected() {
-                console.log("taskMasterSelected")
-                const selectedTaskMaster = this['tasksMasterListGet'].find((o) => o.id == this.taskMasterId)
-                subTasksMaster.get({taskMasterId: this.taskMasterId})
+            taskMasterSelected(opt) {
+                console.log("selected ", opt)
+                const taskMasterId = this.taskMasterId?.id
+                if (taskMasterId == undefined) return 
+                const selectedTaskMaster = this['tasksMasterListGet'].find((o) => o.id == taskMasterId)
+                subTasksMaster.get({taskMasterId})
                 .then((results) => {
-                    this.subTasks = (results.data.subTasksMasterList)
-                    this.taskCost = selectedTaskMaster.cost
+                    this.subTasks = results.data.subTasksMasterList
+                    this.taskCost = selectedTaskMaster?.cost
                 })
+            },
+            taskMasterUnselected() {
+                console.log("task master unselecting")
+                this.taskMasterId = ''
+                this.subTasks = []
             },
             openTab(e, newTab) {
                 var tabs = e.target.parentElement.getElementsByClassName('tab')
