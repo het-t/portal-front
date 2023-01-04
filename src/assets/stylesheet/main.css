@@ -38,6 +38,9 @@ body, #app {
     left:0;
     overflow: hidden;
 }
+#pb {
+    width: calc(100% - 180px);
+}
 .pa-icon {
     width: 12px;
     height: 12px;
@@ -102,9 +105,6 @@ a, button {
     border: none;
 }
 
-#pb {
-    width: 100%;
-}
 #top-nav {
     height: 50px;
     margin: auto;
@@ -271,13 +271,6 @@ input, select, textarea {
     border: solid 1px rgb(224, 224, 224);
     color: #676a6c;
 }
-/* input:focus, select:focus, textarea:focus {
-    outline: none;
-    border: solid 1px rgb(167, 167, 167);
-} */
-/* .button:focus {
-    outline: none;
-} */
 .vr {
     border-right: solid 1px #e7eaec;
     margin: 0 36px;
@@ -330,12 +323,26 @@ input, select, textarea {
     display: none;
 }
 
+@media screen and (max-width: 1150px) and (min-width: 769px) {
+    .list {
+        display: flex;
+        flex-direction: column;
+    }
+}
 @media screen and (max-width : 769px) {
+    .list {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
     html, body {
         overflow-x: hidden;
     }
     #pa {
-        max-width: fit-content;
+        width: 60px !important;
+    }
+    #pb {
+        width: calc(100% - 60px);
     }
     a span {
         display: none !important;
