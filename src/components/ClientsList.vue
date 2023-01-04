@@ -19,7 +19,7 @@
                 <tr class="table-heading">
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="l=!l; j=!j; k=!k; p=!p;" :key="i" sortBy="name" sortType="string" storeName="clients"></table-sort>
+                            <table-sort @clicked="l=!l; j=!j; k=!k; p=!p; sort();" :key="i" sortBy="name" sortType="string" storeName="clients"></table-sort>
 
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="nameH" type="text" class="header p0" required>
@@ -32,7 +32,7 @@
                     </th>
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="l=!l;k=!k; i=!i; p=!p;" :key="j" sortBy="type" sortType="string" storeName="clients"></table-sort>
+                            <table-sort @clicked="l=!l;k=!k; i=!i; p=!p; sort();" :key="j" sortBy="type" sortType="string" storeName="clients"></table-sort>
 
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="typeH" type="text" class="header p0" required>
@@ -42,7 +42,7 @@
                     </th>
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="l=!l; j=!j; i=!i; p=!p;" :key="k" sortBy="ca" sortType="string" storeName="clients"></table-sort>
+                            <table-sort @clicked="l=!l; j=!j; i=!i; p=!p; sort();" :key="k" sortBy="ca" sortType="string" storeName="clients"></table-sort>
 
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[2]" ref="caH" type="text" class="header p0" required>
@@ -53,7 +53,7 @@
                     </th>
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="i=!i; j=!j; k=!k; p=!p;" :key="l" sortBy="con" sortType="string" storeName="clients"></table-sort>
+                            <table-sort @clicked="i=!i; j=!j; k=!k; p=!p; sort();" :key="l" sortBy="con" sortType="string" storeName="clients"></table-sort>
 
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[3]" ref="conH" type="text" class="header p0" required>
@@ -201,7 +201,7 @@
                 })
             },
             sort() {
-                this.p = !this.p
+                this.$store.commit('clients/paginate')
             }
         }
     }

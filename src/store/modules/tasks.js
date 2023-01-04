@@ -105,6 +105,10 @@ const mutations = {
 
         if(state.paginationKey == 0) state.paginationKey = 1
         else if (state.paginationKey == 1) state.paginationKey = 0
+    },
+    paginate(state) {
+        if(state.paginationKey == 0) state.paginationKey = 1
+        else if (state.paginationKey == 1) state.paginationKey = 0     
     }
 }
 

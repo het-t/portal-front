@@ -4,11 +4,6 @@
             <dots-menu v-if="menuVisibisility == true">
                 <template #links>
                     <li>
-                        <router-link :to="{name: 'edit_role', params: {editRoleId: editRoleId}}">
-                            <font-awesome-icon class="menu-icons" :icon="['fas', 'pencil']"></font-awesome-icon>
-                        </router-link>
-                    </li>
-                    <li>
                         <font-awesome-icon @click="deleteRole(editRoleId, editRoleName)"
                             class="menu-icons" 
                             :icon="['fas', 'trash']"
@@ -25,7 +20,7 @@
                     <tr>
                         <th>
                             <div class="flex">
-                                <table-sort :key="i" @clicked="j=!j; p=!p;" sortType="string" sortBy="name" storeName="roles"></table-sort>
+                                <table-sort :key="i" @clicked="j=!j; p=!p; sort();" sortType="string" sortBy="name" storeName="roles"></table-sort>
 
                                 <div class="floating-container">
                                     <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="nameH" class="header p0" type="text" required>
@@ -35,7 +30,7 @@
                         </th>
                         <th>
                             <div class="flex">
-                                <table-sort :key="j" @clicked="i!=i; p=!p;" sortType="number" sortBy="rights" storeName="roles"></table-sort>
+                                <table-sort :key="j" @clicked="i!=i; p=!p; sort();" sortType="number" sortBy="rights" storeName="roles"></table-sort>
 
                                 <div class="floating-container">
                                     <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="rightsH" type="text" class="header p0" required>
@@ -159,8 +154,7 @@ import useDeleteSwal from '@/helpers/swalDelete'
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
         },
         sort() {
-            console.log('sorting', this.filterFor)
-            this.p = !this.p
+            this.$store.commit('roles/paginate')
         }
     },
     components: { TablePagination, DotsMenu, DotsImg, TableSort, RoleCreate, SkeletonForm, NoAccess }

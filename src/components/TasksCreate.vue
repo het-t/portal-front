@@ -65,7 +65,7 @@
                             </div>
 
                             
-                            <div class="row mt8">
+                            <div class="row mt8" v-if="rightCheck('see_pricing') == true">
                                 <label :for="'task-cost'+uk" class="labels c1">fees</label>
                                 <input type="number" v-model="taskCost" :id="'task-cost'+uk">
                             </div>
@@ -201,6 +201,7 @@
     import useEditSwal from '../helpers/swalEdit'
     import useCreateSwal from '@/helpers/swalCreate'
     import VueMultiselect from 'vue-multiselect'
+    import rightCheck from '@/helpers/RightCheck'
 
     export default {
         name: 'TasksCreate',
@@ -247,7 +248,7 @@
             ]),
             ...mapGetters('clients', [
                 'allClients'
-            ]),
+            ])
         },
         watch: {
             taskMasterId(taskMasterId) {
@@ -263,6 +264,7 @@
             }
         },
         methods: {
+            rightCheck,
             labelForCoordinator({firstName, lastName, id}) {
                 return `${firstName} ${lastName} (${id})`
             },

@@ -86,7 +86,7 @@
                         </div>
                     </th>
                     
-                    <th title="cost of all sub-tasks + fees">
+                    <th v-if="rightCheck('see_pricing')" title="cost of all sub-tasks + fees">
                         <div class="flex">
                             total
                         </div>
@@ -129,7 +129,7 @@
                         <td>
                             <tasks-progress :total="task.totalSubTasks" :completed="task.doneSubTasks"/>
                         </td>
-                        <td>
+                        <td v-if="rightCheck('see_pricing')">
                             {{task?.total}}
                         </td>
                         <td>
@@ -204,6 +204,7 @@ export default {
         };
     },
     methods: {
+        rightCheck,
         tasks() {
             if (this.tasksList?.length != 0) {
                 return this.tasksList
@@ -266,7 +267,7 @@ export default {
             }
         },
         sort() {
-            this.$store.commit('tasks/refetch')
+            this.$store.commit('tasks/paginate')
         }
     }, 
     components: { 

@@ -4,16 +4,6 @@
             <dots-menu v-if="menuVisibisility == true">
                 <template #links>
                     <li>
-                        <router-link :to="{
-                            name: 'edit_user', 
-                            params : {
-                                editUserId: selectedUserId
-                            }
-                        }">
-                            <font-awesome-icon class="menu-icons" :icon="['fas', 'pencil']"></font-awesome-icon> 
-                        </router-link>
-                    </li>
-                    <li>
                         <font-awesome-icon @click.prevent="deleteUser(selectedUserId, selectedUserName)"
                             class="menu-icons" 
                             :icon="['fas', 'trash']"
@@ -29,7 +19,7 @@
                 <tr>
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="i=!i; k=!k; p=!p;" :key="j" sortBy="name" sortType="string" storeName="users"></table-sort>
+                            <table-sort @clicked="i=!i; k=!k; p=!p; sort();" :key="j" sortBy="name" sortType="string" storeName="users"></table-sort>
 
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="nameH" type="text" class="header p0" required>
@@ -39,7 +29,7 @@
                     </th>
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="i=!i; j=!j; p=!p;" :key="k" sortBy="email" sortType="string" storeName="users"></table-sort>
+                            <table-sort @clicked="i=!i; j=!j; p=!p; sort();" :key="k" sortBy="email" sortType="string" storeName="users"></table-sort>
 
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="emailH" type="text" class="header p0" required>
@@ -49,7 +39,7 @@
                     </th>
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="j=!j; k=!k; p=!p;" :key="i" sortBy="rights" sortType="number" storeName="users"></table-sort>
+                            <table-sort @clicked="j=!j; k=!k; p=!p; sort();" :key="i" sortBy="rights" sortType="number" storeName="users"></table-sort>
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[2]" ref="rightsH" type="text" class="header p0" required>
                                 <span @click="$refs['rightsH'].focus()" class="floating-label">rights</span>
@@ -193,7 +183,7 @@ export default {
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
         },
         sort() {
-            this.p = !this.p
+            this.$store.commit('users/paginate')
         }
     },
     components: { 
