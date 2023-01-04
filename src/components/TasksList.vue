@@ -203,9 +203,6 @@ export default {
             componentId: {},
         };
     },
-    // computed: {
-
-    // },
     methods: {
         tasks() {
             if (this.tasksList?.length != 0) {

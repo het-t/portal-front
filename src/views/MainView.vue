@@ -80,7 +80,7 @@
 
       <the-breadcrumb></the-breadcrumb>
 
-      <router-view v-if="allow" class="pt24">
+      <router-view v-if="getComponenetsVisibility" class="pt24">
       </router-view>
     </div>
   </div>
@@ -90,14 +90,19 @@
 import LogOut from '@/components/LogOut.vue'
 import { getUserRights } from '../api'
 import TheBreadcrumb from '../components/TheBreadcrumb.vue'
+import { mapGetters } from 'vuex'
 
   export default {
     name: "MainView",
     data() {
       return {
-        allow: false,
         showLabels: true,
       }
+    },
+    computed: {
+      ...mapGetters('rights', [
+        'getComponenetsVisibility'
+      ])
     },
     components: {
       LogOut,
@@ -110,14 +115,13 @@ import TheBreadcrumb from '../components/TheBreadcrumb.vue'
         else this.$refs.menu.classList.remove('lessWidth')
       }
     },
-    created() {
-      if (this.$store.getters['rights/getComponenetsVisibility'] != 0) {
+    updated() {
+      if (this.$store.getters['rights/getComponenetsVisibility'] == 0) {
         getUserRights()
         .then((res) => {
           this.$store.commit('rights/setUserRights', res?.data?.userRights)
-          this.allow = true
         })
-      }
+      } 
     },
   }
 </script>

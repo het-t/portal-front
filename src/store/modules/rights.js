@@ -13,7 +13,8 @@ const getters = {
         return state.userRights
     },
     getComponenetsVisibility(state) {
-        return state.userRights.length
+        if (state.userRights.length == 0) return false
+        else return true
     }
     //define getters to return boolean 
     //for all the rights like createuser, create task template etc...
