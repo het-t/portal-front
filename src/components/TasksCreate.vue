@@ -233,8 +233,6 @@
 
                 taskLogs: [],
                 disabled: false,
-
-                i:0
             }
         },
         computed: {
@@ -251,18 +249,22 @@
             ])
         },
         watch: {
-            taskMasterId(taskMasterId) {
-                if (taskMasterId?.id && ((this.i != 0 && this.editing == true) || this.editing == false)) {
-                    if (this.subTasks.length != 0) {
-                        let removeSubTasksId = this.subTasks.map(st => st?.id)
-                        this.removedSubTasksId.push(...removeSubTasksId)
-                    }
+            taskMasterId(taskMasterId, oldTaskMasterId) {
+                if (oldTaskMasterId == '') oldTaskMasterId = undefined
+                if (taskMasterId == '') taskMasterId = undefined
+
+                let removeSubTasksId = this.subTasks?.map(st => st?.id)
+                if (removeSubTasksId?.length != 0) this.removedSubTasksId?.push(...removeSubTasksId)
+
+                if (oldTaskMasterId == undefined && taskMasterId != undefined) {
                     this.taskMasterSelected(taskMasterId.id)
-                }
-                else if (taskMasterId == '' || taskMasterId == undefined) {
+                } 
+                else if (oldTaskMasterId != undefined && taskMasterId == undefined) {
                     this.subTasks = []
                 }
-                this.i = this.i + 1
+                else if (oldTaskMasterId != undefined && taskMasterId != undefined) {
+                    this.taskMasterSelected(taskMasterId.id)
+                }
             }
         },
         methods: {
@@ -276,10 +278,11 @@
             labelForTaskMaster({title, id}) {
                 return `${title} (${id})`
             },
-            taskMasterSelected(opt) {
-                console.log("selected ", opt)
-                const taskMasterId = this.taskMasterId?.id
-                if (taskMasterId == undefined) return 
+            taskMasterSelected(taskMasterId) {
+                // if (taskMasterId == undefined) return 
+                if (taskMasterId?.id) taskMasterId = taskMasterId.id
+                if (taskMasterId == undefined) return
+
                 const selectedTaskMaster = this['tasksMasterListGet'].find((o) => o.id == taskMasterId)
                 subTasksMaster.get({taskMasterId})
                 .then((results) => {
