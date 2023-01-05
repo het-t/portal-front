@@ -88,13 +88,12 @@ import useEditSwal from '../helpers/swalEdit'
 import TableMain from './TableMain.vue'
 import TablePagination from './TablePagination.vue'
 import TableSort from './TableSort.vue'
-
 export default {
     components: { TableMain, TablePagination, TableSort },
     name: "MyTasksList",
     data() {
         return {
-            subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "pending with signed documents"}, {id: 9, status: "pending with DSC"}],
+            subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "pending with signed documents"}, {id: 9, status: "pending with DSC"}, {id: 10, status: 'reassigned'}],
             myTasksList: [],
 
             i:0, j:0, k:0, l:0, p:0,

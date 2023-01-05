@@ -1,25 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import InitialView from '../views/InitialView.vue'
 import store from '@/store/index.js'
-
-// import { defineAsyncComponent } from 'vue'
-// import SkeletonCard from '../skeletons/SkeletonCard.vue'
-import NotFound from '@/components/NotFound.vue'
-
-import MainView from '@/views/MainView.vue'
-
-import UsersList from '@/components/UserList.vue'
-import UserCreate from '@/components/UserCreate.vue'
-
-import RolesList from '@/components/RoleList.vue'
-import RoleCreate from '@/components/RoleCreate.vue'
-
-import TasksList from '@/components/TasksList.vue'
-import TasksCreate from '@/components/TasksCreate.vue'
-
-import ActivityList from '@/components/UserActivity.vue'
-import ClientsList from '../components/ClientsList.vue'
-import ClientCreate from '../components/ClientCreate.vue'
+import { getUserRights } from '@/api/index.js'
 
 let createUserBreadcrumb = {
   title: 'users',
@@ -121,11 +102,12 @@ let myTasksBreadcrumb = {
   }]
 }
 
+
 let routesNew = [
   {
     path: '/',
     name: 'main',
-    component: InitialView,
+    component: () => import('@/views/InitialView.vue'),
     children: [
       {
         path: '',
@@ -138,7 +120,7 @@ let routesNew = [
   {
     path: '/u',
     name: 'u',
-    component: MainView,
+    component: () => import('@/views/MainView.vue'),
     children: [
       ////////////////////////////
       {
@@ -149,7 +131,7 @@ let routesNew = [
             path: '',
             alias: 'list',
             name: 'users_list',
-            component: UsersList,
+            component: () => import('@/components/UserList.vue'),
             meta: {
               breadcrumb: userListBreadcrumb
             }
@@ -157,7 +139,7 @@ let routesNew = [
           {
             path: 'create-user',
             name: 'create_user',
-            component: UserCreate,
+            component: () => import('@/components/UserCreate.vue'),
             meta: {
               protected: true,
               breadcrumb: createUserBreadcrumb
@@ -190,7 +172,7 @@ let routesNew = [
             path: '',
             alias: 'list',
             name: 'roles_list',
-            component: RolesList,
+            component: () => import('@/components/RoleList.vue'),
             meta: {
               breadcrumb: roleListBreadcrumb
             }
@@ -198,7 +180,7 @@ let routesNew = [
           {
             path: 'create-role',
             name: 'create_role',
-            component: RoleCreate,
+            component: () => import('@/components/RoleCreate.vue'),
             meta: {
               protected: true,
               breadcrumb: roleCreateBreadcrumb
@@ -215,7 +197,7 @@ let routesNew = [
             path: '',
             alias: 'list',
             name: 'tasks_list',
-            component: TasksList,
+            component: () => import('@/components/TasksList.vue'),
             meta: {
               breadcrumb: taskListBreadcrumb
             }
@@ -223,7 +205,7 @@ let routesNew = [
           {
             path: 'create-task',
             name: 'create_task',
-            component: TasksCreate,
+            component: () => import('@/components/TasksCreate.vue'),
             meta: {
               breadcrumb: taskCreateBreadcrumb,
               protected: true
@@ -239,7 +221,7 @@ let routesNew = [
             path: '',
             alias: 'list',
             name: 'activity',
-            component: ActivityList,
+            component: () => import('@/components/UserActivity.vue'),
             meta: {
               breadcrumb: activityBreadcrumb
             }
@@ -255,7 +237,7 @@ let routesNew = [
             path: '',
             alias: 'list',
             name: 'clients_list',
-            component: ClientsList,
+            component: () => import('@/components/ClientsList.vue'),
             meta: {
               breadcrumb: clientListBreadcrumb
             }
@@ -263,7 +245,7 @@ let routesNew = [
           {
             path: 'create-client',
             name: 'create_client',
-            component: ClientCreate,
+            component: () => import('@/components/ClientCreate.vue'),
             meta: {
               protected: true,
               breadcrumb: clientCreateBreadcrumb
@@ -272,21 +254,26 @@ let routesNew = [
           {
             path: '/:pathMatch(.*)', 
             name: 'not-found', 
-            component: NotFound
+            component: () => import('@/components/NotFound.vue')
+          },
+          {
+            path: '/no-access',
+            name: 'no_access',
+            component: () => import('@/components/NoAccess.vue')
           }
         ]
+      },
+      { 
+        path: '/:pathMatch(.*)', 
+        component: () => import('@/components/NotFound.vue')
       }
     ]
   },
   { 
     path: '/:pathMatch(.*)', 
-    name: 'not-found', 
-    component: NotFound
+    component: () => import('@/components/NotFound.vue')
   }
 ]
-
-routesNew.forEach(o => console.log(o))
-
 
 const router = createRouter({
   history: createWebHashHistory(process.env.BASE_URL),
@@ -294,14 +281,26 @@ const router = createRouter({
 })
 
 
-router.beforeEach((to, from, next)=>{
+router.beforeEach((to)=>{
   if (to?.meta?.protected) {
     const userRights = store.getters['rights/getUserRights']
-    const allow = userRights?.some((right) => right?.code_name == to?.name)
-    if (!allow) return { name: 'no_access'}
+    console.log("length", userRights.length)
+    if (!userRights.length) {
+      getUserRights()
+      .then((res) => {
+        console.log("getUerRights")
+        store.commit('rights/setUserRights', res?.data?.userRights)
+        console.log(userRights, to?.name)
+        const allow = userRights?.some((right) => right?.code_name == to?.name)
+        if (!allow) return { name: 'no_access'}    
+      })
+    } 
+    else {
+      console.log("outside")
+      const allow = userRights?.some((right) => right?.code_name == to?.name)
+      if (!allow) return { name: 'no_access'}    
+    }
   }
-  console.log(to, from)
-  next()
 })
 
 

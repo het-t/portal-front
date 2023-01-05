@@ -33,7 +33,7 @@
 
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="emailH" type="text" class="header p0" required>
-                                <span @click="$refs['emailH'].focus()" class="floating-label">email</span>
+                                <span @click="$refs['emailH'].focus()" class="floating-label">username</span>
                             </div>
                         </div>
                     </th>
@@ -165,6 +165,7 @@ export default {
                     this.componentId[userId] = 'UserCreate'
                 })
             }
+            else this.componentId[userId] = 'NoAccess'
 
         },
         deleteUser(userId, userName) {

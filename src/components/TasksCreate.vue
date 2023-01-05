@@ -28,22 +28,22 @@
                             <template v-if="editing">
                                 <div class="row mt8">
                                     <label :for="'contactEmail'+uk" class="labels c1">Contact Email: </label>
-                                    <input :value="clientContact?.conEmail" :id="'contactEmail'+uk">
+                                    <input :value="clientContact?.conEmail" :id="'contactEmail'+uk" disabled>
                                 </div>
 
                                 <div class="row mt8">
                                     <label :for="'contactPhone'+uk" class="labels c1">Contact Phone: </label>
-                                    <input :value="clientContact?.conPhone" :id="'contactPhone'+uk" type="text">
+                                    <input :value="clientContact?.conPhone" :id="'contactPhone'+uk" type="text" disabled>
                                 </div>
 
-                                <div class="row mt8">
+                                <!-- <div class="row mt8">
                                     <label :for="'task-status'+uk" class="labels c1">status</label>
                                     <select v-model="taskStatus" :id='"task-status"+uk'>
                                         <option value="1">InProgress</option>
                                         <option value="2">Unbilled</option>
                                         <option value="3">Billed</option>
                                     </select>
-                                </div>
+                                </div> -->
                             </template>
 
                             <div class="row mt8">
@@ -212,7 +212,7 @@
         data() {
             return {
                 editing: false,
-                subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "pending with signed documents"}, {id: 9, status: "pending with DSC"}],
+                subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "pending with signed documents"}, {id: 9, status: "pending with DSC"}, {id: 10, status: 'reassigned'}],
                 
                 subTasks: [],
                 removedSubTasksId: [],
@@ -220,7 +220,7 @@
                 taskMasterId: '',
                 repeat: false,
                 newSubTask: '',
-                taskStatus: '',
+                // taskStatus: '',
                 taskTitle: '',
                 taskDescription: '',
                 taskClient: '',
@@ -252,13 +252,15 @@
         },
         watch: {
             taskMasterId(taskMasterId) {
-                console.log(taskMasterId)
-                if (taskMasterId?.id && this.i != 0) {
+                if (taskMasterId?.id && ((this.i != 0 && this.editing == true) || this.editing == false)) {
                     if (this.subTasks.length != 0) {
                         let removeSubTasksId = this.subTasks.map(st => st?.id)
                         this.removedSubTasksId.push(...removeSubTasksId)
                     }
                     this.taskMasterSelected(taskMasterId.id)
+                }
+                else if (taskMasterId == '' || taskMasterId == undefined) {
+                    this.subTasks = []
                 }
                 this.i = this.i + 1
             }
@@ -330,7 +332,7 @@
                     cost,
                     coordinatorId,
                     clientId,
-                    status
+                    // status
                 } = data
                 const clientData = this.allClients.find(client => client.id == clientId)
                 this.taskTitle = title
@@ -340,11 +342,12 @@
                 this.taskClient = clientData
                 this.taskMasterId = this.tasksMasterListGet.find(task => task.id == taskMasterId)
                 this.clientContact = clientData
-                this.taskStatus = status
+                // this.taskStatus = status
             },
             proceed() {
                 this.disabled = true
                 this.subTasks?.map((subTask) => {
+                    if (subTask.assignedTo?.id)
                     subTask.assignedTo = subTask.assignedTo?.id
                 })
                 
@@ -418,7 +421,6 @@
         },
         mounted() {
             if (this.editing == true) {
-                console.log(this['taskData'](this.editTaskId)?.taskData, "as task data")
                 const taskData = (this['taskData'])(this.editTaskId)?.taskData?.[0]
                 const taskLogs = (this['taskData'])(this.editTaskId)?.taskLogs
                 const subTasksData = this['subTasksData'](this.editTaskId)
@@ -426,10 +428,11 @@
                     this.populateDataProperties(taskData)
                     this.taskLogs = taskLogs
                 }
-                if (subTasksData != undefined && subTasksData != '') {
+                if (subTasksData != undefined && subTasksData != '') {          
                     for(let i =0; i<subTasksData.length; i++) {
+                        if (subTasksData[i].assignedTo?.id == undefined)
                         subTasksData[i].assignedTo = this.allUsers.find(user => user.id == subTasksData[i].assignedTo)
-                    }          
+                    }
                     this.subTasks = subTasksData
                 }
             }

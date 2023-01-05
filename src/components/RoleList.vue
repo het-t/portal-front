@@ -137,6 +137,9 @@ import useDeleteSwal from '@/helpers/swalDelete'
                 this.$store.dispatch('roles/rolesDataSet', {roleId, force})
                 .then(() => this.componentId[roleId] = 'RoleCreate')
             } 
+            else {
+                this.componentId[roleId] = 'NoAccess'
+            }
         },
         deleteRole(roleId, roleName) {
             useDeleteSwal({

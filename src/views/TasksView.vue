@@ -27,9 +27,6 @@
             ])
             .then(() => {
                 this.allow = true
-                this.$store.subscribe((mutations) => {
-                    console.log(mutations)
-                })
             })
         }
     }

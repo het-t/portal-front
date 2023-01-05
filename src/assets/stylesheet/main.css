@@ -271,6 +271,9 @@ input, select, textarea {
     border: solid 1px rgb(224, 224, 224);
     color: #676a6c;
 }
+input:disabled {
+    cursor: not-allowed;
+}
 .vr {
     border-right: solid 1px #e7eaec;
     margin: 0 36px;

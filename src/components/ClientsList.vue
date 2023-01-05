@@ -184,6 +184,7 @@
                 if (rightCheck('edit_client')) {
                     this.componentId[clientId] = 'ClientCreate'
                 }
+                else this.componentId[clientId] = 'NoAccess'
             },
             menu(e, {client, clientId, visibility}) {
                 this.menuVisibisility = visibility
@@ -194,7 +195,7 @@
             deleteClient(clientId, client) {
                 useDeleteSwal({
                     text: client,
-                    promise: clients.delete({clientId}),
+                    promise: () => clients.delete({clientId}),
                     mutationFn: 'clients/deleteClient',
                     mutationArgs: {clientId, filters:this.filterFor},
                     context: this

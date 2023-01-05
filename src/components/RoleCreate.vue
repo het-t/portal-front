@@ -11,7 +11,7 @@
             <div class="row mt8">
                 <label class="labels c1">rights</label>
                 <div>
-                    <div class="mt16 flex" v-for="right in rightsList" :key="right">
+                    <div class="mt16 flex" v-for="right in getAllRightsList" :key="right">
                         <input v-model="roleRights" 
                             :id="right.id" 
                             :value="right.id" 
@@ -45,6 +45,7 @@
 import { roles } from '@/api'
 import useCreateSwal from '@/helpers/swalCreate'
 import useEditSwal from '../helpers/swalEdit'
+import { mapGetters } from 'vuex'
 
     export default {
         name: 'CreateRole',
@@ -56,6 +57,14 @@ import useEditSwal from '../helpers/swalEdit'
                 rightsList: [],
                 disabled: false
             }
+        },
+        computed: {
+            ...mapGetters('rights', [
+                'getAllRightsList'
+            ]),
+            ...mapGetters('roles', [
+                'rolesDataGet'
+            ]),
         },
         methods: {
             createRole({roleName, roleRights}) {

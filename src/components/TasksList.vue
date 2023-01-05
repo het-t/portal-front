@@ -265,6 +265,7 @@ export default {
                     this.componentId[taskId] = 'TasksCreate'
                 })
             }
+            else this.componentId[taskId] = 'NoAccess'
         },
         sort() {
             this.$store.commit('tasks/paginate')
