@@ -65,7 +65,7 @@
                         {{task.deadline}}
                     </td>
                     <td>
-                        <select @change="changeStatus(task.taskId, task.id, task.statusId, task.title)" v-model="task.statusId" name="" id="">
+                        <select @change="changeStatus(task.costSaved, task.taskId, task.id, task.statusId, task.title)" v-model="task.statusId" name="" id="">
                             <option v-for="status in subTaskStatuses" :value="status.id" :key="status.id">{{status.status}}</option>
                         </select>
                     </td>
@@ -83,6 +83,7 @@
 </template>
 
 <script>
+import swal from 'sweetalert'
 import { myTasks } from '../api'
 import useEditSwal from '../helpers/swalEdit'
 import TableMain from './TableMain.vue'
@@ -104,15 +105,30 @@ export default {
         }
     },
     methods: {
-        changeStatus(taskId, subTaskId, statusId, subTask) {
-            this.polling = false
-            useEditSwal({
-                text: subTask,
-                mutationFnName: 'myTasks/refetch',
-                mutationArgs: {},
-                promise: myTasks.changeStatus({taskId, subTaskId, statusId}),
-                context: this
-            })
+        changeStatus(costSaved, taskId, subTaskId, statusId, subTask) {
+            if (costSaved == 0 && statusId == 5) {
+
+                swal({
+                    text: "Provide the cost of sub-task before marking it done",
+                    content: "input",
+                    buttons: true
+                })
+                .then((cost) => {
+                    if (!cost) throw null
+                    return myTasks.changeStatus({taskId, subTaskId, statusId, cost, costSaved})
+                })
+                .catch(err => console.log(err))
+            }
+            else {
+                this.polling = false
+                useEditSwal({
+                    text: subTask,
+                    mutationFnName: 'myTasks/refetch',
+                    mutationArgs: {},
+                    promise: myTasks.changeStatus({taskId, subTaskId, statusId, costSaved}),
+                    context: this
+                })
+            }
         },
         sort() {
             this.$store.commit('myTasks/paginate')
