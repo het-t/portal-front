@@ -118,6 +118,10 @@ export default {
                     return myTasks.changeStatus({taskId, subTaskId, statusId, cost, costSaved})
                 })
                 .catch(err => console.log(err))
+                .finally(() => {
+                    this.$store.commit("tasks/refetch", {})
+                    this.$store.commit("myTasks/refetch")
+                })
             }
             else {
                 this.polling = false
@@ -135,12 +139,11 @@ export default {
         }
     },
     mounted() {
-        const timeout = 10*60*1000
         var polling = (context) => {
             setTimeout(() => {
                 this.$store.commit('myTasks/refetch')
                 if (context?.polling) polling(context)
-            }, timeout) 
+            }, 600000) 
         }
         polling(this)
         this.polling = true

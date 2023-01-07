@@ -274,39 +274,6 @@
                         ++this.i
                     }
                 }
-
-
-                // if (this.editing == false) {
-                //     this.taskMasterSelected(taskMasterId.id)
-                // }
-                // else if (oldTaskMasterId == undefined && taskMasterId != undefined && this.i != 0) {
-                //     console.log("3")
-                //     if (this.editing == true) {
-                //         let removeSubTasksId = this.subTasks?.map(st => st?.id)
-                //         if (removeSubTasksId?.length != 0) this.removedSubTasksId?.push(...removeSubTasksId)
-                //     }
-                //     this.taskMasterSelected(taskMasterId.id)
-                // } 
-                // else if (oldTaskMasterId == undefined && taskMasterId != undefined) {
-                //     console.log("4")
-                //     this.taskMasterSelected(taskMasterId.id)
-                // }
-                // else if (oldTaskMasterId != undefined && taskMasterId == undefined) {
-                //     if (this.editing == true) {
-                //         let removeSubTasksId = this.subTasks?.map(st => st?.id)
-                //         if (removeSubTasksId?.length != 0) this.removedSubTasksId?.push(...removeSubTasksId)
-                //     }
-                //     this.subTasks = []
-                // }
-                // else if (oldTaskMasterId != undefined && taskMasterId != undefined) {
-                //     if (this.editing == true) {
-                //         let removeSubTasksId = this.subTasks?.map(st => st?.id)
-                //         if (removeSubTasksId?.length != 0) this.removedSubTasksId?.push(...removeSubTasksId)
-                //     }
-
-                //     this.taskMasterSelected(taskMasterId.id)
-                // }
-
             }
         },
         methods: {
@@ -437,6 +404,7 @@
                         context: this
                     })
                 } 
+                this.$store.commit('myTasks/refetch')
             },
             canceled() {
                 if (this.editing == true) this.$emit("editingCompleted", {force: true})
