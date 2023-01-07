@@ -3,39 +3,42 @@
         <div ref="menu">
             <dots-menu v-if="menuVisibisility == true">
                 <template #links>
-                    <li title="change status to billed">
+                    <li @click="changeTaskStatus(3)" title="change status to billed">
                         <font-awesome-icon
-                        @click="changeTaskStatus(3)"
                             class="menu-icons"
                             :icon="['fas', 'dollar-sign']"
                         ></font-awesome-icon>
+                        Billed
                     </li>
 
-                    <li title="change status to unbilled" @click="changeTaskStatus(2)" class="fa-stack fa-2x">
-                        <font-awesome-icon
-                            class="menu-icons fa-stack-2x"
-                            :icon="['fas', 'dollar-sign']"
-                        ></font-awesome-icon>
-                        <font-awesome-icon
-                            class="menu-icons fa-stack-1x"
-                            :icon="['fas', 'slash']"
-                        ></font-awesome-icon>
+                    <li title="change status to unbilled" @click="changeTaskStatus(2)">
+                        <div class="fa-stack fa-2x">
+                            <font-awesome-icon
+                                class="menu-icons fa-stack-2x"
+                                :icon="['fas', 'dollar-sign']"
+                            ></font-awesome-icon>
+                            <font-awesome-icon
+                                class="menu-icons fa-stack-1x"
+                                :icon="['fas', 'slash']"
+                            ></font-awesome-icon>
+                        </div>
+                        Unbilled
                     </li>
 
-                    <li title="change status to in progress">
+                    <li @click="changeTaskStatus(1)" title="change status to in progress">
                         <font-awesome-icon
-                        @click="changeTaskStatus(1)"
                             class="menu-icons"
                             :icon="['fas', 'hand']"
                         ></font-awesome-icon>
+                        In Progress
                     </li>
 
-                    <li title="delete task">
+                    <li @click="deleteTask(selectedTaskId, selectedTask)" title="delete task">
                         <font-awesome-icon 
-                        @click="deleteTask(selectedTaskId, selectedTask)"
                             class="menu-icons" 
                             :icon="['fas', 'trash']"
                         ></font-awesome-icon>
+                        Delete
                     </li>
                 </template>
             </dots-menu>
@@ -132,7 +135,7 @@
                         <td v-if="rightCheck('see_pricing')">
                             {{task?.total}}
                         </td>
-                        <td>
+                        <td class="dots">
                             <div class="task-status" :class="task.status">{{ task.status }}</div>
                         </td>
                         <div class="dots">

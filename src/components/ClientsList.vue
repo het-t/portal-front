@@ -3,11 +3,12 @@
         <div ref="menu">
             <dots-menu v-if="menuVisibisility == true">
                 <template #links>
-                    <li>
-                        <font-awesome-icon @click.prevent="deleteClient(selectedClientId, selectedClient)"
+                    <li @click.prevent="deleteClient(selectedClientId, selectedClient)">
+                        <font-awesome-icon
                             class="menu-icons" 
                             :icon="['fas', 'trash']"
                         ></font-awesome-icon>
+                        Delete
                     </li>
                 </template>
             </dots-menu>

@@ -39,7 +39,7 @@
 
                     <th>
                         <div class="flex">
-                            <table-sort :key="k" @clicked="i=!i; j=!k; l=!l; sort()" sortType="string" sortBy="deadline" storeName="myTasks"></table-sort>
+                            <table-sort :key="k" @clicked="i=!i; j=!k; l=!l; sort();" sortType="string" sortBy="deadline" storeName="myTasks"></table-sort>
 
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[3]" ref="deadlineH" class="header p0" type="text" required>

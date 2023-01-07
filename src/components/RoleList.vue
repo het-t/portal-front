@@ -3,11 +3,12 @@
         <div ref="menu">
             <dots-menu v-if="menuVisibisility == true">
                 <template #links>
-                    <li>
-                        <font-awesome-icon @click="deleteRole(editRoleId, editRoleName)"
+                    <li @click="deleteRole(editRoleId, editRoleName)">
+                        <font-awesome-icon
                             class="menu-icons" 
                             :icon="['fas', 'trash']"
                         ></font-awesome-icon>
+                        Delete
                     </li>
                 </template>
             </dots-menu>
@@ -114,7 +115,8 @@ import useDeleteSwal from '@/helpers/swalDelete'
             menuVisibisility: '',
             rolesList: [],
             editRoleId: '',
-
+            editRoleName: '',
+            
             i:0, j:0, p:0,
 
             filterFor: ['', ''],     //0-name, 1-rights

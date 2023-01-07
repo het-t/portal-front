@@ -268,7 +268,7 @@ input, select, textarea {
     box-sizing: border-box;
     display: block;
     padding:8px;
-    border: solid 1px rgb(224, 224, 224);
+    border: solid 1px #e0e0e0;
     color: #676a6c;
 }
 input:disabled {
