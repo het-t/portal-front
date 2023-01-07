@@ -72,7 +72,7 @@
                 </tr>  
             </template>
 
-                <table-pagination :key="p"
+                <table-pagination :key="$store.getters['myTasks/getKey']"
                     :filters="filterFor"
                     @tableData="myTasksList = $event"
                     tableName="myTasks"
@@ -105,8 +105,8 @@ export default {
         changeStatus(taskId, subTaskId, statusId, subTask) {
             useEditSwal({
                 text: subTask,
-                mutationFnName: 'tasks/RESET_STATE',
-                mutationArgs: {isMaster: false},
+                mutationFnName: 'myTasks/refetch',
+                mutationArgs: {},
                 promise: myTasks.changeStatus({taskId, subTaskId, statusId}),
                 context: this
             })

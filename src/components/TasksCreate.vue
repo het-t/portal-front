@@ -233,6 +233,8 @@
 
                 taskLogs: [],
                 disabled: false,
+
+                i:0
             }
         },
         computed: {
@@ -246,25 +248,65 @@
             ]),
             ...mapGetters('clients', [
                 'allClients'
-            ])
+            ]),
         },
         watch: {
             taskMasterId(taskMasterId, oldTaskMasterId) {
                 if (oldTaskMasterId == '') oldTaskMasterId = undefined
                 if (taskMasterId == '') taskMasterId = undefined
 
-                let removeSubTasksId = this.subTasks?.map(st => st?.id)
-                if (removeSubTasksId?.length != 0) this.removedSubTasksId?.push(...removeSubTasksId)
+                if (this.i != 0) {
+                    console.log("i != 0")
+                    //while editing place all sub-tasks to be removed
+                    if (this.editing == true) {
+                        let removeSubTasksId = this.subTasks?.map(st => st?.id)
+                        if (removeSubTasksId?.length != 0) this.removedSubTasksId?.push(...removeSubTasksId)
+                    }
+                    //fetch sub-task of selected taskMaster
+                    this.taskMasterSelected(taskMasterId?.id)
+                }
+                else if (this.i == 0) {
+                    console.log("i == 0")
+                    if (this.editing != true) {
+                        this.taskMasterSelected(taskMasterId?.id)
+                    }
+                    else {
+                        ++this.i
+                    }
+                }
 
-                if (oldTaskMasterId == undefined && taskMasterId != undefined) {
-                    this.taskMasterSelected(taskMasterId.id)
-                } 
-                else if (oldTaskMasterId != undefined && taskMasterId == undefined) {
-                    this.subTasks = []
-                }
-                else if (oldTaskMasterId != undefined && taskMasterId != undefined) {
-                    this.taskMasterSelected(taskMasterId.id)
-                }
+
+                // if (this.editing == false) {
+                //     this.taskMasterSelected(taskMasterId.id)
+                // }
+                // else if (oldTaskMasterId == undefined && taskMasterId != undefined && this.i != 0) {
+                //     console.log("3")
+                //     if (this.editing == true) {
+                //         let removeSubTasksId = this.subTasks?.map(st => st?.id)
+                //         if (removeSubTasksId?.length != 0) this.removedSubTasksId?.push(...removeSubTasksId)
+                //     }
+                //     this.taskMasterSelected(taskMasterId.id)
+                // } 
+                // else if (oldTaskMasterId == undefined && taskMasterId != undefined) {
+                //     console.log("4")
+                //     this.taskMasterSelected(taskMasterId.id)
+                // }
+                // else if (oldTaskMasterId != undefined && taskMasterId == undefined) {
+                //     if (this.editing == true) {
+                //         let removeSubTasksId = this.subTasks?.map(st => st?.id)
+                //         if (removeSubTasksId?.length != 0) this.removedSubTasksId?.push(...removeSubTasksId)
+                //     }
+                //     this.subTasks = []
+                // }
+                // else if (oldTaskMasterId != undefined && taskMasterId != undefined) {
+                //     if (this.editing == true) {
+                //         let removeSubTasksId = this.subTasks?.map(st => st?.id)
+                //         if (removeSubTasksId?.length != 0) this.removedSubTasksId?.push(...removeSubTasksId)
+                //     }
+
+                //     this.taskMasterSelected(taskMasterId.id)
+                // }
+
             }
         },
         methods: {
@@ -279,21 +321,21 @@
                 return `${title} (${id})`
             },
             taskMasterSelected(taskMasterId) {
-                // if (taskMasterId == undefined) return 
+                console.log("taskMasterSelected called")
                 if (taskMasterId?.id) taskMasterId = taskMasterId.id
-                if (taskMasterId == undefined) return
+                if (taskMasterId == undefined) {
+                    this.taskCost = ''
+                    this.subTasks = []
+                    return
+                }
 
+                ++this.i
                 const selectedTaskMaster = this['tasksMasterListGet'].find((o) => o.id == taskMasterId)
                 subTasksMaster.get({taskMasterId})
                 .then((results) => {
                     this.subTasks = results.data.subTasksMasterList
                     this.taskCost = selectedTaskMaster?.cost
                 })
-            },
-            taskMasterUnselected() {
-                console.log("task master unselecting")
-                this.taskMasterId = ''
-                this.subTasks = []
             },
             openTab(e, newTab) {
                 var tabs = e.target.parentElement.getElementsByClassName('tab')
@@ -335,7 +377,6 @@
                     cost,
                     coordinatorId,
                     clientId,
-                    // status
                 } = data
                 const clientData = this.allClients.find(client => client.id == clientId)
                 this.taskTitle = title
@@ -345,10 +386,10 @@
                 this.taskClient = clientData
                 this.taskMasterId = this.tasksMasterListGet.find(task => task.id == taskMasterId)
                 this.clientContact = clientData
-                // this.taskStatus = status
             },
             proceed() {
                 this.disabled = true
+
                 this.subTasks?.map((subTask) => {
                     if (subTask.assignedTo?.id)
                     subTask.assignedTo = subTask.assignedTo?.id
@@ -396,7 +437,6 @@
                         context: this
                     })
                 } 
-                // this.disabled = false
             },
             canceled() {
                 if (this.editing == true) this.$emit("editingCompleted", {force: true})

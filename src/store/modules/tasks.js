@@ -137,7 +137,6 @@ const actions = {
     },
     tasksDataSet({getters, commit}, {taskId, force}) {
         const res = getters['taskData']?.(taskId)
-        console.log("taskData", res)
         return new Promise((resolve, reject) => {
             if (res == undefined || res == '' || force == true) {
                 tasks.getData({taskId})

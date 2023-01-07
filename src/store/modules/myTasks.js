@@ -3,7 +3,8 @@ const state = {
     myTasksData: {},    //data of all pages opened in my tasks screen
     sortBy: 'id',       
     sortOrder: 0,       //0-desc, 1-asc
-    currentPage: ''
+    currentPage: '',
+    paginationKey: 0,
 }
 
 const getters = {
