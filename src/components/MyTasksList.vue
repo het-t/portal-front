@@ -98,11 +98,14 @@ export default {
 
             i:0, j:0, k:0, l:0, p:0,
 
-            filterFor: ['', '', '']
+            filterFor: ['', '', ''],
+
+            polling: false
         }
     },
     methods: {
         changeStatus(taskId, subTaskId, statusId, subTask) {
+            this.polling = false
             useEditSwal({
                 text: subTask,
                 mutationFnName: 'myTasks/refetch',
@@ -114,6 +117,17 @@ export default {
         sort() {
             this.$store.commit('myTasks/paginate')
         }
+    },
+    mounted() {
+        const timeout = 10*60*1000
+        var polling = (context) => {
+            setTimeout(() => {
+                this.$store.commit('myTasks/refetch')
+                if (context?.polling) polling(context)
+            }, timeout) 
+        }
+        polling(this)
+        this.polling = true
     }
 }
 </script>

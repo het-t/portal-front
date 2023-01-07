@@ -18,5 +18,6 @@ export default function useEditSwal({text, mutationFnName, mutationArgs, promise
     })
     .finally(() => {
         context.disabled = false
+        if (context?.polling) context.polling = true
     })
 }
