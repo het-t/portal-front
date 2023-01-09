@@ -113,7 +113,7 @@
                     <div v-if="subTasks" class="grid-wrapper">
                         <div v-for="(task, index) in subTasks" :key="index" class="mb8">
                             <div class="grid">
-                                
+
                                 <div>{{index+1}})</div>
 
                                 <div class="pointer"
@@ -121,7 +121,8 @@
                                     @keyup.enter="toggleDisplaySubTask(index)"
                                     @click.prevent="toggleDisplaySubTask(index)"
                                 >
-                                    {{task.description}}
+                                    <s v-if="task.statusId == 5 || task.statusId == 11" class="done-st">{{ task.description }}</s>
+                                    <template v-else>{{ task.description }}</template>
                                 </div>
 
                                 <font-awesome-icon tabindex="0" icon="fa-solid fa-minus"
@@ -212,7 +213,7 @@
         data() {
             return {
                 editing: false,
-                subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "pending with signed documents"}, {id: 9, status: "pending with DSC"}, {id: 10, status: 'reassigned'}],
+                subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "pending with signed documents"}, {id: 9, status: "pending with DSC"}, {id: 10, status: 'reassigned'}, {id: 11, status: 'approved'}],
                 
                 subTasks: [],
                 removedSubTasksId: [],
@@ -454,7 +455,9 @@
 </script>
 
 <style scoped>
-
+.done-st {
+    color: grey;
+}
 .add-st {
     width: 13px;
     height: 13px;
