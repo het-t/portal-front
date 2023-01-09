@@ -13,7 +13,7 @@ const getters = {
     },
     //get page data
     myTasksListGet: (state) => (index, sortBy, sortOrder, filters) => {
-        return state.myTasksData[`${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}`]
+        return state.myTasksData[`${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}`]
     },
     sortGet(state) {
         return {
@@ -33,7 +33,7 @@ const mutations = {
     //set page data
     myTasksList(state, {index, sortBy, sortOrder, filters, data}) {
         Object.defineProperty(state.myTasksData, 
-            `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}`, {
+            `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}`, {
             value: data,
             writable: true,
             enumerable: true

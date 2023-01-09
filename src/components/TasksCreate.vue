@@ -121,7 +121,7 @@
                                     @keyup.enter="toggleDisplaySubTask(index)"
                                     @click.prevent="toggleDisplaySubTask(index)"
                                 >
-                                    <s v-if="task.statusId == 5 || task.statusId == 11" class="done-st">{{ task.description }}</s>
+                                    <s v-if="task.statusId == 5" class="done-st">{{ task.description }}</s>
                                     <template v-else>{{ task.description }}</template>
                                 </div>
 

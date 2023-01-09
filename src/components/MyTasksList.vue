@@ -18,7 +18,7 @@
                     <th>
                         <div class="flex">
                             <table-sort :key="l" @clicked="i=!i; j=!j; k=!k; sort();" sortType="string" sortBy="client" storeName="myTasks"></table-sort>
-
+                            
                             <div class="floating-container">
                                 <input v-debounce:700ms.lock="sort" v-model="filterFor[2]" ref="clientH" class="header p0" type="text" required>
                                 <span @click="$refs['clientH'].focus()" class="floating-label">client</span>
