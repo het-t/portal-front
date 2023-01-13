@@ -38,9 +38,14 @@ import {mixin as VueClickAway} from 'vue3-click-away'
     .dots-img{
         cursor: pointer;
         padding: 4px;
-        background-color: rgba(192, 192, 192, 0.587);
+        /* background-color: rgba(192, 192, 192, 0.587); */
         border: solid 1px white;
-        color: black !important;
+    }
+    .dots-parent .dots-img {
+        color: grey !important;
+    }
+    .dots-parent:hover .dots-img {
+        color: rgb(32, 32, 32) !important;
     }
     .dots-clicked {
         visibility: visible !important;
