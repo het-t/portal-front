@@ -3,10 +3,10 @@
         <div class="recordsPerPage">
             <label for="recordsPerPage">entries</label>
             <select @change="getPageData()" id="recordsPerPage" v-model="recordsPerPage" class="ml8"> 
-                <option :value=10>10</option>
-                <option :value=20>20</option>
                 <option :value=50>50</option>
-                <option :value="100">100</option>
+                <option :value=100>100</option>
+                <option :value=150>150</option>
+                <option :value=200>200</option>
             </select>
         </div>
         <ul>
@@ -32,7 +32,7 @@
             return {
                 pageData: '',
                 currentPage: 1,
-                recordsPerPage: 10,
+                recordsPerPage: 50,
                 pageCount: '',
             }
         },
