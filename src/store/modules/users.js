@@ -36,6 +36,9 @@ const getters = {
     },
     getKey(state) {
         return state.paginationKey
+    },
+    getCurrentPage(state) {
+        return state.currentPage
     }
 }
 

@@ -19,6 +19,9 @@ const getters = {
             sortBy: state.sortBy,
             sortOrder: state.sortOrder
         }
+    },
+    getCurrentPage(state) {
+        return state.currentPage
     }
 }
 

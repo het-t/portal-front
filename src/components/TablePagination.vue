@@ -106,7 +106,13 @@
             },
         },
         created() {
-            this.$store.commit(`${this.tableName}/currentPageSet`, {index: this.currentPage})
+            const currentPageInStore = this.$store.getters[`${this.tableName}/getCurrentPage`]
+            console.log("current page in store", currentPageInStore)
+            if (currentPageInStore == '' || currentPageInStore == undefined) {
+                console.log("coming")
+                this.$store.commit(`${this.tableName}/currentPageSet`, {index: this.currentPage})
+            }
+            else this.currentPage = currentPageInStore
             if (this.totalRecords == '') {
                 axios.get(`/u/api/${this.tableName}/count`, {
                     withCredentials: true
