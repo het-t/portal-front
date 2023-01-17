@@ -4,6 +4,8 @@ import router from './router'
 import store from './store/index.js'
 import VueCookies from 'vue-cookies'
 
+import Toaster from "@meforma/vue-toaster";
+
 import { vue3Debounce } from 'vue-debounce'
 
 /* import the fontawesome core */
@@ -71,5 +73,8 @@ app.use(VueCookies)
     .directive('debounce', vue3Debounce({ lock: true }))
     .use(store)
     .use(router)
+    .use(Toaster, {
+        position: 'top-right'
+    })
     .component("font-awesome-icon", FontAwesomeIcon)
     .mount('#app')

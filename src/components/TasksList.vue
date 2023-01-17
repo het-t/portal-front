@@ -221,10 +221,6 @@ export default {
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
         },
         changeTaskStatus(statusId) {
-            let status;
-            if (statusId == 1) status = 'In Progress'
-            else if (statusId == 2) status = 'Unbilled'
-            else status = 'Billed'
 
             tasks.changeStatus({
                 taskId: this.selectedTaskId,
@@ -232,7 +228,7 @@ export default {
             })
             .then(() => 
                 useEditSwal({
-                    text: `status of task ${this.selectedTask} to ${status}`,
+                    text: '',
                     context: this,
                     promise: Promise.resolve(),
                     mutationFnName: 'tasks/refetch',
