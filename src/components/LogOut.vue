@@ -38,6 +38,7 @@
 button {
   padding: 0 4px;
   border: none;
-  border: solid 1px #f3f3f4;
+  border: solid 1px #fff;
+  background-color: #fff;
 }
 </style>

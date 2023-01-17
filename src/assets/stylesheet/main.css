@@ -53,6 +53,9 @@ body, #app {
     height: 26px;
     color: #2f4050;
 }
+.top-nav-icons, .top-nav button {
+    background-color: #fff;
+}
 
 a, button {
     cursor: pointer;
@@ -109,10 +112,11 @@ a, button {
     height: 50px;
     margin: auto;
     /* background-color: whitesmoke; */
-    /* background-color: white; */
+    background-color: white;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0 0 5px rgb(191, 191, 191);
 }
 .top-nav-right {
     display: flex;
@@ -123,8 +127,8 @@ a, button {
     display: inline;
 }
 .header button {
-    border: solid 1px #f3f3f4;
-    background-color: #f3f3f4;
+    border: solid 1px #fff;
+    background-color: #fff;
 }
 #ham {
     filter: invert(0.2);

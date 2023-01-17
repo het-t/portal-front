@@ -1,5 +1,5 @@
 <template>
-    <div id="breadcrumb" class="pr24 pl24 pt16 pb16">
+    <div id="breadcrumb" class="pr24 pl24 pt16">
         <div class="flex">
             <h2 class="m0">{{$route?.meta?.breadcrumb?.title}}</h2>
             <font-awesome-icon v-if="$route?.meta?.breadcrumb?.action"
@@ -11,7 +11,7 @@
             ></font-awesome-icon>
         </div>
         
-        <div class="flex mt16">
+        <div class="flex mt8">
             <div v-for="(route, index) of $route?.meta?.breadcrumb?.path" :key="index"
                 class="flex"
             >
@@ -23,7 +23,7 @@
                     {{route?.text}}
                 </p>
 
-                <span class="mr8 ml8">/</span>
+                <span class="m0">/</span>
             </div>
         </div>
     </div>
@@ -45,8 +45,8 @@ export default {
 <style scoped>
 #breadcrumb {
     width: 100%;
-    height: 80px;
-    background-color: #fff;
+    /* height: 80px; */
+    /* background-color: #fff; */
     color: #676a6c !important;
     font-size: 14px;
     text-transform: capitalize;
