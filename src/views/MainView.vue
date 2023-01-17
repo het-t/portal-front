@@ -1,6 +1,11 @@
 <template>
   <div id="main">
     <div id="pa" :class="showLabels" ref="menu">
+
+      <div v-if="showLabels" class="logo-container">
+        <img class="mt8 mr8 ml8 mb8" id="logo" src="../assets/logo.png">
+      </div>
+
       <div id="nav">
         <div class="link-list">
           <router-link :to="{name: 'users_list'}" tabindex="-1" class="pt16 pb16 link">
@@ -143,6 +148,14 @@ import { mapGetters } from 'vuex'
   }
   button:hover, button:active {
     border: solid 1px #c2c2c2 !important;
+  }
+  #logo {
+    width: 150px;
+  }
+  .logo-container {
+    background-color: #293846;
+    box-shadow: 0 0 5px #293846;
+    height: 50px;
   }
 </style>
 
