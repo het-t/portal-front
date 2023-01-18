@@ -6,6 +6,11 @@
             <input ref="focus" v-model="email" placeholder="Username" id="email" type="text" name="email"><br>
             <input v-model="pwd" placeholder="Password" id="pwd" type="password" name="password"><br>
 
+            <div class="rememberme-container mb16">
+                <input v-model="remember" type="checkbox" id="rememberme">
+                <label for="rememberme">remember me</label>
+            </div>
+
             <button class="green button" @click.prevent="login(), clear()">login</button>
         </form>
     </div>
@@ -21,14 +26,16 @@ import axios from '../api/axiosInstance.js'
         data() {
             return {
                 email: '',
-                pwd: ''
+                pwd: '',
+                remember: true
             }
         },
         methods: {
             login() {
                 axios.post('api/login', {
                     email: this.email,
-                    password: this.pwd
+                    password: this.pwd,
+                    remember: this.remember
                 }, {
                     withCredentials: true,
                 })
@@ -53,15 +60,36 @@ import axios from '../api/axiosInstance.js'
         },
         mounted() {
             this.$refs['focus'].focus()
+
+            axios.get('api/', {
+                withCredentials: true
+            })
+            .then((results) => {
+                if (results?.data == '1') {
+                    this.$router.push({name: 'my_tasks_list'})
+                }
+            })
         }
     }
 
 </script>
 
 <style scoped>
-
-input {
+label {
+    color: #676a6c;
+}
+.rememberme-container {
     width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+input[type="text"], input[type="password"] {
+    width: 100%;
+}
+input[type="checkbox"] {
+    width: auto;
 }
 .login {
     height: 100vh;
