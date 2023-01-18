@@ -60,7 +60,7 @@
       </div> 
     </div>
 
-    <div id="pb" class="mb16">
+    <div id="pb" class="mb16" :class="'pb'+showLabels">
       <div id="top-nav" class="mb16 pr24 pl24">
         <div class="header mt8 mb8">
           <button @click="menuToggle()" tabindex="-1" class="neutral p0">

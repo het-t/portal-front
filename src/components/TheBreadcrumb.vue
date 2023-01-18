@@ -45,14 +45,13 @@ export default {
 <style scoped>
 #breadcrumb {
     width: 100%;
-    /* height: 80px; */
-    /* background-color: #fff; */
     color: #676a6c !important;
     font-size: 14px;
     text-transform: capitalize;
     color: inherit;
 }
 .flex {
+    gap: 8px;
     display: flex;
     align-items: center;
 }

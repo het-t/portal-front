@@ -65,7 +65,7 @@
                         {{task.deadline}}
                     </td>
                     <td>
-                        <select @change="changeStatus(task.costSaved, task.taskId, task.id, task.statusId, task.title)" v-model="task.statusId" name="" id="">
+                        <select @change="changeStatus(task.costSaved, task.taskId, task.id, task.statusId)" v-model="task.statusId" name="" id="">
                             <option v-for="status in subTaskStatuses" :value="status.id" :key="status.id">{{status.status}}</option>
                         </select>
                     </td>
@@ -105,7 +105,7 @@ export default {
         }
     },
     methods: {
-        changeStatus(costSaved, taskId, subTaskId, statusId, subTask) {
+        changeStatus(costSaved, taskId, subTaskId, statusId) {
             if (costSaved == 0 && statusId == 5) {
 
                 swal({
@@ -126,7 +126,7 @@ export default {
             else {
                 this.polling = false
                 useEditSwal({
-                    text: subTask,
+                    text: '',
                     mutationFnName: 'myTasks/refetch',
                     mutationArgs: {},
                     promise: myTasks.changeStatus({taskId, subTaskId, statusId, costSaved}),
@@ -158,12 +158,10 @@ export default {
     select {
         width: fit-content;
         border: none;
-        border-bottom: solid 1px #e7eaec;
     }
     select, option {
         text-transform: capitalize;
-        padding-right: 0;
-        padding-left: 0;
+        padding: 0;
     }
     tr  th:not(:nth-last-child(1)) , tr td:not(:nth-last-child(1)){
         border-right: solid 1px #e7eaec !important;

@@ -38,8 +38,11 @@ body, #app {
     left:0;
     overflow: hidden;
 }
-#pb {
+.pbtrue {
     width: calc(100% - 180px);
+}
+.pbfalse {
+    width: calc(100% - 60px);
 }
 .pa-icon {
     width: 12px;
