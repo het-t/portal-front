@@ -11,7 +11,7 @@
     name: 'LogOut',
     methods: {
       logout() {
-
+        this.$cookies.remove('_token')
         this.$router.push({name: 'login'})
 
         // axios.post("/u/api/logout/" , {
