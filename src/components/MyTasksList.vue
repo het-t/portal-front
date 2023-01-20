@@ -60,7 +60,8 @@
                     <td>
                         {{task.client }}
                     </td>
-                    <td>{{task.description}}</td>
+                    <td v-if="task.description != '_#_*&^'">{{task.description}}</td>
+                    <td v-else></td>
                     <td>
                         {{task.deadline}}
                     </td>

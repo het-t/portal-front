@@ -27,23 +27,15 @@
 
                             <template v-if="editing">
                                 <div class="row mt8">
-                                    <label :for="'contactEmail'+uk" class="labels c1">Contact Email: </label>
+                                    <label :for="'contactEmail'+uk" class="labels c1">Email</label>
                                     <input :value="clientContact?.conEmail" :id="'contactEmail'+uk" disabled>
                                 </div>
 
                                 <div class="row mt8">
-                                    <label :for="'contactPhone'+uk" class="labels c1">Contact Phone: </label>
+                                    <label :for="'contactPhone'+uk" class="labels c1">Phone</label>
                                     <input :value="clientContact?.conPhone" :id="'contactPhone'+uk" type="text" disabled>
                                 </div>
 
-                                <!-- <div class="row mt8">
-                                    <label :for="'task-status'+uk" class="labels c1">status</label>
-                                    <select v-model="taskStatus" :id='"task-status"+uk'>
-                                        <option value="1">InProgress</option>
-                                        <option value="2">Unbilled</option>
-                                        <option value="3">Billed</option>
-                                    </select>
-                                </div> -->
                             </template>
 
                             <div class="row mt8">
@@ -112,7 +104,7 @@
 
                     <div v-if="subTasks" class="grid-wrapper">
                         <div v-for="(task, index) in subTasks" :key="index" class="mb8">
-                            <div class="grid">
+                            <div class="grid" v-if="task.description != '_#_*&^'">
 
                                 <div>{{index+1}})</div>
 
@@ -133,7 +125,7 @@
                                 
                             </div>
 
-                            <div :ref="'sub-task'+index" class="hide ml24">
+                            <div :ref="'sub-task'+index" class="hide ml24" v-if="task.description != '_#_*&^'">
                                 <div class="ml16">
                                     <select v-model="task.statusId" class="sub-task-extra">
                                         <option v-for="(status, index) in subTaskStatuses" :value="status.id" :key="index.toString()+uk">
@@ -333,9 +325,17 @@
                 }
             },
             toggleDisplaySubTask(index) {
-                this.$refs['sub-task'+index][0].classList.value.includes('show') ?
-                this.$refs['sub-task'+index][0].classList.remove('show') :
-                this.$refs['sub-task'+index][0].classList.add('show')
+                if (this.$refs['sub-task'+index][0].classList.value.includes('show'))
+                    this.$refs['sub-task'+index][0].classList.remove('show')
+                else { 
+                    for (let i = 0; i < this.subTasks.length; i++) {
+                        let key = 'sub-task'+i
+                        if (this.$refs[key][0]?.classList?.value?.includes('show')) {
+                            this.$refs[key][0].classList.remove('show')
+                        }
+                    }
+                    this.$refs['sub-task'+index][0].classList.add('show')
+                }
             },
             populateDataProperties(data) {
                 const {
@@ -456,7 +456,7 @@
 
 <style scoped>
 .done-st {
-    color: grey;
+    color: #a0a0a0;
 }
 .add-st {
     width: 13px;
