@@ -102,6 +102,13 @@ let myTasksBreadcrumb = {
   }]
 }
 
+let workDiaryMainBreadcrumb = {
+  title: 'work diary',
+  path: [{
+    text: 'list',
+    route: '/u/work-diary'
+  }]
+}
 
 let routesNew = [
   {
@@ -262,6 +269,16 @@ let routesNew = [
             component: () => import('@/components/NoAccess.vue')
           }
         ]
+      },
+      ////////////////////////
+      {
+        path: 'work-diary',
+        name: 'work_diary',
+        component: () => import('@/components/WorkDiaryMain.vue'),
+        meta: {
+          protected: true,
+          breadcrumb: workDiaryMainBreadcrumb
+        }
       },
       { 
         path: '/:pathMatch(.*)', 
