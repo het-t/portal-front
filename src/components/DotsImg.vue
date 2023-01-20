@@ -53,6 +53,5 @@ import {mixin as VueClickAway} from 'vue3-click-away'
 
     .tr:hover .dots-img {
         visibility: visible;
-        /* border: solid 1px rgb(198, 198, 198); */
     }
 </style>

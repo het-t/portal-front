@@ -3,8 +3,8 @@
     <div class="login-main">
         <form>
             <p id="banner">Login</p>
-            <input ref="focus" v-model="email" placeholder="Username" id="email" type="text" name="email"><br>
-            <input v-model="pwd" placeholder="Password" id="pwd" type="password" name="password"><br>
+            <input ref="focus" v-model="email" placeholder="Username" id="email" type="text" name="email" class="mb8">
+            <input v-model="pwd" placeholder="Password" id="pwd" type="password" name="password" class="mb8">
 
             <div class="rememberme-container mb16">
                 <input v-model="remember" type="checkbox" id="rememberme">

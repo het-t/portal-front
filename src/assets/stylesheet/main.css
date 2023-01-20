@@ -348,15 +348,6 @@ input:disabled {
     html, body {
         overflow-x: hidden;
     }
-    #pa {
-        width: 60px !important;
-    }
-    #pb {
-        width: calc(100% - 60px);
-    }
-    a span {
-        display: none !important;
-    }
     .fg-wrapper {
         flex-direction: column;
     }
@@ -371,6 +362,9 @@ input:disabled {
     }
     #menu-btn {
         display: none;
+    }
+    .dots-img {
+        visibility: visible;
     }
 }
 @media screen and (max-width : 426px) {

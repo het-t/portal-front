@@ -41,14 +41,10 @@
     flex-direction: column;
     gap: 12px;
 }
-/* .dots-menu .menu-icons {
-    padding: 8px 8px; 
-} */
 .dots-menu {
     position: absolute;
     right: 60px;
-    /* width: fit-content; */
-    z-index: 9; 
+    z-index: 99; 
     border: solid 1px #e7eaec;
     box-shadow: 1px black; 
     box-shadow: 1px 1px 1px 1px #d2d2d2;
@@ -56,18 +52,10 @@
     filter: none;
     text-transform: capitalize;
 }
-/* .menu-icons {
-    width: 18px;
-    height: 18px;
-} */
 .dots-menu {
     color: grey;
-    /* width: 18px;
-    height: 18px; */
 }
 .dots-menu li {
-    /* width: 34px;
-    height: 34px; */
     cursor: pointer;
     display: flex;
     gap: 12px;

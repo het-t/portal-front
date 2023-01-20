@@ -37,7 +37,7 @@
         </div>
 
         <div class="link-list">
-          <router-link to="/u/assigned/list" tabindex="-1" class="pt16 pb16 link">
+          <router-link :to="{name: 'work_diary'}" tabindex="-1" class="pt16 pb16 link">
             <font-awesome-icon :icon="['fas', 'user-check']" class="pa-icon ml24 mr24"></font-awesome-icon>
             <span v-if="showLabels">Work&nbsp;Diary</span>
           </router-link>
@@ -125,6 +125,11 @@ import { mapGetters } from 'vuex'
           this.$store.commit('rights/setUserRights', res?.data?.userRights)
         })
       } 
+    },
+    mounted() {
+      if (window.outerWidth <= 768) {
+        this.menuToggle()
+      }
     },
     updated() {
       if (this.$store.getters['rights/getComponenetsVisibility'] == 0) {
