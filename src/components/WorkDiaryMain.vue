@@ -22,15 +22,15 @@
                     <tr class="tr"                          
                         @keyup.enter="getSubTasks('row'+index)"
                         @click.prevent="getSubTasks('row'+index, {taskId: task.id})">
-                            <td>{{ task.title }}</td>
-                            <td>{{ task.client }}</td>
-                            <td>{{ task.description }}</td>
-                            <td>{{ task.coordinatorId }}</td>
-                            <td>{{ task.status }}</td>
+                            <td>{{ task?.title }}</td>
+                            <td>{{ task?.client }}</td>
+                            <td>{{ task?.description }}</td>
+                            <td>{{ task?.coordinator }}</td>
+                            <td>{{ task?.status }}</td>
                     </tr>
 
                     <tr class="tr tr-hidden hide" :ref="('row'+index)">
-                        <td colspan="5">
+                        <td colspan="5" class="p0">
                             <table-main>
                                 <template #thead> 
                                     <tr>

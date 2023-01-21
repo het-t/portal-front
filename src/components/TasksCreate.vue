@@ -125,7 +125,10 @@
                                 
                             </div>
 
-                            <div :ref="'sub-task'+index" class="hide ml24" v-if="task.description != '_#_*&^'">
+                            <div v-if="task.description != '_#_*&^' && show == index"
+                                class="hide ml24"
+                                :class="show == index ? 'show' : 'hide'" 
+                            >
                                 <div class="ml16">
                                     <select v-model="task.statusId" class="sub-task-extra">
                                         <option v-for="(status, index) in subTaskStatuses" :value="status.id" :key="index.toString()+uk">
@@ -205,7 +208,7 @@
         data() {
             return {
                 editing: false,
-                subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "pending with signed documents"}, {id: 9, status: "pending with DSC"}, {id: 10, status: 'reassigned'}, {id: 11, status: 'approved'}],
+                subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "signed documents awaited"}, {id: 9, status: "pending for DSC"}, {id: 10, status: 'reassigned'}, {id: 11, status: 'approved'}],
                 
                 subTasks: [],
                 removedSubTasksId: [],
@@ -227,7 +230,8 @@
                 taskLogs: [],
                 disabled: false,
 
-                i:0
+                i:0,
+                show: -1
             }
         },
         computed: {
@@ -325,17 +329,8 @@
                 }
             },
             toggleDisplaySubTask(index) {
-                if (this.$refs['sub-task'+index][0].classList.value.includes('show'))
-                    this.$refs['sub-task'+index][0].classList.remove('show')
-                else { 
-                    for (let i = 0; i < this.subTasks.length; i++) {
-                        let key = 'sub-task'+i
-                        if (this.$refs[key][0]?.classList?.value?.includes('show')) {
-                            this.$refs[key][0].classList.remove('show')
-                        }
-                    }
-                    this.$refs['sub-task'+index][0].classList.add('show')
-                }
+                if (this.show == index) this.show = -1
+                else this.show = index
             },
             populateDataProperties(data) {
                 const {
