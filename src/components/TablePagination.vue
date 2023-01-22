@@ -76,7 +76,7 @@
                 if (
                     (pageDataStore == undefined) || 
                     (pageDataStore?.length == 0) || 
-                    (pageDataStore?.length < this.recordsPerPage && pageDataStore?.length >= 10)
+                    (pageDataStore?.length < this.recordsPerPage && pageDataStore?.length >= 50)
                 ) {
 
                     axios.get(`/u/api/${this.tableName}`, {

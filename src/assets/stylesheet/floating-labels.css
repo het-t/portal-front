@@ -7,7 +7,7 @@
 }
 
 .floating-container .header {
-    border: none;
+    border: none !important;
 }
 
 .floating-container .floating-label {

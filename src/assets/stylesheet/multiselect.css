@@ -5,6 +5,10 @@
     font-size: 13px !important;
     font-family: 'Open Sans', sans-serif;
 }
+.multiselect__input {
+    border: none !important;
+    padding: 0 !important;
+}
 .multiselect__single {
     padding: 0 !important;
     margin: 0 !important;
@@ -18,7 +22,7 @@
 }
 .sub-task-extra .multiselect__tags {
     border: none;
-    border-bottom: solid 1px #e7eaec !important;
+    /* border-bottom: solid 1px #e7eaec !important; */
 }
 .multiselect__content-wrapper {
     border: solid 1px grey;

@@ -1,10 +1,17 @@
 <template>
     <div class="pr16 pl16">
-        <vue-multiselect v-model="user" :options="allUsers" :custom-label="labelForCoordinator" track-by="id" placeholder="select user" id="username">
-            <template #noResult>
-                Oops! No user found. Consider creating new user
-            </template>
-        </vue-multiselect>
+        <div class="flex mb8">
+            <vue-multiselect v-model="user" :options="allUsers" :custom-label="labelForCoordinator" track-by="id" placeholder="select user" id="username">
+                <template #noResult>
+                    Oops! No user found. Consider creating new user
+                </template>
+            </vue-multiselect>
+
+            <date-picker
+                @datePicker="dates = $event"
+            >
+            </date-picker>
+        </div>
 
         <table-main>
             <template #thead>
@@ -19,7 +26,7 @@
 
             <template #tbody>
                 <template v-for="(task, index) in tasks" :key="index">
-                    <tr class="tr"                          
+                    <tr class="tr edit-tr"                          
                         @keyup.enter="getSubTasks('row'+index)"
                         @click.prevent="getSubTasks('row'+index, {taskId: task.id})">
                             <td>{{ task?.title }}</td>
@@ -35,15 +42,24 @@
                                 <template #thead> 
                                     <tr>
                                         <th>description</th>
+                                        <th>activity</th>
                                         <th>status</th>
+                                        <th>time</th>
                                     </tr>
                                 </template>
 
                                 <template #tbody>
-                                    <tr v-for="(subTask, index) in subTasks" :key="index" class="tr">
+                                    <tr v-for="(subTask, index) in subTasks[task.id]" :key="index" class="tr">
                                         <td v-if="subTask.description != '_#_*&^'">{{ subTask.description }}</td>
                                         <td v-else>{{ task.title }}</td>
+                                        <td>
+                                            {{ subTask.action }} {{ subTask.key }}
+                                            <span v-if="subTask.action == 'updated'">
+                                                from {{ subTask.before || '-' }} to {{ subTask.after || '-' }}
+                                            </span>
+                                        </td>
                                         <td>{{ subTask.status }}</td>
+                                        <td>{{ new Date(subTask.timestamp).toLocaleString() }}</td>
                                     </tr>
                                 </template>
                             </table-main>
@@ -60,15 +76,17 @@ import TableMain from './TableMain.vue'
 import { mapGetters } from 'vuex'
 import VueMultiselect from 'vue-multiselect'
 import makeGetReq from '../api/makeGetReq'
+import DatePicker from './DatePicker.vue'
 
     export default {
-        components: { TableMain, VueMultiselect },
+        components: { TableMain, VueMultiselect, DatePicker },
         name: 'WorkDiaryMain',
         data() {
             return {
                 tasks: [],
                 subTasks: [],
-                user: ''
+                user: '',
+                dates: []
             }
         },
         computed: {
@@ -79,6 +97,15 @@ import makeGetReq from '../api/makeGetReq'
         watch: {
             user() {
                 if (this.user != '') {
+                    this.tasks = []
+                    this.subTasks = []
+                    this.getTasks()
+                }
+            },
+            dates() {
+                if (this.user != '') {
+                    this.tasks = []
+                    this.subTasks = []
                     this.getTasks()
                 }
             }
@@ -98,23 +125,25 @@ import makeGetReq from '../api/makeGetReq'
 
                 makeGetReq('/u/api/work-diary/sub-tasks', {
                     userId,
-                    taskId
+                    taskId,
+                    fromDate: this.dates?.[0],
+                    toDate: this.dates?.[1]
                 })
                 .then((subTasks) => {
-                    this.subTasks = subTasks.data
+                    this.subTasks[taskId] = subTasks.data
                 })
             },
             getTasks() {
-                let userId
-                if (this.user.id) userId = this.user.id
-                else userId = this.user
-
-                makeGetReq('/u/api/work-diary/tasks', {
-                    userId, 
-                })
-                .then((tasks) => {
-                    this.tasks = tasks.data
-                })
+                if (this.user?.id) {
+                    makeGetReq('/u/api/work-diary/tasks', {
+                        userId: this.user?.id, 
+                        fromDate: this.dates?.[0],
+                        toDate: this.dates?.[1]
+                    })
+                    .then((tasks) => {
+                        this.tasks = tasks.data
+                    })
+                }
             }
         },
         created() {
@@ -124,11 +153,19 @@ import makeGetReq from '../api/makeGetReq'
 </script>
 
 <style scoped>
+    .flex {
+        display: flex;
+        gap: 8px;
+    }
     .multiselect {
         min-width: 250px;
         max-width: 400px !important;
     }
     .hide {
         display: none !important;
+    }
+
+    .edit-tr {
+        cursor: pointer;
     }
 </style>

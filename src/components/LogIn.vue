@@ -11,7 +11,7 @@
                 <label for="rememberme">remember me</label>
             </div>
 
-            <button class="green button" @click.prevent="login(), clear()">login</button>
+            <button :disabled="disabled" class="green button" @click.prevent="login(), clear()">login</button>
         </form>
     </div>
 </div>
@@ -27,11 +27,13 @@ import axios from '../api/axiosInstance.js'
             return {
                 email: '',
                 pwd: '',
-                remember: true
+                remember: true,
+                disabled: false
             }
         },
         methods: {
             login() {
+                this.disabled = true
                 axios.post('api/login', {
                     email: this.email,
                     password: this.pwd,
@@ -52,6 +54,11 @@ import axios from '../api/axiosInstance.js'
                         text: `Ooops ${err}`
                     })
                 )
+                .finally(() => {
+                    setTimeout(() => {
+                        this.disabled = false
+                    }, 1000)
+                })
             },
             clear() {
                 this.email = ''
@@ -67,7 +74,10 @@ import axios from '../api/axiosInstance.js'
             .then((results) => {
                 if (results?.data == '1') {
                     this.$router.push({name: 'my_tasks_list'})
-                }
+                }       
+            })
+            .catch(() => {
+                this.$router.push({name: 'login'})
             })
         }
     }

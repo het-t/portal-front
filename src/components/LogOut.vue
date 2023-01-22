@@ -13,22 +13,7 @@
       logout() {
         this.$cookies.remove('_token')
         this.$router.push({name: 'login'})
-
-        // axios.post("/u/api/logout/" , {
-        //   withCredentials: true
-        // })
-        // .then((results)=>{
-        //   console.log(results)
-        //   if (results.data == 'ok') {
-        //     this.$cookies.remove('_token');
-        //     console.log("logout")
-        //     this.$router.push({name: 'login'})
-        //   }
-        //   else {
-        //     this.$router.push({name: 'logout'})
-        //   }
-        // })
-
+        this.$store.reset()
       },
     }
   }

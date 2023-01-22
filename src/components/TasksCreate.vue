@@ -490,7 +490,7 @@ option, select {
     background-color: #2F4050;
 }
 .save-task-template, .recurring {
-    width: fit-content;
+    width: fit-content !important;
 }
 .hide {display: none;}
 .show {
@@ -499,13 +499,17 @@ option, select {
 .labels {
     align-self: center;
 }
-input, select {
-    width: 80%;
-}
+/* input, select {
+    width: fit-content;
+} */
 .sub-task-extra {
     width: 80% !important;
-    border: none;
+    border: none !important;
     border-bottom: solid 1px #e7eaec !important;
+}
+.sub-task-extra:focus {
+    border: none !important;
+    outline-color: #e7eaec;
 }
 .grid-wrapper {
     width: 100%;

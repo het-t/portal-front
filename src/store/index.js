@@ -1,4 +1,5 @@
-import { createStore } from 'vuex'
+import { Store } from 'vuex'
+import { createStore } from 'vuex-extensions'
 
 import users from './modules/users.js'
 import rights from './modules/rights.js'
@@ -8,7 +9,7 @@ import myTasks from './modules/myTasks.js'
 import roles from './modules/roles.js'
 import activity from './modules/activity.js'
 
-export default createStore({
+export default createStore(Store, {
   modules: {
     users,
     rights,
@@ -17,5 +18,4 @@ export default createStore({
     myTasks,
     roles,
     activity
-  }
-})
+  }})

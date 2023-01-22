@@ -21,12 +21,14 @@
     "sweetalert": "^2.1.2",
     "vue": "^3.2.13",
     "vue-cookies": "^1.8.1",
+    "vue-datepicker-next": "^1.0.2",
     "vue-debounce": "^4.0.0",
     "vue-multiselect": "^3.0.0-alpha.2",
     "vue-router": "^4.0.3",
     "vue3-circle-progress": "^1.0.7",
     "vue3-click-away": "^1.2.4",
-    "vuex": "^4.0.0"
+    "vuex": "^4.0.0",
+    "vuex-extensions": "^4.0.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-eslint": "~5.0.0",

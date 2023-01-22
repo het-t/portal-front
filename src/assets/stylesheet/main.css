@@ -106,7 +106,7 @@ a, button {
     visibility: visible !important;
 }
 
-.button {
+#app .button {
     border-radius: 4px;
     border: none;
 }
@@ -137,7 +137,7 @@ a, button {
     filter: invert(0.2);
 }
 
-a {
+#app a {
     text-decoration: none;
     display: block;
     text-transform: capitalize;
@@ -151,15 +151,15 @@ a {
     color: #676a6c;
     overflow-x: auto;
 }
-table, th, td {
+#app table, #app th, #app td {
     border-collapse: collapse;
     text-align: left;
     color: #676a6c;
 }
-table {
+#app table {
     width: 100%;
 }
-th, tr, td {
+#app th, #app tr, #app td {
     padding: 12px;
 }
 .tr-th {
@@ -173,7 +173,7 @@ th, tr, td {
     filter: invert(50%);
     display: none;
 }
-th:hover .tr-th img, .tr-th button:focus img {
+#app th:hover .tr-th img, #app .tr-th button:focus img {
     display: block;
 }
 .actions {
@@ -190,7 +190,8 @@ th:hover .tr-th img, .tr-th button:focus img {
 .table-action {
     border: solid 1px white;
 }
-tr  th:not(:nth-last-child(1), :nth-last-child(2)) , tr td:not(:nth-last-child(1), :nth-last-child(2)){
+#app tr  th:not(:nth-last-child(1),  :nth-last-child(2)) , 
+#app tr td:not(:nth-last-child(1), :nth-last-child(2)){
     border-right: solid 1px #eeeeee;
 }
 
@@ -255,7 +256,7 @@ tr  th:not(:nth-last-child(1), :nth-last-child(2)) , tr td:not(:nth-last-child(1
 }
 
 /* forms */
-form {
+#app form {
     height: 100%;
 }
 .fg-wrapper {
@@ -302,11 +303,11 @@ input:disabled {
 
 
 /* buttons */
-.button:disabled {
+#app .button:disabled {
     background-color: grey !important;
     color: white !important;
 }
-.button {
+#app .button {
     padding: 8px;
     text-transform: capitalize;
     border: solid 1px #e7eaec;
@@ -498,13 +499,13 @@ input:disabled {
     padding-bottom: 32px;
 }
 
-h5 {
+#app h5 {
     text-transform: capitalize;
     text-decoration: none;
     font-weight: 600;
 }
 
-tr .child-row
+#app tr .child-row
 {
     padding-left: 25px;
     margin-left: 20px;

@@ -230,6 +230,7 @@ let routesNew = [
             name: 'activity',
             component: () => import('@/components/UserActivity.vue'),
             meta: {
+              protected: true,
               breadcrumb: activityBreadcrumb
             }
           }
@@ -258,31 +259,32 @@ let routesNew = [
               breadcrumb: clientCreateBreadcrumb
             }
           },
-          {
-            path: '/:pathMatch(.*)', 
-            name: 'not-found', 
-            component: () => import('@/components/NotFound.vue')
-          },
-          {
-            path: '/no-access',
-            name: 'no_access',
-            component: () => import('@/components/NoAccess.vue')
-          }
         ]
       },
       ////////////////////////
       {
         path: 'work-diary',
-        name: 'work_diary',
-        component: () => import('@/components/WorkDiaryMain.vue'),
-        meta: {
-          protected: true,
-          breadcrumb: workDiaryMainBreadcrumb
-        }
+        children: [{
+          path: '',
+          alias: 'list',
+          name: 'work_diary',
+          component: () => import('@/components/WorkDiaryMain.vue'),
+          meta: {
+            protected: true,
+            breadcrumb: workDiaryMainBreadcrumb
+          }
+        }]
       },
-      { 
+      ///////////////////////
+      {
         path: '/:pathMatch(.*)', 
+        name: 'not-found', 
         component: () => import('@/components/NotFound.vue')
+      },
+      {
+        path: '/no-access',
+        name: 'no_access',
+        component: () => import('@/components/NoAccess.vue')
       }
     ]
   },
@@ -299,25 +301,24 @@ const router = createRouter({
 
 
 router.beforeEach((to)=>{
-  if (to?.meta?.protected) {
+  if (to?.meta?.protected == true) {
     const userRights = store.getters['rights/getUserRights']
-    console.log("length", userRights.length)
     if (!userRights.length) {
       getUserRights()
       .then((res) => {
-        console.log("getUerRights")
         store.commit('rights/setUserRights', res?.data?.userRights)
-        console.log(userRights, to?.name)
-        const allow = userRights?.some((right) => right?.code_name == to?.name)
-        if (!allow) return { name: 'no_access'}    
+        const allow = userRights.some((right) => right.code_name == to.name)
+        if (allow == false) return { name: 'no_access'}
+        return true    
       })
     } 
     else {
-      console.log("outside")
       const allow = userRights?.some((right) => right?.code_name == to?.name)
-      if (!allow) return { name: 'no_access'}    
+      if (allow == false) return { name: 'no_access'} 
+      return true   
     }
   }
+  else return true
 })
 
 

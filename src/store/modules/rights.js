@@ -1,6 +1,6 @@
 import { getAllRights } from "@/api"
 
-const state = {
+let state = {
     allRightsList: [],  //list of all rights
     userRights: [],      //list of user's rights
 }
@@ -13,8 +13,8 @@ const getters = {
         return state.userRights
     },
     getComponenetsVisibility(state) {
-        if (state.userRights.length == 0) return false
-        else return true
+        if (state.userRights?.length) return true
+        else return false
     }
     //define getters to return boolean 
     //for all the rights like createuser, create task template etc...

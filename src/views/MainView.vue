@@ -100,6 +100,7 @@ import { mapGetters } from 'vuex'
     data() {
       return {
         showLabels: true,
+        getRightsAgain: true
       }
     },
     computed: {
@@ -119,12 +120,13 @@ import { mapGetters } from 'vuex'
       }
     },
     created() {
-      if (this.$store.getters['rights/getComponenetsVisibility'] == 0) {
-        getUserRights()
-        .then((res) => {
-          this.$store.commit('rights/setUserRights', res?.data?.userRights)
-        })
-      } 
+      getUserRights()
+      .then((res) => {
+        this.$store.commit('rights/setUserRights', res?.data?.userRights)
+      })
+      .catch(() => {
+        this.$router.push({name: 'login'})
+      }) 
     },
     mounted() {
       if (window.outerWidth <= 768) {
@@ -133,10 +135,16 @@ import { mapGetters } from 'vuex'
     },
     updated() {
       if (this.$store.getters['rights/getComponenetsVisibility'] == 0) {
-        getUserRights()
-        .then((res) => {
-          this.$store.commit('rights/setUserRights', res?.data?.userRights)
-        })
+        if (this.getRightsAgain == true) {
+          this.getRightsAgain = false
+          getUserRights()
+          .then((res) => {
+            this.$store.commit('rights/setUserRights', res?.data?.userRights)
+          })
+          .catch(() => {
+            this.$router.push({name: 'login'})
+          }) 
+        }
       } 
     }
   }
