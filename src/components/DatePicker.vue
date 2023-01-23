@@ -34,9 +34,13 @@ export default {
 </script>
 
 <style>
-/* @import '~vue-datepicker-next/scss/index.scss'; */
 .date-picker {
     color: #676A6C !important;
+}
+.mx-calendar tr,
+.mx-calendar th,
+.mx-calendar td {
+    border-right: none !important;
 }
 .date-picker div {
     text-align: center !important;
@@ -50,5 +54,6 @@ export default {
 }
 .mx-input {
     border: none;
+    color: #676A6C !important;
 }
 </style>

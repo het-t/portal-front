@@ -153,6 +153,11 @@ export default {
 </script>
 
 <style scoped>
+    .tr th:not(:nth-last-child(1)), 
+    .tr td:not(:nth-last-child(1)), 
+    .table-heading th:not(:nth-last-child(1)) {
+        border-right: solid 1px #e7eaec !important;
+    }
     .flex { 
         display: flex;
     }
@@ -163,8 +168,5 @@ export default {
     select, option {
         text-transform: capitalize;
         padding: 0;
-    }
-    tr  th:not(:nth-last-child(1)) , tr td:not(:nth-last-child(1)){
-        border-right: solid 1px #e7eaec !important;
     }
 </style>

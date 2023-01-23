@@ -34,18 +34,24 @@
                 currentPage: 1,
                 recordsPerPage: 50,
                 pageCount: '',
+                noCachingTotalRecords: ''
             }
         },
         computed: {
             totalRecords() {
-                return this.$store.getters[`${this.tableName}/${this.tableName}CountGet`]
+                if (this.noCachingTotalRecords != '') return this.noCachingTotalRecords
+                return this.$store.getters?.[`${this.tableName}/${this.tableName}CountGet`]
             },
+            isStoreAvailable() {
+                return !(this.noCaching == true)
+            }
         },
         props: {
             tableName: String,
             sortBy: String,
             sortOrder: Number,
-            filters: Array
+            filters: Array,
+            noCaching: Boolean
         },
         methods: {
             showPage() {
@@ -63,22 +69,23 @@
             },
             pageChange(page) {
                 this.currentPage = page
-                this.$store.commit(`${this.tableName}/currentPageSet`, {index: page})
+                if (this.isStoreAvailable) this.$store.commit(`${this.tableName}/currentPageSet`, {index: page})
                 this.getPageData()
             },
             getPageData() {
                 this.pageCount = Math.ceil(this.totalRecords / this.recordsPerPage)
 
-                const {sortBy, sortOrder} = this.$store.getters[`${this.tableName}/sortGet`]
+                let {sortBy, sortOrder} = this.$store.getters?.[`${this.tableName}/sortGet`] ?
+                                        this.$store.getters?.[`${this.tableName}/sortGet`] :
+                                        {}
 
-                let pageDataStore = this.$store.getters[`${this.tableName}/${this.tableName}ListGet`]?.(this.currentPage, sortBy, sortOrder, this.filters)
+                let pageDataStore = this.$store.getters?.[`${this.tableName}/${this.tableName}ListGet`]?.(this.currentPage, sortBy, sortOrder, this.filters)
 
-                if (
+                if ((
                     (pageDataStore == undefined) || 
                     (pageDataStore?.length == 0) || 
                     (pageDataStore?.length < this.recordsPerPage && pageDataStore?.length >= 50)
-                ) {
-
+                ) || !this.isStoreAvailable) {
                     axios.get(`/u/api/${this.tableName}`, {
                         params: {
                             from: (this.currentPage-1)*this.recordsPerPage,
@@ -90,13 +97,15 @@
                         withCredentials: true
                     })
                     .then((res) => {
-                        this.$store.commit(`${this.tableName}/${this.tableName}List`, {
-                            index: this.currentPage, 
-                            sortBy, 
-                            sortOrder,
-                            filters: this.filters,
-                            data: res.data[this.tableName+'List']
-                        })    
+                        if (this.isStoreAvailable) {
+                            this.$store.commit(`${this.tableName}/${this.tableName}List`, {
+                                index: this.currentPage, 
+                                sortBy, 
+                                sortOrder,
+                                filters: this.filters,
+                                data: res.data[this.tableName+'List']
+                            })   
+                        }
                         this.$emit("tableData", res.data[this.tableName+'List'])                
                     })
                 } 
@@ -106,19 +115,25 @@
             },
         },
         created() {
-            const currentPageInStore = this.$store.getters[`${this.tableName}/getCurrentPage`]
-            console.log("current page in store", currentPageInStore)
-            if (currentPageInStore == '' || currentPageInStore == undefined) {
-                console.log("coming")
-                this.$store.commit(`${this.tableName}/currentPageSet`, {index: this.currentPage})
+            if (this.isStoreAvailable){ 
+                const currentPageInStore = this.$store.getters[`${this.tableName}/getCurrentPage`]
+
+                if (currentPageInStore == '' || currentPageInStore == undefined) {
+                    this.$store.commit(`${this.tableName}/currentPageSet`, {index: this.currentPage})
+                }
+                else this.currentPage = currentPageInStore
             }
-            else this.currentPage = currentPageInStore
-            if (this.totalRecords == '') {
+
+            if (this.totalRecords == '' || this.totalRecords == undefined) {
                 axios.get(`/u/api/${this.tableName}/count`, {
+                    params: {
+                        filters: this.filters
+                    },
                     withCredentials: true
                 })
                 .then((res) => {
-                    this.$store.commit(`${this.tableName}/${this.tableName}CountSet`, res?.data?.count)
+                    this.noCachingTotalRecords = res.data.count
+                    if (this.isStoreAvailable)this.$store.commit?.(`${this.tableName}/${this.tableName}CountSet`, res?.data?.count)
                     this.getPageData()
                 })
             }

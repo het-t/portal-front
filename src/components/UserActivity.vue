@@ -5,7 +5,7 @@
 
             <div class="mt16 ml16 mr16">
                 <table>
-                    <tr>
+                    <tr class="table-heading">
                         <th>
                             <div class="flex">
                                 <table-sort @clicked="i=!i; k=!k; m=!m; n=!n; o=!o; p=!p;" :key="j" sortBy="id" sortType="number" storeName="activity"></table-sort>
@@ -150,6 +150,11 @@
 </script>
 
 <style scoped>
+    .tr th:not(:nth-last-child(1)), 
+    .tr td:not(:nth-last-child(1)), 
+    .table-heading th:not(:nth-last-child(1)) {
+        border-right: solid 1px #e7eaec !important;
+    }
     .flex {
         display: flex;
     }
@@ -161,8 +166,5 @@
         flex-direction: row;
         margin: 13px 0;
         align-items: center;
-    }
-    tr  th:not(:nth-last-child(1)) , tr td:not(:nth-last-child(1)){
-        border-right: solid 1px #e7eaec !important;
     }
 </style>

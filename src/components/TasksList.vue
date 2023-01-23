@@ -285,6 +285,9 @@ export default {
 </script>
 
 <style scoped>
+@import '../assets/stylesheet/task-status-tag.css';
+@import '../assets/stylesheet/nth-child-no-border.css';
+
     .tr:hover .dots img {
         visibility: visible !important;
     }
@@ -302,20 +305,6 @@ export default {
         cursor: pointer;
     }
     .task-status {
-        font-size: 12px;
-        border: solid 1px #a0a0a0;
-        color: #a0a0a0;
-        padding: 4px 12px;
-        border-radius: 12px;
-        width: fit-content;
         margin: auto;
-    }   
-    .Unbilled {
-        border-color: red;
-        color: red;
-    }
-    .Billed {
-        border-color: green;
-        color: green;
     }
 </style>

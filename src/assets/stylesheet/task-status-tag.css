@@ -1,0 +1,16 @@
+.task-status {
+    font-size: 12px;
+    border: solid 1px #a0a0a0;
+    color: #a0a0a0;
+    padding: 4px 12px;
+    border-radius: 12px;
+    width: fit-content;
+}   
+.Unbilled {
+    border-color: red;
+    color: red;
+}
+.Billed {
+    border-color: green;
+    color: green;
+}

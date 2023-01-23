@@ -210,6 +210,7 @@
 </script>
 
 <style scoped>
+@import '../assets/stylesheet/nth-child-no-border.css';
     .flex {
         display: flex;
     }

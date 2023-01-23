@@ -9,18 +9,58 @@
 
             <date-picker
                 @datePicker="dates = $event"
+                class="ml8"
             >
             </date-picker>
         </div>
 
         <table-main>
             <template #thead>
-                <tr>
-                    <th>title</th>
-                    <th>client</th>
-                    <th>description</th>
-                    <th>coordinator</th>
-                    <th>status</th>
+                <tr class="table-heading">
+                    <th>
+                        <div class="flex">
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filters[3]" :focus="floatingLabelsFocus.includes('title')" type="text" class="header p0" required>
+                                <span @click="floatingLabelsFocus.push('title')" class="floating-label">Title</span>
+                            </div>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="flex">
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filters[4]" :focus="floatingLabelsFocus.includes('client')" type="text" class="header p0" required>
+                                <span @click="floatingLabelsFocus.push('client')" class="floating-label">Client</span>
+                            </div>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="flex">
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filters[5]" :focus="floatingLabelsFocus.includes('desc')" type="text" class="header p0" required>
+                                <span @click="floatingLabelsFocus.push('desc')" class="floating-label">Description</span>
+                            </div>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="flex">
+                            <div class="floating-container">
+                                <input v-debounce:700ms.lock="sort" v-model="filters[6]" :focus="floatingLabelsFocus.includes('co')" type="text" class="header p0" required>
+                                <span @click="floatingLabelsFocus.push('co')" class="floating-label">Coordinator</span>
+                            </div>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="flex">
+                            <div class="floating-container">
+                                <select @change="sort" v-model="filters[7]" ref="status" class="header p0" required>
+                                    <option value="1">InProgress</option>
+                                    <option value="2">Unbilled</option>
+                                    <option value="3">Billed</option>
+                                </select>
+                                <span @click="$refs['status'].focus()" class="floating-label">status</span>
+                            </div>
+                        </div>
+                    </th>
                 </tr>
             </template>
 
@@ -33,7 +73,11 @@
                             <td>{{ task?.client }}</td>
                             <td>{{ task?.description }}</td>
                             <td>{{ task?.coordinator }}</td>
-                            <td>{{ task?.status }}</td>
+                            <td class="pl12 pt0">
+                                <div class="task-status" :class="task.status">
+                                    {{ task.status }}
+                                </div>
+                            </td>
                     </tr>
 
                     <tr class="tr tr-hidden hide" :ref="('row'+index)">
@@ -67,6 +111,16 @@
                     </tr>
                 </template>
             </template>
+
+            <table-pagination
+                :key="key"
+                v-if="getData == true"
+                @tableData="tasks = $event"
+                :filters="filters"
+                tableName="workDiary"
+                :noCaching="true"  
+            ></table-pagination>
+
         </table-main>
     </div>
 </template>
@@ -77,16 +131,23 @@ import { mapGetters } from 'vuex'
 import VueMultiselect from 'vue-multiselect'
 import makeGetReq from '../api/makeGetReq'
 import DatePicker from './DatePicker.vue'
+import TablePagination from './TablePagination.vue'
 
     export default {
-        components: { TableMain, VueMultiselect, DatePicker },
+        components: { TableMain, VueMultiselect, DatePicker, TablePagination },
         name: 'WorkDiaryMain',
         data() {
             return {
                 tasks: [],
                 subTasks: [],
                 user: '',
-                dates: []
+                dates: [],
+                getData: false,
+                key: 0,
+                floatingLabelsFocus: [],
+                filters: ['', '', '', '', '', '', '', ''], 
+                //wdUserId, datetime_for, datetime_to, task-title, task-client,                                
+                //task-description, task-coordinator, task-status
             }
         },
         computed: {
@@ -95,18 +156,26 @@ import DatePicker from './DatePicker.vue'
             ]),
         },
         watch: {
-            user() {
-                if (this.user != '') {
-                    this.tasks = []
-                    this.subTasks = []
-                    this.getTasks()
+            user(newValue) {
+                this.filters[0] = newValue?.id
+                this.tasks = []
+                this.subTasks = []
+
+                if (newValue != null) {
+                    this.getData = true
+                    this.key = !this.key
                 }
+                else this.getData = false
             },
-            dates() {
-                if (this.user != '') {
+            dates(newValue) {
+                this.filters[1] = newValue?.[0] 
+                this.filters[2] = newValue?.[1]
+
+                if (this.user != '' && this.user != null) {
                     this.tasks = []
                     this.subTasks = []
-                    this.getTasks()
+                    this.getData = true
+                    this.key = !this.key
                 }
             }
         },
@@ -120,30 +189,21 @@ import DatePicker from './DatePicker.vue'
                 else this.$refs[rowIndex][0].classList.add('hide')
 
                 let userId
-                if (this.user.id) userId = this.user.id
+                if (this.user?.id) userId = this.user.id
                 else userId = this.user
 
-                makeGetReq('/u/api/work-diary/sub-tasks', {
+                makeGetReq('/u/api/workDiary/sub-tasks', {
                     userId,
                     taskId,
-                    fromDate: this.dates?.[0],
-                    toDate: this.dates?.[1]
+                    fromDate: this.dates[0],
+                    toDate: this.dates[1]
                 })
                 .then((subTasks) => {
                     this.subTasks[taskId] = subTasks.data
                 })
             },
-            getTasks() {
-                if (this.user?.id) {
-                    makeGetReq('/u/api/work-diary/tasks', {
-                        userId: this.user?.id, 
-                        fromDate: this.dates?.[0],
-                        toDate: this.dates?.[1]
-                    })
-                    .then((tasks) => {
-                        this.tasks = tasks.data
-                    })
-                }
+            sort() {
+                this.key = !this.key
             }
         },
         created() {
@@ -153,9 +213,15 @@ import DatePicker from './DatePicker.vue'
 </script>
 
 <style scoped>
+@import '../assets/stylesheet/task-status-tag.css';
+@import '../assets/stylesheet/floating-labels.css';
+    .tr th:not(:nth-last-child(1)), 
+    .tr td:not(:nth-last-child(1)), 
+    .table-heading th:not(:nth-last-child(1)) {
+        border-right: solid 1px #e7eaec !important;
+    }
     .flex {
         display: flex;
-        gap: 8px;
     }
     .multiselect {
         min-width: 250px;

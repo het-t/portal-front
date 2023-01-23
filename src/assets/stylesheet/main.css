@@ -190,10 +190,6 @@ a, button {
 .table-action {
     border: solid 1px white;
 }
-#app tr  th:not(:nth-last-child(1),  :nth-last-child(2)) , 
-#app tr td:not(:nth-last-child(1), :nth-last-child(2)){
-    border-right: solid 1px #eeeeee;
-}
 
 /* for hidden tr */
 .tr-hidden input, .tr-hidden select, .tr-hidden textarea {

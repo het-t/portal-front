@@ -167,6 +167,8 @@ import useDeleteSwal from '@/helpers/swalDelete'
 </script>
 
 <style scoped>
+@import '../assets/stylesheet/nth-child-no-border.css';
+
 .hide {
     display: none !important;
 }
