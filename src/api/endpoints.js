@@ -27,7 +27,12 @@ const endpoints = {
     deleteClient: '/u/api/clients/delete-client',
     deleteTask: '/u/api/tasks/delete-task',
     changeStatusMyTask: '/u/api/myTasks/change-status',
-    changeTaskStatus: '/u/api/tasks/change-status'
+    changeTaskStatus: '/u/api/tasks/change-status',
+    
+    admin: {
+        createAdmin: '/u/api/orgs/admins/create-admin',
+        createOrg: '/u/api/orgs/create-org'
+    }
 }
 
 export default endpoints

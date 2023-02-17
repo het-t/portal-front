@@ -1,6 +1,5 @@
 <template>
     <div class="card">
-
         <div class="table-tabs">
             <button @click="openTab($event, 'general')" :ref="('defaultTab'+uk)" class="button nutral tab">general</button>
             <button @click="openTab($event, 'credentials')" class="button nutral tab">credentials</button>
@@ -41,7 +40,7 @@
                             <input :ref="('credentials'+uk+'focus')" v-model="userEmail" type="text" :id="('user-email'+uk)">
                         </div>
 
-                        <div :id="('i6'+uk)" class="row mt8">
+                        <div v-if="orgId == ''" :id="('i6'+uk)" class="row mt8">
                             <label :for="('user-role'+uk)" class="labels c1">role</label>
                             <select v-model="userRole" :id="('user-role'+uk)">
                                 <option v-for="(role) in dbRoles" :key="role.id" :value="role.name">
@@ -52,13 +51,12 @@
 
                         <div :id="('i7'+uk)" class="row mt8">
                             <label :for="('user-pwd'+uk)" class="labels c1">password</label>
-                            <input v-model="userPassword" type="password" :id="('user-pwd'+uk)">
+                            <input :disabled="editUserId == undefined ? false : true" v-model="userPassword" type="password" :id="('user-pwd'+uk)">
                         </div>
                     </div>
 
                     <button :disabled="disabled === true" @click.prevent="proceed()" class="green mt16 button">save</button>
                     <button :disabled="disabled === true" @click.prevent="canceled()" class="neutral ml8 mt16 button">cancel</button>
-
                 </div>
             </form>
         </div>
@@ -68,7 +66,7 @@
 </template>
 
 <script>
-import {users} from '@/api/index.js'
+import { users, admin } from '@/api/index.js'
 import useCreateSwal from '@/helpers/swalCreate'
 import useEditSwal from '../helpers/swalEdit'
 
@@ -86,22 +84,27 @@ import useEditSwal from '../helpers/swalEdit'
                 userPassword: '',
                 dbRoles: [],
                 userId: '',
-                disabled: false
+                disabled: false,
+                orgId: ''
             }
         },
         mounted() {
-            const rolesList = this.$store.getters['roles/allRoles']
-
-            if (rolesList != undefined && rolesList != '') {
-                this.dbRoles = rolesList
-            }
-
             if (this.editUserId != undefined) {
                 const userData = this.$store.getters['users/usersDataGet'](this.editUserId)
 
                 if (userData != undefined && userData != '') {
                     this.populateDataProperties(userData)
                 }
+            }
+            if (this.orgId == '') {
+                const rolesList = this.$store.getters['roles/allRoles']
+
+                if (rolesList != undefined && rolesList != '') {
+                    this.dbRoles = rolesList
+                }
+            }
+            else {
+                this.orgId = this.$route.params?.orgId != undefined ? this.$route.params.orgId : ''
             }
 
             this.$refs['defaultTab'+this.uk].click()
@@ -119,7 +122,10 @@ import useEditSwal from '../helpers/swalEdit'
             },
             canceled() {
                 if (this.editUserId != undefined) this.$emit("editingCompleted", {force: true})
-                else this.$router.push('/u/users/list')
+                else {
+                    if (this.orgId != '') this.$router.push('/u/admin/orgs')
+                    else this.$router.push('/u/users/list')
+                }
             },
             proceed() {
                 this.disabled = true
@@ -131,25 +137,37 @@ import useEditSwal from '../helpers/swalEdit'
                     birthdate: this.userBirthdate,
                     email: this.userEmail,
                     role: this.userRole,
-                    password: this.userPassword
+                    password: this.userPassword,
+                    orgId: this.orgId
                 }
-                if (!args.userId) {
+
+                if (this.orgId != '') {
                     useCreateSwal({
-                        text: args.firstName + ' ' + args.lastName,
-                        url: '/u/users/list',
-                        promise: users.create(args),
-                        mutationFnName: 'users/refetch',
+                        text: args.firstName + '' + args.lastName,
+                        url: `/u/admin/orgs/${args.orgId}`,
+                        promise: admin.users.create(args),
                         context: this
                     })
                 }
                 else {
-                    useEditSwal({
-                        text: args.firstName + ' ' + args.lastName,
-                        mutationFnName: 'users/refetch',
-                        mutationArgs: {userId: args.userId},
-                        promise: users.edit(args),
-                        context: this
-                    })
+                    if (!args.userId) {
+                        useCreateSwal({
+                            text: args.firstName + ' ' + args.lastName,
+                            url: '/u/users/list',
+                            promise: users.create(args),
+                            mutationFnName: 'users/refetch',
+                            context: this
+                        })
+                    }
+                    else {
+                        useEditSwal({
+                            text: args.firstName + ' ' + args.lastName,
+                            mutationFnName: 'users/refetch',
+                            mutationArgs: {userId: args.userId},
+                            promise: users.edit(args),
+                            context: this
+                        })
+                    }
                 }
             },
             populateDataProperties(o) {
@@ -195,14 +213,14 @@ import useEditSwal from '../helpers/swalEdit'
 
 
 
-    input, select {
-        width: 100%;
-    }
-    input[type="checkbox"] {
-        width:auto !important;
-        display: inline;
-    }
-    .labels {
-        align-self: center;
-    }
+input, select {
+    width: 100%;
+}
+input[type="checkbox"] {
+    width:auto !important;
+    display: inline;
+}
+.labels {
+    align-self: center;
+}
 </style>

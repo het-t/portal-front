@@ -37,11 +37,15 @@ import { faListCheck,
         faDollarSign,
         faSlash,
         faHand,
-        faUserCheck
+        faUserCheck,
+        faSave,
+        faGear
     } from '@fortawesome/free-solid-svg-icons'
 
 
 library.add(
+    faGear,
+    faSave,
     faUserGroup, 
     faListCheck, 
     faSun, 

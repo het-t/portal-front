@@ -1,6 +1,6 @@
 <template>
     <div class="pr16 pl16">
-        <div class="flex mb8">
+        <div class="flex-wd-options mb8">
             <vue-multiselect v-model="user" :options="allUsers" :custom-label="labelForCoordinator" track-by="id" placeholder="select user" id="username">
                 <template #noResult>
                     Oops! No user found. Consider creating new user
@@ -9,7 +9,6 @@
 
             <date-picker
                 @datePicker="dates = $event"
-                class="ml8"
             >
             </date-picker>
         </div>
@@ -99,7 +98,8 @@
                                         <td>
                                             {{ subTask.action }} {{ subTask.key }}
                                             <span v-if="subTask.action == 'updated'">
-                                                from {{ subTask.before || '-' }} to {{ subTask.after || '-' }}
+                                                from
+                                                {{ subTask.before || '-' }} to {{ subTask.after || '-' }}
                                             </span>
                                         </td>
                                         <td>{{ subTask.status }}</td>
@@ -219,6 +219,11 @@ import TablePagination from './TablePagination.vue'
     .tr td:not(:nth-last-child(1)), 
     .table-heading th:not(:nth-last-child(1)) {
         border-right: solid 1px #e7eaec !important;
+    }
+    .flex-wd-options {
+        display: flex;
+        column-gap: 8px;
+        row-gap: 8px;
     }
     .flex {
         display: flex;

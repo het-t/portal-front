@@ -114,9 +114,9 @@
 
             <template #tbody>
                 <template v-for="(task, index) of tasks()" :key="task.id">
+                        <!-- v-show="task.id" -->
 
                     <tr
-                        v-show="task.id"
                         class="tr edit-task-tr" 
                         tabindex="0"
                         @keyup.enter="editTask('row'+index, task.id, $event)"

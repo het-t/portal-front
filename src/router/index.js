@@ -2,6 +2,39 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import store from '@/store/index.js'
 import { getUserRights } from '@/api/index.js'
 
+let settingBreadcrumb = {
+  title: 'settings',
+}
+
+let AdminPanelOrgListBreadcrumb = {
+  title: 'Organizations',
+  action: true,
+  actionUrl: '/u/admin/orgs/create-org',
+  path: [{
+    text: 'home',
+    route: '/u/admin/orgs'
+  }]
+}
+
+let AdminCreateBreadcrumb = {
+  title: 'Admin',
+  path: [{
+    text: 'home',
+    route: '/u/admin/orgs'
+  }]
+}
+
+let AdminPanelCreateOrgBreadcrumb = {
+  title: 'Organizations',
+  path: [{
+    text: 'home',
+    route: '/u/admin/orgs'
+  }, {
+    text: 'create',
+    route: '/u/admin/orgs/create-org'
+  }]
+}
+
 let createUserBreadcrumb = {
   title: 'users',
   path: [{
@@ -129,6 +162,75 @@ let routesNew = [
     name: 'u',
     component: () => import('@/views/MainView.vue'),
     children: [
+      {
+        path: 'profile',
+        name: 'profile',
+        component: () => import('@/components/TheProfile.vue')
+      },
+      {
+        path: 'admin',
+        name: 'admin_panel',
+        meta: {
+          protected: true
+        },
+        component: () => import('@/views/AdminPanelView.vue'),
+        children: [
+        {
+          path: 'orgs',
+          component: () => import('@/views/OrganizationsView.vue'),
+          children: [
+            {
+              path: '',
+              alias: '/',
+              name: 'organizations_list',
+              component: () => import('@/components/OrganizationsList.vue'),
+              meta: {
+                breadcrumb: AdminPanelOrgListBreadcrumb
+              }
+            },
+            {
+              path: 'create-org',
+              name: 'organizations_create',
+              component: () => import('@/components/OrganizationsCreate.vue'),
+              meta: {
+                breadcrumb: AdminPanelCreateOrgBreadcrumb
+              }
+            },
+            {
+              path: ':orgId/create-admin',
+              name: 'organizations_create_admin',
+              params: ['orgId'],
+              component: () => import('../components/UserCreate.vue'),
+              meta: {
+                breadcrumb: AdminCreateBreadcrumb
+              }
+            },
+            {
+              path: ':orgId/',
+              name: 'organizations_data',
+              params: ['orgId'],
+              component: () => import('../components/OrganizationsData.vue')
+            }
+          ]
+        }]
+      },
+      {
+        path: 'settings',
+        name: 'settings',
+        component: () => import('@/components/TheSetting.vue'),
+        meta: {
+          breadcrumb: settingBreadcrumb,
+          protected: true
+        }
+      },
+      // {
+      //   path: 'settings',
+      //   // name: 'profile',
+      //   component: () => import('@/components/TheSetting.vue'),
+      //   meta: {
+      //     breadcrumb: settingBreadcrumb
+      //   }
+      // },
       ////////////////////////////
       {
         path: 'users',
@@ -141,7 +243,7 @@ let routesNew = [
             component: () => import('@/components/UserList.vue'),
             meta: {
               breadcrumb: userListBreadcrumb
-            }
+            },
           },
           {
             path: 'create-user',
@@ -303,6 +405,8 @@ const router = createRouter({
 router.beforeEach((to)=>{
   if (to?.meta?.protected == true) {
     const userRights = store.getters['rights/getUserRights']
+    console.log(userRights, to.name)
+
     if (!userRights.length) {
       getUserRights()
       .then((res) => {

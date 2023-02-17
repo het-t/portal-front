@@ -1,8 +1,8 @@
 <template>
-    <div class="flex">
+    <div class="flex table-pagination">
         <div class="recordsPerPage">
             <label for="recordsPerPage">entries</label>
-            <select @change="getPageData()" id="recordsPerPage" v-model="recordsPerPage" class="ml8"> 
+            <select @change="getPageData()" id="recordsPerPage" v-model="recordsPerPage"> 
                 <option :value=50>50</option>
                 <option :value=100>100</option>
                 <option :value=150>150</option>
@@ -106,6 +106,7 @@
                                 data: res.data[this.tableName+'List']
                             })   
                         }
+                        console.log(res.data[this.tableName+'List'])
                         this.$emit("tableData", res.data[this.tableName+'List'])                
                     })
                 } 
@@ -152,6 +153,8 @@
     }
     .recordsPerPage {
         display: flex;
+        column-gap: 8px;
+        row-gap: 8px;
         align-items: center;
         margin: 13px 0;
     }

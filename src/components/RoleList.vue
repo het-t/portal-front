@@ -57,8 +57,6 @@
                                 {{role?.rights}}
                             </td>
 
-                            <!--      -->
-                            <!-- @hideMenu="menu($event, {roleName: role.name, roleId: role.id, visibility: true})"" -->
                             <DotsImg 
                                 @openMenu="menu($event, {roleName: role.name, roleId: role.id, visibility: true})"
                                 @hideMenu="menu($event, {roleName: role.name, roleId: role.id, visibility: false})"

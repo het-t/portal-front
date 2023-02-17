@@ -78,31 +78,31 @@
 
                     <tr class="tr" v-for="activity in activityData" :key="activity?.id" >
                         <td>
-                            {{activity?.id}}
+                            <span>{{ activity?.id }}</span>
                         </td>
 
                         <td>
-                            {{activity?.email}}
+                            <span>{{ activity?.email }}</span>
                         </td>
 
                         <td>
-                            {{activity?.activity}}
+                            <span>{{ activity?.activity }}</span>
                         </td>
                         
                         <td>
-                            {{activity?.referenceTable}}
+                            <span>{{ activity?.referenceTable }}</span>
                         </td>
 
                         <td>
-                            {{activity?.referenceTablePkId}}
+                            <span>{{ activity?.referenceTablePkId }}</span>
                         </td>
 
                         <td>
-                            {{activity?.detail}}
+                            <span>{{ activity?.detail }}</span>
                         </td>
 
                         <td class="w">
-                            {{(new Date(activity?.datestamp).toLocaleString())}}
+                            <span>{{ (new Date(activity?.datestamp).toLocaleString()) }}</span>
                         </td>
                     </tr>
                 </table>
@@ -144,7 +144,7 @@
         },
         components: { 
             TablePagination,
-            TableSort
+            TableSort,
         }
     }
 </script>

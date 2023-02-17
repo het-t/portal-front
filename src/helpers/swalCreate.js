@@ -7,7 +7,7 @@ export default function useCreateSwal({text, url, mutationFnName, mutationArgs, 
         context.$toast.success(`saved ${text}`)
     )
     .then(() => { 
-        context.$store.commit(mutationFnName, args)
+        if (mutationFnName) context.$store.commit(mutationFnName, args)
         setTimeout(() => context.$router.push(url), 1)
     })
     .catch((err) => {

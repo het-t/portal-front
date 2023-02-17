@@ -65,6 +65,7 @@ const mutations = {
         state.usersCount = usersCount
     },
     usersAll(state, usersList) {
+        console.log(state.allUsers, usersList)
         state.allUsers = usersList
     },
     usersDataSet(state, {index, data}) {
@@ -83,8 +84,8 @@ const mutations = {
     },
     refetch(state, {userId}) {
         state.users = {}
-        state.usersCount = undefined
-        state.allUsers = undefined
+        state.usersCount = ''
+        state.allUsers = []
 
         if (userId) state.usersData[userId] = {}
         else state.userData = undefined

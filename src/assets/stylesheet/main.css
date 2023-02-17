@@ -49,14 +49,15 @@ body, #app {
     height: 12px;
     color: grey !important;
     transform: scale(1.5);
-    /* filter: invert(70%); */
 }
 .top-nav-icons {
     width: 26px;
     height: 26px;
     color: #2f4050;
 }
-.top-nav-icons, .top-nav button {
+.top-nav-icons, 
+.top-nav button {
+    border: solid 1px #fff;
     background-color: #fff;
 }
 
@@ -67,15 +68,14 @@ a, button {
 .link-list span {
     color: #a7b1c2;
 }
-.router-link-active .pa-icon, 
-.router-link-exact-active .pa-icon{
+#nav .router-link-active .pa-icon, 
+#nav .router-link-exact-active .pa-icon{
     color: white !important;
-    /* filter: invert(100%) !important; */
 }
-.router-link-active, 
-.router-link-exact-active,
-.router-link-active span,
-.router-link-exact-active span {
+#nav .router-link-active, 
+#nav .router-link-exact-active,
+#nav .router-link-active span,
+#nav .router-link-exact-active span {
     color: white;
     background-color: #293846;
 }
@@ -97,10 +97,7 @@ a, button {
     width: 13px;
     height: 13px;
     color: black !important;
-    /* padding: 8px; */
     visibility: hidden;
-    /* background-color: whitesmoke; */
-    /* border: solid 1px #e7eaec; */
 }
 .dots-clicked {
     visibility: visible !important;
@@ -114,7 +111,6 @@ a, button {
 #top-nav {
     height: 50px;
     margin: auto;
-    /* background-color: whitesmoke; */
     background-color: white;
     display: flex;
     justify-content: space-between;
@@ -297,6 +293,10 @@ input:disabled {
     margin : auto;
 }
 
+/*  */
+.flex {
+    display: flex;
+}
 
 /* buttons */
 #app .button:disabled {
@@ -307,6 +307,7 @@ input:disabled {
     padding: 8px;
     text-transform: capitalize;
     border: solid 1px #e7eaec;
+    cursor: pointer;
 }
 .green {
     background-color: rgb(27, 175, 131);
@@ -337,6 +338,12 @@ input:disabled {
     }
 }
 @media screen and (max-width : 769px) {
+    .profile-flex {
+        flex-direction: column;
+    }
+    #setting-i1, #setting-i2 {
+        width: calc(100% - 24px) !important;
+    }
     .list {
         display: flex;
         flex-direction: row;
@@ -362,6 +369,52 @@ input:disabled {
     }
     .dots-img {
         visibility: visible;
+    }
+    input.header {
+        max-width: 50px;
+        width: inherit;
+    }
+    .link span, .logo-container {
+        display: none !important;
+    }
+    #pa {
+        width: fit-content;
+    }
+    .lessWidth {
+        display: none;
+    }
+    .pbfalse {
+        width: 100%;
+    }
+    .pbtrue {
+        width: calc(100% - 60px);
+    }
+    .flex-wd-options {
+        flex-direction: column;
+    }
+    .date-picker {
+        width: 80%;
+    }
+    .table-pagination {
+        width: 100%;
+    }
+    .table-pagination ul {
+        padding-left: 8px;
+    }
+    form input~#remember-me, .role-name {
+        width: 100% !important;
+    }
+    .mx-date-time-range {
+        height: fit-content !important;
+        width: fit-content !important;
+    }
+    .mx-datepicker-main {
+        background-color: transparent !important;
+        height: fit-content;
+        width: fit-content;
+    }
+    .mx-calendar-range div {
+        background-color: #fff;
     }
 }
 @media screen and (max-width : 426px) {

@@ -75,7 +75,7 @@ const mutations = {
     refetch(state) {
         state.clientsCount = undefined
         state.clients = {}
-        state.allClients = {}
+        state.allClients = []
 
         if (state.paginationKey == 0) state.paginationKey = 1
         else if (state.paginationKey == 1) state.paginationKey = 0

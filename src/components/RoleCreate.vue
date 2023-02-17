@@ -3,7 +3,7 @@
         <form class="pr16 pl16 pt16 pb16">
             <div class="row mt8">
                 <label ref="focus" for="role-name" class="labels c1">name</label>
-                <input v-model="roleName" type="text" id="role-name"> 
+                <input v-model="roleName" type="text" id="role-name" class="role-name"> 
             </div>
                 
             <div class="hr"></div>
@@ -30,12 +30,12 @@
             <button 
                 :disabled="disabled === true"
                 @click.prevent="(editRoleId == undefined || editRoleId == '') ? createRole({roleName, roleRights}) : editRole()" 
-                class="green button"
+                class="green button mt8"
             >save</button>
             <button 
                 :disabled="disabled === true" 
                 @click.prevent="canceled()" 
-                class="neutral ml8 button"
+                class="neutral ml8 button mt8"
             >cancel</button>
         </form>
     </div>
@@ -125,8 +125,8 @@ import { mapGetters } from 'vuex'
         align-items: center;
         gap: 12px;
     }
-    input[type="text"], input[type="date"] {
-        width: 40% !important;
+    .role-name {
+        width: 30%;
     }
     input[type="checkbox"] {
         width:auto !important;

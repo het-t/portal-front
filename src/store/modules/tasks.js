@@ -172,17 +172,27 @@ const actions = {
             else resolve()
         })
     },
-    subTasksDataSet({getters, commit}, {taskId}) {
+    subTasksDataSet({getters, commit, dispatch}, {taskId, force}) {
         const res = getters['subTasksData']?.(taskId)
         return new Promise((resolve, reject) => {
-            if (res == undefined || res == '') {
+            if (res == undefined || res == '' || force == true) {
                 tasks.getSubTasks({taskId})
                 .then((res) => {
                     commit('subTasksDataSet', {
                         taskId, 
                         data: res.data.subTasksList
                     })
+                    for(let st of res.data.subTasksList) {
+                        if (st.assignedTo != undefined && st.assignedTo != '' && st.assignedTo != null) {
+                            dispatch('images/fetchProfilePic', {
+                                userId: st.assignedTo,
+                                width: 50,
+                                height: 50
+                            }, {root: true})
+                        }
+                    }
                     resolve()
+                    return res
                 })
                 .catch(() => {
                     reject()

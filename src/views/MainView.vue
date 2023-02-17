@@ -57,6 +57,12 @@
           </router-link>
         </div>
 
+        <div class="link-list">
+          <router-link v-if="rightCheck('admin_panel') == true" :to="{name: 'admin_panel'}" tabindex="-1" class="pt16 pb16 link">
+            <font-awesome-icon :icon="['fas', 'gear']" class="pa-icon ml24 mr24"></font-awesome-icon>
+            <span v-if="showLabels">admin</span>
+          </router-link>
+        </div>
       </div> 
     </div>
 
@@ -70,9 +76,9 @@
 
         <div class="top-nav-right">
           <div class="header mt8 mb8">
-            <button class="mr16" tabindex="-1">
+            <router-link class="mr16" :to="{name: 'profile'}">
               <font-awesome-icon :icon="['fas', 'user']" class="top-nav-icons"></font-awesome-icon>
-            </button>
+            </router-link>
           </div>
 
           <div class="logout">
@@ -94,6 +100,7 @@ import LogOut from '@/components/LogOut.vue'
 import { getUserRights } from '../api'
 import TheBreadcrumb from '../components/TheBreadcrumb.vue'
 import { mapGetters } from 'vuex'
+import rightCheck from '@/helpers/RightCheck'
 
   export default {
     name: "MainView",
@@ -113,6 +120,14 @@ import { mapGetters } from 'vuex'
       TheBreadcrumb,
     },
     methods: {
+      rightCheck,
+      checkIfAdmin() {
+        let userType;
+        if (this.rightCheck('admin_panel') == true) userType = 'admin'
+        else userType = 'normal'
+        
+        this.$store.commit('setUserType', userType)
+      },
       menuToggle() {
         this.showLabels = !this.showLabels
         if (!this.showLabels) this.$refs.menu.classList.add('lessWidth')
@@ -123,10 +138,13 @@ import { mapGetters } from 'vuex'
       getUserRights()
       .then((res) => {
         this.$store.commit('rights/setUserRights', res?.data?.userRights)
+        this.checkIfAdmin()
       })
       .catch(() => {
-        this.$router.push({name: 'login'})
-      }) 
+          this.$cookies.remove('_token')
+          this.$store.reset()
+          this.$router.push({name: 'login'})
+        }) 
     },
     mounted() {
       if (window.outerWidth <= 768) {
@@ -140,8 +158,11 @@ import { mapGetters } from 'vuex'
           getUserRights()
           .then((res) => {
             this.$store.commit('rights/setUserRights', res?.data?.userRights)
+            this.checkIfAdmin()
           })
           .catch(() => {
+            this.$cookies.remove('_token')
+            this.$store.reset()
             this.$router.push({name: 'login'})
           }) 
         }
@@ -159,8 +180,13 @@ import { mapGetters } from 'vuex'
   #tasks-icon, #my-day-icon, #activity-icon {
     scale: 1.5;
   }
-  button:hover, button:active {
+  button:hover, 
+  button:active,
+  #top-nav a:hover  {
     border: solid 1px #c2c2c2 !important;
+  }
+  #top-nav a {
+    border: solid 1px #fff;
   }
   #logo {
     width: 150px;

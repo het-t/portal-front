@@ -49,6 +49,16 @@ const myTasks = {
     get: () => makeGetReq(endpoints.getMyTasks),
     changeStatus: (args) => makeGetReq(endpoints.changeStatusMyTask, args)
 }
+
+const admin = {
+    users: {
+        create: (args) => makePostReq(endpoints.admin.createAdmin, args)
+    },
+    orgs: {
+        create: (args) => makePostReq(endpoints.admin.createOrg, args)
+    }
+}
+
 const getAllRights = () => makeGetReq(endpoints.getAllRights)
 
 const getUserRights = () => makeGetReq(endpoints.getUserRights)
@@ -56,6 +66,7 @@ const getUserRights = () => makeGetReq(endpoints.getUserRights)
 export {
     getAllRights,
     getUserRights,
+    admin,
     clients,
     users,
     roles,

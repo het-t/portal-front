@@ -7,8 +7,8 @@
                 <button @click="openTab($event, 'contact')" class="button neutral tab">contact</button>
             </div>
 
-            <form class="mt16 pb32 pr16 pl16">
-                <div class="fg-wrapper pl16">
+            <form class="mt16 ml16 pb32 pr16 pl16">
+                <div class="fg-wrapper">
                     <div class="hide fg" :ref="('client'+uk)">
                         <div class="row mt8">
                             <label for="client-cli-llpin" class="labels c1">CIN/LLPIN</label>
@@ -53,7 +53,7 @@
                     </div>
                 </div>
 
-                <div class="fg-wrapper pl16">
+                <div class="fg-wrapper">
                     <div class="hide fg" :ref="('contact'+uk)">
                         <div class="row mt8">
                             <label for="contact-name" class="labels c1">name</label>
@@ -71,7 +71,7 @@
                         </div>
                     </div>
                 </div>
-                <button :disabled="disabled === true" @click.prevent="proceed()" class="green mt16 ml16 button">save</button>
+                <button :disabled="disabled === true" @click.prevent="proceed()" class="green mt16 button">save</button>
                 <button :disabled="disabled === true" @click.prevent="canceled()" class="neutral ml8 mt16 button">cancel</button>
 
             </form>
@@ -112,16 +112,16 @@ export default {
     },
     methods: {
         openTab(e, newTab) {
-                var tabs = e.target.parentElement.getElementsByClassName('tab')
-                let curTab = [...tabs].find(tab => tab?.classList?.contains('tab-open') == true)
-                curTab?.classList?.remove('tab-open')
-                e?.target?.classList?.add('tab-open')
-                this.$refs['client'+this.uk]?.classList?.add('hide')
-                this.$refs['ca'+this.uk]?.classList?.add('hide')
-                this.$refs['contact'+this.uk]?.classList?.add('hide')
-                this.$refs[newTab+this.uk]?.classList?.remove('hide')
-                this.$refs[newTab+this.uk+'focus'].focus()
-            },
+            var tabs = e.target.parentElement.getElementsByClassName('tab')
+            let curTab = [...tabs].find(tab => tab?.classList?.contains('tab-open') == true)
+            curTab?.classList?.remove('tab-open')
+            e?.target?.classList?.add('tab-open')
+            this.$refs['client'+this.uk]?.classList?.add('hide')
+            this.$refs['ca'+this.uk]?.classList?.add('hide')
+            this.$refs['contact'+this.uk]?.classList?.add('hide')
+            this.$refs[newTab+this.uk]?.classList?.remove('hide')
+            this.$refs[newTab+this.uk+'focus'].focus()
+        },
         canceled() {
             // to toggle the hidden-tr visibility
             if (this.editing == true) this.$emit("editingCompleted")
@@ -219,15 +219,13 @@ export default {
     color:  #e7eaec;
     background-color: #2F4050;
 }
-
-
-    .head-tr {
-        display: block !important;
-    }
-    input, select {
-        width: 100%;
-    }
-    option {
-        text-transform: capitalize;
-    }
+.head-tr {
+    display: block !important;
+}
+input, select {
+    width: 100%;
+}
+option {
+    text-transform: capitalize;
+}
 </style>
