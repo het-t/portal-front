@@ -53,44 +53,46 @@
 
             <template #tbody>
                 <template v-for="(user, index) in users()" :key="user?.id">
-                    <tr 
-                        class="tr edit-user-tr"
-                        tabindex="0"
-                        @keyup.enter="editUser('row'+index, user.id, $event)"
-                        @click.prevent="editUser('row'+index, user.id, $event)"    
-                    >
-                        <td>
-                            {{user.firstName + ' ' + user.lastName}}
-                        </td>
-                        <td>
-                            {{user.email}}
-                        </td>
-                        <td>
-                            {{user.rights}}
-                        </td>
-                        <td>
-                            <dots-img
-                                @openMenu="menu($event, {userName: user.firstName + ' ' + user.lastName, userId: user.id, visibility: true})"
-                                @hideMenu="menu($event, {userName: user.firstName + ' ' + user.lastName, userId: user.id, visibility: false})" 
-                            ></dots-img>
-                        </td>
-                    </tr>
-                    <tr class="tr tr-hidden hide" :ref="('row'+index)">
-                       <td colspan="3" class="p0 m0">
-                            <component v-if="componentId?.[user.id]" 
-                                :is="componentId?.[user.id]"
-                                :editUserId="user.id"
-                                :uk="index"
-                                @editingCompleted="editUser('row'+index, user.id, $event)"
-                                class="user-create"
-                                :buttonsIndex=2    
-                            ></component>
+                    <template v-if="user.isActive == 1">
+                        <tr 
+                            class="tr edit-user-tr"
+                            tabindex="0"
+                            @keyup.enter="editUser('row'+index, user.id, $event)"
+                            @click.prevent="editUser('row'+index, user.id, $event)"    
+                        >
+                            <td>
+                                {{user.firstName + ' ' + user.lastName}}
+                            </td>
+                            <td>
+                                {{user.email}}
+                            </td>
+                            <td>
+                                {{user.rights}}
+                            </td>
+                            <td>
+                                <dots-img
+                                    @openMenu="menu($event, {userName: user.firstName + ' ' + user.lastName, userId: user.id, visibility: true})"
+                                    @hideMenu="menu($event, {userName: user.firstName + ' ' + user.lastName, userId: user.id, visibility: false})" 
+                                ></dots-img>
+                            </td>
+                        </tr>
+                        <tr class="tr tr-hidden hide" :ref="('row'+index)">
+                        <td colspan="3" class="p0 m0">
+                                <component v-if="componentId?.[user.id]" 
+                                    :is="componentId?.[user.id]"
+                                    :editUserId="user.id"
+                                    :uk="index"
+                                    @editingCompleted="editUser('row'+index, user.id, $event)"
+                                    class="user-create"
+                                    :buttonsIndex=2    
+                                ></component>
 
-                            <skeleton-form v-else
-                                :buttonsIndex=2    
-                            ></skeleton-form>
-                        </td>
-                    </tr>
+                                <skeleton-form v-else
+                                    :buttonsIndex=2    
+                                ></skeleton-form>
+                            </td>
+                        </tr>
+                    </template>
                 </template>
             </template>
             

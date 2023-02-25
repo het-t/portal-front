@@ -27,9 +27,15 @@
 
                             <div class="row mt8">
                                 <label :for="'task-coordinator'+uk" class="labels c1">co-ordinator</label>
-                                <vue-multiselect :id="'task-coordinator'+uk" v-model="taskCoordinator" placeholder="Select Coordinator" :options="allUsers" :custom-label="labelForCoordinator" track-by="id">
+                                <vue-multiselect class="options-list" :id="'task-coordinator'+uk" v-model="taskCoordinator" placeholder="Select Coordinator" :options="allUsers" :custom-label="labelForCoordinator" track-by="id">
                                     <template #noResult>
                                         Oops! No user found. Consider creating new user
+                                    </template>
+
+                                    <template v-slot:option="props">
+                                        <span class="p0 m0" style="height: 0 !important; width: 0 !important;" :class="props.option.isActive == 0 ? 'not-active' : ''">
+                                            {{props.option.firstName}} {{props.option.lastName}} ({{props.option.id}})
+                                        </span>
                                     </template>
                                 </vue-multiselect>
                             </div>
@@ -58,9 +64,15 @@
                                 <div ref="UsersExtra" style="display: inline;" v-show="popupVisible">
                                     <div class="row mt8">
                                         <label :for="'extraAssignTo'+uk" class="labels c1">Assign To</label>
-                                        <vue-multiselect :id="'extraAssignTo'+uk" v-model="popAssignTo" placeholder="Select user to assign" :options="allUsers" :custom-label="labelForCoordinator" track-by="id">
+                                        <vue-multiselect class="options-list" :id="'extraAssignTo'+uk" v-model="popAssignTo" placeholder="Select user to assign" :options="allUsers" :custom-label="labelForCoordinator" track-by="id">
                                             <template #noResult>
                                                 Oops! No user found. Consider creating new user
+                                            </template>
+
+                                            <template v-slot:option="props">
+                                                <span class="p0 m0" :class="props.option.isActive == 0 ? 'not-active' : ''">
+                                                    {{props.option.firstName}} {{props.option.lastName}} ({{props.option.id}})
+                                                </span>
                                             </template>
                                         </vue-multiselect>
                                     </div>
@@ -181,9 +193,15 @@
                                 </div>
 
                                 <div class="ml16">
-                                    <vue-multiselect v-model="task.assignedTo" :options="allUsers" :custom-label="labelForCoordinator" track-by="id" placeholder="Assigend To" class="sub-task-extra">
+                                    <vue-multiselect v-model="task.assignedTo" :options="allUsers" :custom-label="labelForCoordinator" track-by="id" placeholder="Assigend To" class="sub-task-extra options-list">
                                         <template #noResult>
                                             Oops! No user found. Consider creating new user
+                                        </template>
+
+                                        <template v-slot:option="props">
+                                            <span class="p0 m0" style="height: 0 !important; width: 0 !important;" :class="props.option.isActive == 0 ? 'not-active' : ''">
+                                                {{props.option.firstName}} {{props.option.lastName}} ({{props.option.id}})
+                                            </span>
                                         </template>
                                     </vue-multiselect>
                                 </div>

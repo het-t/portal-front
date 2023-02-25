@@ -36,3 +36,6 @@
 .multiselect__single {
     background-color: inherit !important;
 }
+.multiselect__element:has(span.not-active) {
+    display: none !important;
+}
