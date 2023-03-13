@@ -35,11 +35,11 @@
 }
 .dots-menu ul {
     list-style: none;
-    padding: 12px;
+    padding: 12px 4px;
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 2px;
 }
 .dots-menu {
     position: absolute;
@@ -56,9 +56,11 @@
     color: grey;
 }
 .dots-menu li {
+    margin: 0 12px;
     cursor: pointer;
     display: flex;
-    gap: 12px;
+    height: 36px;
+    gap: 8px;
     align-items: center;
 }
 .dots-menu .fa-2x {

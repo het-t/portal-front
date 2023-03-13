@@ -58,6 +58,13 @@
         </div>
 
         <div class="link-list">
+          <router-link :to="{name: 'settings'}" tabindex="-1" class="pt16 pb16 link">
+            <font-awesome-icon :icon="['fas', 'gear']" class="pa-icon ml24 mr24"></font-awesome-icon>
+            <span v-if="showLabels">Settings</span>
+          </router-link>
+        </div>
+
+        <div class="link-list">
           <router-link v-if="rightCheck('admin_panel') == true" :to="{name: 'admin_panel'}" tabindex="-1" class="pt16 pb16 link">
             <font-awesome-icon :icon="['fas', 'gear']" class="pa-icon ml24 mr24"></font-awesome-icon>
             <span v-if="showLabels">admin</span>
@@ -149,6 +156,7 @@ import rightCheck from '@/helpers/RightCheck'
     mounted() {
       if (window.outerWidth <= 768) {
         this.menuToggle()
+        this.$refs.menu.addEventListener('click', this.menuToggle);
       }
     },
     updated() {
@@ -167,7 +175,10 @@ import rightCheck from '@/helpers/RightCheck'
           }) 
         }
       } 
-    }
+    },
+    beforeUnmount() {
+      this.$refs.menu.removeEventListener('click', this.menuToggle)
+    },
   }
 </script>
 

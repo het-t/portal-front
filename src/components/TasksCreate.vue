@@ -165,7 +165,7 @@
                                     
                                     <p contentEditable="true"
                                         class="st-description"
-                                        :class="task.statusId == 5 ? 'done-st' : ''"
+                                        :class="task.statusId == 5 || task.statusId == 6 ? 'done-st' : ''"
                                         @input="updateSubTaskTitle(task, $event)"
                                     >{{ task.description }}</p>
                                     

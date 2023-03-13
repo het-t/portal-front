@@ -21,12 +21,10 @@ const actions = {
         const existingImg = getters['getProfilePic'](`${userId}_${width}x${height}`)
 
         return new Promise((resolve, reject) => {
-            console.log(getters['getProfilePic'](`${userId}_${width}x${height}`))
             if (userId == undefined) reject()
             else if (
                 existingImg == undefined 
             ) {
-                console.log
                 commit('setProfilePic', {
                     userId: `${userId}_${width}x${height}`, 
                     data: ''

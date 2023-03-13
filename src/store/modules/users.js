@@ -1,9 +1,5 @@
 import { users } from "@/api"
 
-//create user usersCount+1, users: {}, allUsers: [], usersData: as it is
-//edit user   usersCount as it is, users: {}, allUsers: [], usersData: deleted that user
-//delete user  usersCount-1  users:{} delete that user, allUsers:delete that user, usersData: delete that user
-
 const state = {
     usersCount: '', //no. of users for table pagination
     users: {},  //data of all visited users table pages 

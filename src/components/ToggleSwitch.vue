@@ -21,7 +21,7 @@ export default {
     name: 'ToggleSwitch',
     data() {
         return {
-            currentState: true //'true'
+            currentState: true 
         }
     },
     props: {
@@ -37,7 +37,7 @@ export default {
     methods: {
         toggleCheckbox() {
             this.currentState == true ? this.currentState = false : this.currentState = true
-            this.$emit('switchToggled', {[this.name]: this.currentState})
+            this.$emit('switchToggled', {'key': this.name, 'value': this.currentState})
         }
     },
     mounted() {

@@ -5,6 +5,12 @@
                 <template #noResult>
                     Oops! No user found. Consider creating new user
                 </template>
+
+                <template v-slot:option="props">
+                    <span class="p0 m0" style="height: 0 !important; width: 0 !important;" :class="props.option.isActive == 0 ? 'not-active' : ''">
+                        {{props.option.firstName}} {{props.option.lastName}} ({{props.option.id}})
+                    </span>
+                </template>
             </vue-multiselect>
 
             <date-picker

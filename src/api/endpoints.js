@@ -32,6 +32,19 @@ const endpoints = {
     admin: {
         createAdmin: '/u/api/orgs/admins/create-admin',
         createOrg: '/u/api/orgs/create-org'
+    },
+
+    settings: {
+        get: '/u/api/settings/',
+        waNotifications: {
+            create: '/u/api/settings/notifications/wa/create',
+            getOtp: '/u/api/settings/notifications/wa/',
+            verifyOtp: '/u/api/settings/notifications/wa/'
+        }
+    },
+
+    profile: {
+        getSettings: '/u/api/settings/'
     }
 }
 

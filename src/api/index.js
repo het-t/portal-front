@@ -59,6 +59,21 @@ const admin = {
     }
 }
 
+const settings = {
+    get: (args) => makeGetReq(endpoints.settings.get, args),
+    notifications: {
+        wa: {
+            create: (args) => makePostReq(endpoints.settings.waNotifications.create, args),
+            getOtp: (args) => makeGetReq(endpoints.settings.waNotifications.getOtp, args),
+            verifyOtp: (args) => makePostReq(endpoints.settings.waNotifications.verifyOtp, args)            
+        }
+    }
+}
+
+const profile = {
+    setProfilePic: (args) => makePostReq(endpoints.profile.setProfilePic, args)
+}
+
 const getAllRights = () => makeGetReq(endpoints.getAllRights)
 
 const getUserRights = () => makeGetReq(endpoints.getUserRights)
@@ -73,5 +88,7 @@ export {
     myTasks,
     tasks,
     tasksMaster,
-    subTasksMaster
+    subTasksMaster,
+    settings,
+    profile
 }

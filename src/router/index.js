@@ -217,21 +217,11 @@ let routesNew = [
       {
         path: 'settings',
         name: 'settings',
-        component: () => import('@/components/TheSetting.vue'),
+        component: () => import('@/views/SettingView.vue'),
         meta: {
           breadcrumb: settingBreadcrumb,
-          protected: true
         }
       },
-      // {
-      //   path: 'settings',
-      //   // name: 'profile',
-      //   component: () => import('@/components/TheSetting.vue'),
-      //   meta: {
-      //     breadcrumb: settingBreadcrumb
-      //   }
-      // },
-      ////////////////////////////
       {
         path: 'users',
         component: () => import('@/views/UsersView.vue'),
@@ -405,7 +395,6 @@ const router = createRouter({
 router.beforeEach((to)=>{
   if (to?.meta?.protected == true) {
     const userRights = store.getters['rights/getUserRights']
-    console.log(userRights, to.name)
 
     if (!userRights.length) {
       getUserRights()

@@ -24,6 +24,7 @@
 </script>
 
 <style scoped>
+@import "../assets/stylesheet/skeleton-card.css";
 .table-head {
     width: 100px;
     height: 24px;
@@ -40,17 +41,5 @@ tr {
     width: 24px;
     height: 24px;
     border-radius: 100%;
-}
-
-@keyframes pulse-bg {
-  0% {
-    background-color: #ccc;
-  }
-  50% {
-    background-color: #c2c2c2;
-  }
-  100% {
-    background-color: #ccc;
-  }
 }
 </style>

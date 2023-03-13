@@ -28,7 +28,7 @@
             </div>
 
             <div id="setting-i2">           
-                <the-setting>
+                <the-setting :pageId="3">
                     <template #table-head>
                         <div style="border-bottom: solid 1px #e0e0e0;">
                             <h2 class="mt8 mb8 mr16 ml16" style="font-weight: 300;">Settings</h2>
@@ -41,14 +41,13 @@
 </template>
 
 <script>
-import TheSetting from './TheSetting.vue'
 import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css';
 import swal from 'sweetalert'
 import axios from 'axios';
-
+import TheSetting from './TheSetting.vue';
     export default {
-        components: { TheSetting, Cropper },
+        components: { Cropper, TheSetting },
         name: 'TheProfile',
         data() {
             return {
