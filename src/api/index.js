@@ -65,7 +65,9 @@ const settings = {
         wa: {
             create: (args) => makePostReq(endpoints.settings.waNotifications.create, args),
             getOtp: (args) => makeGetReq(endpoints.settings.waNotifications.getOtp, args),
-            verifyOtp: (args) => makePostReq(endpoints.settings.waNotifications.verifyOtp, args)            
+            verifyOtp: (args) => makePostReq(endpoints.settings.waNotifications.verifyOtp, args),
+            get: () => makeGetReq(endpoints.settings.waNotifications.getHistory),
+            consent: (args) => makePostReq(endpoints.settings.waNotifications.consent, args),
         }
     }
 }

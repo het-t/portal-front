@@ -43,6 +43,10 @@ import { faListCheck,
         faArrowUpRightFromSquare
     } from '@fortawesome/free-solid-svg-icons'
 
+import {
+    faThumbsUp,
+    faThumbsDown
+} from '@fortawesome/free-regular-svg-icons'
 
 library.add(
     faGear,
@@ -70,7 +74,9 @@ library.add(
     faSlash,
     faHand,
     faUserCheck,
-    faArrowUpRightFromSquare
+    faArrowUpRightFromSquare,
+    faThumbsUp,
+    faThumbsDown
 )
 
 let app = createApp(App)

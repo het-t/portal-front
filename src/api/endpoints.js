@@ -39,7 +39,9 @@ const endpoints = {
         waNotifications: {
             create: '/u/api/settings/notifications/wa/create',
             getOtp: '/u/api/settings/notifications/wa/',
-            verifyOtp: '/u/api/settings/notifications/wa/'
+            verifyOtp: '/u/api/settings/notifications/wa/',
+            getHistory: '/u/api/settings/notifications/wa/history',
+            consent: '/u/api/settings/notifications/wa/consent',
         }
     },
 

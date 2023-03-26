@@ -104,9 +104,7 @@ import { mapGetters } from 'vuex'
             this.rightsList = this.$store.getters['rights/getAllRightsList']    //action invoked in rolesview.js
             
             const roleDataStore = this.$store.getters['roles/rolesDataGet'](this.editRoleId)
-            
-            console.log("editing", roleDataStore)
-            
+                        
             if (roleDataStore != undefined && roleDataStore != '') {
                 console.log("coming inside", roleDataStore)
                 this.roleName = roleDataStore[0].roleName
