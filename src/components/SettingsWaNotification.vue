@@ -7,6 +7,11 @@
             </button>
 
             <div v-else>
+                <div style="display: flex;" class="mt8">
+                    <input @input="text.user = ''; text.client = '';" v-model="custom" style="cursor: pointer; width: auto; margin: 0 8px 0 0;" type="checkbox" name="custom-rule" id="custom-rule-check">
+                    <label for="custom-rule-check">Custom rule</label>
+                </div>
+
                 <div v-if="!custom" class="ntf-grid">
                     <label for="user">User</label>
                     <select v-model="text.user" name="user" id="user">
@@ -22,16 +27,10 @@
                         <option value="None">None</option>
                     </select>
                 </div>
-                
-                <div style="display: flex;" class="mt8 mb8">
-                    <input @input="text.user = ''; text.client = '';" v-model="custom" style="cursor: pointer; width: auto; margin: 0 8px 0 0;" type="checkbox" name="custom-rule" id="custom-rule-check">
-                    <label for="custom-rule-check">Custom rule</label>
-                </div>
 
-                <div class="autocomplete" v-if="custom">
+                <div class="autocomplete mt16" v-if="custom">
                     <label for="ntf-rule-user-wa">User Rule</label>
-                    <span></span>
-                    <textarea placeholder="'\' for suggestions" v-model="text.user" @input="handleInput($event, 'user')" name="ntf-rule-user-wa" id="ntf-rule-user-wa" cols="30" rows="2"></textarea>
+                    <textarea class="mt8" placeholder="'\' for suggestions" v-model="text.user" @input="handleInput($event, 'user')" name="ntf-rule-user-wa" id="ntf-rule-user-wa" cols="30" rows="2"></textarea>
                     <div v-if="showSuggestions.user" class="suggestions">
                         <div v-for="(suggestion, index) in suggestions.user" :key="index" @click="selectSuggestion(suggestion, 'user')">
                             {{ suggestion }}
@@ -39,10 +38,9 @@
                     </div>
                 </div>
 
-                <div class="autocomplete mt8" v-if="custom">
+                <div class="autocomplete mt16" v-if="custom">
                     <label for="ntf-rule-client-wa">Client Rule</label>
-                    <span></span>
-                    <textarea placeholder="'\' for suggestions" v-model="text.client" @input="handleInput($event, 'client')" name="ntf-rule-client-wa" id="ntf-rule-client-wa" cols="30" rows="2"></textarea>
+                    <textarea class="mt8" placeholder="'\' for suggestions" v-model="text.client" @input="handleInput($event, 'client')" name="ntf-rule-client-wa" id="ntf-rule-client-wa" cols="30" rows="2"></textarea>
                     <div v-if="showSuggestions.client" class="suggestions">
                         <div v-for="(suggestion, index) in suggestions.client" :key="index" @click="selectSuggestion(suggestion, 'client')">
                             {{ suggestion }}
@@ -50,10 +48,20 @@
                     </div>
                 </div>
 
-                <div class="ntf-grid">
+                <span style="display: flex; justify-content: center; text-align: center; margin: 8px 0; width: 100%; max-width: 500px;" class="mt8 mb8">OR</span>
+
+                <div class="mt8 mb8">
+                    <input @change="ntfFile = $event.target.files[0]" type="file" accept=".xlsx, .xls, .xlsm" name="ntf-file" id="ntf-file">
+                </div>
+
+                <div class="mt32" style="display: flex; flex-direction: column;">
                     <label for="ntf-content">message</label>
-                    <span></span>
-                    <textarea placeholder="Include your organization's name" v-model="ntfContent" name="ntf-content" id="ntf-content" cols="60" rows="10"></textarea>
+                    <textarea class="mt8" placeholder="Include your organization's name" v-model="ntfContent" name="ntf-content" id="ntf-content" cols="60" rows="10"></textarea>
+                </div>
+
+                <div class="mt16" style="display: flex;">
+                    <input v-model="consent" style="width: auto; margin-right: 8px; cursor: pointer;" type="checkbox" name="consent" id="consent">
+                    <label for="consent">Send without asking for consent</label>
                 </div>
 
                 <div class="mt16">
@@ -63,7 +71,7 @@
             </div>
         </div>
         
-        <div class="ntf-history-table mt12">
+        <div v-if="!ntfPopupVisible" class="ntf-history-table mt12">
             <table-main class="tr" style="max-height: 250px; overflow: auto;">
                 <template v-slot:thead>   
                     <tr>
@@ -102,6 +110,7 @@
 <script>
 import { settings } from '@/api/index.js'
 import TableMain from './TableMain.vue'
+import axios from 'axios'
 
 export default {
     name: 'SettingsWaNotification',
@@ -111,12 +120,14 @@ export default {
         return {
             ntfPopupVisible: false,
             ntfContent: '',
+            consent: false,
             ntfRule: {
                 userrole: 'none',
                 user: [],
                 clientType: 'none'
             },
             custom: false,
+            ntfFile: '',
             options: {
                 user: [
                     'UserName', 
@@ -161,12 +172,22 @@ export default {
     },
     methods: {
         sendWaNtf() {
-            settings.notifications.wa.create({
-                content: this.ntfContent,
-                userRule: (this.text.user.trim() == '') ? ' 1 = 0 ' : this.text.user,
-                clientRule: (this.text.client.trim() == '') ? ' 1 = 0 ' : this.text.client,
-                custom: this.custom,
-            })
+            let formData = new FormData();
+            formData.append('userRule', (this.text.user.trim() == '') ? ' 1 = 0 ' : this.text.user)
+            formData.append('clientRule', (this.text.client.trim() == '') ? ' 1 = 0 ' : this.text.client)
+            formData.append('content', this.ntfContent)
+            formData.append('custom', this.custom)
+            formData.append('consent', this.consent)
+            formData.append('file', this.ntfFile)
+            
+            axios.post('/u/api/settings/notifications/wa/create', formData, 
+                {
+                    withCredentials: true,
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                }
+            )
             .then(() => {
                 this.ntfContent = ''
                 this.ntfRule.userrole = 'none'
@@ -174,6 +195,7 @@ export default {
                 this.text.user = ''
                 this.text.client = ''
                 this.custom = false
+                this.consent = false
                 this.$toast.success('notifications will be sent soon')
             })
             .catch(err => {
@@ -251,15 +273,24 @@ export default {
 .ntf-grid {
     width: auto;
     display: grid;
-    grid-template-columns: 150px 200px;
+    grid-template-columns: 150px minmax(100px, 350px);
     align-items: center;
 }
-#ntf-condition,
-#ntf-content {
+#ntf-condition {
     grid-column-start: 1;
     grid-column-end: 3;
 }
-
+#ntf-content {
+    width: 100%;
+    max-width: 500px;
+}
+#ntf-file {
+    width: 100%;
+    max-width: 500px;
+}
+#file-upload-button {
+    display: none;
+}
 .ntf-grid label,
 .ntf-grid input,
 .ntf-grid select,
@@ -272,7 +303,7 @@ export default {
 }
 .autocomplete textarea {
   width: 100%;
-  max-width: 400px;
+  max-width: 500px;
   border: 1px solid #ddd;
   padding: 8px;
 }
