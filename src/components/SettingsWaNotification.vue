@@ -298,6 +298,11 @@ export default {
     margin-top: 8px;
     width: 100% !important; 
 }
+
+input, textarea, select {
+    border-radius: 3px;
+}
+
 .autocomplete {
   position: relative;
 }

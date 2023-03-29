@@ -29,7 +29,7 @@
                             </div>
                         </div>
 
-                        <div v-if="settingObj.meta.component">
+                        <div v-if="settingObj.meta.component" style="border-left: solid 6px #e5e5e5;">
                             <component :is="settingObj.meta.component" :settingObj="settingObj"></component>
                         </div>
                 </template>
