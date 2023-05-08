@@ -10,8 +10,32 @@
                         ></font-awesome-icon>
                         Delete
                     </li>
+                    <li @click.prevent="changeClientTag(selectedClientId, 1)">
+                        <font-awesome-icon
+                            class="menu-icon"
+                            :icon="['fas', 'check']"
+                        ></font-awesome-icon>
+                        Confirmed
+                    </li>
+                    <li @click.prevent="changeClientTag(selectedClientId, 2)">
+                        <font-awesome-icon
+                            class="menu-icon"
+                            :icon="['fas', 'hand-holding-dollar']"
+                        ></font-awesome-icon>
+                        Lead
+                    </li>
                 </template>
             </dots-menu>
+        </div>
+
+        <div class="clientTag">
+            <div @click.prevent="clientStatus(1)" class="tag-container" :class="filterFor[4] === 1 ? 'active-tag' : ''">
+                <span>Confirmed</span>
+            </div>
+
+            <div @click.prevent="clientStatus(2)" class="tag-container" :class="filterFor[4] === 2 ? 'active-tag' : ''">
+                <span>Leads</span>
+            </div>
         </div>
 
         <table-main>
@@ -171,12 +195,17 @@
 
                 i:0, j:0, k:0, l:0, p:0,
 
-                filterFor: ['', '', '', ''],
+                filterFor: ['', '', '', '', 1],
 
                 componentId: {}
             }
         },
         methods: {
+            clientStatus(status) {
+                this.$store.commit('clients/setClientStatus', status)
+                this.filterFor[4] = status
+                this.sort()
+            },
             editClient(rowIndex, clientId) {
                 const show = this.$refs[rowIndex][0].classList.contains('hide')
                 if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
@@ -202,6 +231,16 @@
                     context: this
                 })
             },
+            changeClientTag(clientId, tag) {
+                clients.tag({
+                    id: clientId,
+                    tagId: tag
+                })
+                .then(() => {
+                    this.$store.commit('clients/refetch')
+                })
+                .catch(err => console.log(err))
+            },
             sort() {
                 this.$store.commit('clients/paginate')
             }
@@ -219,13 +258,9 @@
     }
     .tr, .table-heading {
         padding: 0;
-        /* display: grid; */
         align-items: initial;
-        /* grid-template-columns: 1fr 1fr 1fr 2fr 2fr 36px; */
     }
     .tr-hidden {
-        /* grid-template-columns: auto;
-        grid-column: 1/-1; */
         margin-bottom: 58px;
     }
     td {
@@ -239,5 +274,21 @@
     }
     thead {
         align-items: center;
+    }
+    .clientTag {
+        display: flex;
+    }
+    .clientTag .tag-container {
+        font-size: 16px;
+        padding: 18px 36px;
+        color: #676A6C;
+        cursor: pointer;
+    }
+    .active-tag {
+        font-weight: 500;
+        border: solid 1px #e7eaec;
+        border-top-right-radius: 12px;
+        border-top-left-radius: 12px;
+        background-color: white;
     }
 </style>

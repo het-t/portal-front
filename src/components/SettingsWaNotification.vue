@@ -1,6 +1,11 @@
 <template>
     <div v-if="settingObj.setting == 2" style="height: fit-content;" class="ml16">
         <div v-if="settingObj.value == 'true'" class="mt16">
+            <button v-if="ntfPopupVisible == false" class="button neutral mr8" @click="getQr">
+                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                <span class="ml8">authenticate</span>
+            </button>
+
             <button v-if="ntfPopupVisible == false" class="button neutral" @click="ntfPopupVisible = true">
                 <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
                 <span class="ml8">new notification</span>
@@ -111,6 +116,7 @@
 import { settings } from '@/api/index.js'
 import TableMain from './TableMain.vue'
 import axios from 'axios'
+import swal from 'sweetalert'
 
 export default {
     name: 'SettingsWaNotification',
@@ -118,6 +124,7 @@ export default {
     props: ['settingObj'],
     data() {
         return {
+            waQr: '',
             ntfPopupVisible: false,
             ntfContent: '',
             consent: false,
@@ -136,6 +143,7 @@ export default {
                 client: [
                     'ClientName', 
                     'ClientType', 
+                    'ClientStatus'
                 ]
             },
             text: {
@@ -167,10 +175,54 @@ export default {
             return this.$store.getters['users/allUsers'].filter(el => el.isActive == 1).map(el => el.email)
         },
         ClientName() {
-            return this.$store.getters['clients/allClients'].map(el => el.name)
+            return this.$store.getters['clients/clientsGetConfirmed'].map(el => el.name)
+        },
+        ClientStatus() {
+            return ['Confirmed', 'Lead']
         }
     },
     methods: {
+        getQr(e) {
+            if (e.target.tagName === 'SPAN') e.target.parentElement.disabled = true
+            else e.target.disabled = true
+
+            const canvas = document.createElement('canvas')
+            const context = canvas.getContext('2d')
+
+            canvas.width = 300;
+            canvas.height = 300;
+
+            context.fillStyle = '#000';
+            context.font = '18px Open Sans';
+            context.textAlign = 'center';
+            context.fillText('Wait while QR code is loading', canvas.width / 2, canvas.height / 2);
+
+            this.waQr = canvas
+            swal({
+                content: this.waQr,
+            })
+
+            settings.notifications.wa.getQr()
+            .then((res) => {
+                console.log(this.waQr)
+
+                let image = new Image()
+                image.src = res.data
+                this.waQr = image
+
+                return swal({
+                    content: this.waQr,
+                })
+            })
+            .catch(() => {
+                this.$toast.error(`Oops! We can't perform this action right now`)
+                this.waQr = ''
+            })
+            .finally(() => {
+                if (e.target.tagName === 'SPAN') e.target.parentElement.disabled = false
+                else e.target.disabled = false
+            })
+        },
         sendWaNtf() {
             let formData = new FormData();
             formData.append('userRule', (this.text.user.trim() == '') ? ' 1 = 0 ' : this.text.user)
@@ -196,6 +248,7 @@ export default {
                 this.text.client = ''
                 this.custom = false
                 this.consent = false
+                this.ntfFile = ''
                 this.$toast.success('notifications will be sent soon')
             })
             .catch(err => {
@@ -251,8 +304,9 @@ export default {
     },
     created() {
         this.$store.dispatch('users/usersAll')
-        this.$store.dispatch('clients/clientsAll')
-
+        this.$store.dispatch('clients/clientsGetConfirmed')
+        this.$store.dispatch('clients/clientsGetLead')
+        
         this.getHistory()
     }
 }

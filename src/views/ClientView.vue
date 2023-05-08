@@ -16,7 +16,7 @@
             Promise.all([
 
                 //get client types if not available in store
-                this.$store.dispatch('clients/getTypes')
+                this.$store.dispatch('clients/getTypes'),
 
             ])
             .then(() => {

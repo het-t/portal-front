@@ -16,7 +16,7 @@
 
             Promise.all([
                 //get all clients if not in store
-                this.$store.dispatch('clients/clientsAll'),
+                this.$store.dispatch('clients/clientsGetConfirmed'),
                 
                 //get all tasksMaster if not in store
                 this.$store.dispatch('tasks/tasksMasterListSet'),

@@ -106,7 +106,6 @@ import { mapGetters } from 'vuex'
             const roleDataStore = this.$store.getters['roles/rolesDataGet'](this.editRoleId)
                         
             if (roleDataStore != undefined && roleDataStore != '') {
-                console.log("coming inside", roleDataStore)
                 this.roleName = roleDataStore[0].roleName
                 this.roleRights = roleDataStore.map(o => o.rightId)
             }

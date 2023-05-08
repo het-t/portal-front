@@ -7,7 +7,8 @@ const clients = {
     create: (args) => makeGetReq(endpoints.createClient, args),
     getTypes: () => makeGetReq(endpoints.getClientsMasterTypes),
     edit: (args) => makeGetReq(endpoints.editClient, args),
-    delete: (args) => makePostReq(endpoints.deleteClient, args)
+    delete: (args) => makePostReq(endpoints.deleteClient, args),
+    tag: (args) => makePostReq(endpoints.changeClientTag, args)
 }
 
 const users = {
@@ -63,6 +64,7 @@ const settings = {
     get: (args) => makeGetReq(endpoints.settings.get, args),
     notifications: {
         wa: {
+            getQr: () => makeGetReq(endpoints.settings.waNotifications.getQr),
             create: (args) => makePostReq(endpoints.settings.waNotifications.create, args),
             getOtp: (args) => makeGetReq(endpoints.settings.waNotifications.getOtp, args),
             verifyOtp: (args) => makePostReq(endpoints.settings.waNotifications.verifyOtp, args),
@@ -92,5 +94,5 @@ export {
     tasksMaster,
     subTasksMaster,
     settings,
-    profile
+    profile,
 }

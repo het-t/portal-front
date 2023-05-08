@@ -4,25 +4,29 @@ const state = {
     clientTypes: [],    //list of client's types
     clients: {},        //list of all data of visited pages of clients table
     clientsCount: '',
-    allClients: [],     //list of all clients
+    clientsConfirmed: [],     //list of all clients
     sortBy: 'id',
     sortOrder: 0,    //0-desc, 1-asc
     currentPage: '',
-    paginationKey: 0
+    paginationKey: 0,
+    clientCreatingStatus: 2
 }
 
 const getters = {
+    getClientStatus(state) {
+        return state.clientCreatingStatus
+    },
     getAllTypesList(state) {
         return state.clientTypes
     },
     clientsListGet: (state) => (index, sortBy, sortOrder, filters) => {
-        return state.clients[`${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}_${filters[3]}`]
+        return state.clients[`${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}_${filters[3]}_${filters[4]}`]
     },
     clientsCountGet(state) {
         return state.clientsCount
     },
-    allClients(state) {
-        return state.allClients
+    clientsGetConfirmed(state) {
+        return state.clientsConfirmed
     },
     sortGet(state) {
         return {
@@ -42,10 +46,13 @@ const mutations = {
     RESET_STATE(state) {
         state.clients = {}
         state.clientsCount = ''
-        state.allClients = []
+        state.clientsConfirmed = []
+    },
+    setClientStatus(state, status) {
+        state.clientCreatingStatus = status
     },
     deleteClient(state, {clientId, filters}) {
-        const path = state.currentPage+'_'+state.sortBy+'_'+state.sortOrder+'_'+filters[0]+'_'+filters[1]+'_'+filters[2]+'_'+filters[3]
+        const path = state.currentPage+'_'+state.sortBy+'_'+state.sortOrder+'_'+filters[0]+'_'+filters[1]+'_'+filters[2]+'_'+filters[3]+'_'+filters[4]
         state.clients[path].splice(state.clients[path].findIndex(client => client.id == clientId), 1)
     },
     setAllTypesList(state, typesList) {
@@ -56,14 +63,14 @@ const mutations = {
     },
     clientsList(state, {index, sortBy, sortOrder, filters, data}) {
         Object.defineProperty(state.clients, 
-            `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}_${filters[3]}`, {
+            `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}_${filters[3]}_${filters[4]}`, {
             value: data,
             writable: true,
             enumerable: true,
         })
     },
-    clientsAll(state, clientsList) {
-        state.allClients = clientsList
+    clientsConfirmed(state, clientsList) {
+        state.clientsConfirmed = clientsList
     },
     sortSet(state, {sortBy, sortOrder}) {
         state.sortBy = sortBy
@@ -75,7 +82,7 @@ const mutations = {
     refetch(state) {
         state.clientsCount = undefined
         state.clients = {}
-        state.allClients = []
+        state.clientsConfirmed = []
 
         if (state.paginationKey == 0) state.paginationKey = 1
         else if (state.paginationKey == 1) state.paginationKey = 0
@@ -83,7 +90,7 @@ const mutations = {
     paginate(state) {
         if (state.paginationKey == 0) state.paginationKey = 1
         else if (state.paginationKey == 1) state.paginationKey = 0  
-    }
+    },
 }
 
 const actions = {
@@ -102,16 +109,16 @@ const actions = {
             else resolve()
         })
     },
-    clientsAll({commit, getters}) {
+    clientsGetConfirmed({commit, getters}) {
         return new Promise((resolve, reject) => {
-            if (getters['allClients']?.length == 0) {
+            if (getters['clientsGetConfirmed']?.length == 0) {
                 clients.get({
                     from: null,
                     recordsPerPage: null,
-                    filters: ['', '', '', '']
+                    filters: ['', '', '', '', 1]
                 })
                 .then((res) => {
-                    commit('clientsAll', res?.data?.clientsList)
+                    commit('clientsConfirmed', res?.data?.clientsList)
                     resolve()
                 })
                 .catch(err => {

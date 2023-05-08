@@ -98,7 +98,7 @@ export default {
             conName: '',
             conEmail: '',
             conPhone: '',
-            
+
             editing: false,
             editClientId: '',
 
@@ -129,6 +129,7 @@ export default {
         },
         proceed() {
             this.disabled = true
+
             const args = {
                 clientId: this.editClientId,
                 clientName: this.clientName,
@@ -140,14 +141,17 @@ export default {
                 caPan: this.caPan,
                 conName: this.conName,
                 conEmail: this.conEmail,
-                conPhone: this.conPhone
+                conPhone: this.conPhone,
+                status: this.$store.getters['clients/getClientStatus']
             }
 
             if (args.clientId != undefined && args.clientId != '') {  
                 useEditSwal({
                     text: args.clientName,
                     mutationFnName: 'clients/refetch',
-                    promise: clients.edit(args),
+                    promise: Promise.all([
+                        clients.edit(args),
+                    ]),
                     context: this,
                 })
                     
@@ -156,7 +160,9 @@ export default {
                 useCreateSwal({
                     text: args.clientName,
                     url: '/u/clients/list',
-                    promise: clients.create(args),
+                    promise: Promise.all([ 
+                        clients.create(args),
+                    ]),
                     mutationFnName: 'clients/RESET_STATE',
                     mutationArgs: {},
                     context: this
@@ -197,7 +203,6 @@ export default {
             this.conName = conName
             this.conEmail = conEmail
             this.conPhone = conPhone
-            
         }
     }
 }

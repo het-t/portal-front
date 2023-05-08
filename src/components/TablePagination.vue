@@ -106,7 +106,6 @@
                                 data: res.data[this.tableName+'List']
                             })   
                         }
-                        console.log(res.data[this.tableName+'List'])
                         this.$emit("tableData", res.data[this.tableName+'List'])                
                     })
                 } 

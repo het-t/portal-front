@@ -1,7 +1,6 @@
 <template>
     <div>
         <div class="card">
-
             <div class="table-tabs">
                 <button @click="openTab($event, 'details')" :ref='"defaultTab"+uk' class="button neutral tab">details</button>
                 <button @click="openTab($event, 'logs')" class="button neutral tab">logs</button>
@@ -18,7 +17,7 @@
                             
                             <div class="row mt8">
                                 <label :for="'task-client'+uk" class="labels c1">client</label>
-                                <vue-multiselect :id="'task-client'+uk" v-model="taskClient" :options="allClients" :custom-label="labelForClient" track-by="id" placeholder="Select Client">
+                                <vue-multiselect :id="'task-client'+uk" v-model="taskClient" :options="clientsGetConfirmed" :custom-label="labelForClient" track-by="id" placeholder="Select Client">
                                     <template #noResult>
                                         Oops! No client found. Consider creating new client
                                     </template>
@@ -27,7 +26,7 @@
 
                             <div class="row mt8">
                                 <label :for="'task-coordinator'+uk" class="labels c1">co-ordinator</label>
-                                <vue-multiselect class="options-list" :id="'task-coordinator'+uk" v-model="taskCoordinator" placeholder="Select Coordinator" :options="allUsers" :custom-label="labelForCoordinator" track-by="id">
+                                <vue-multiselect multiple class="options-list multiselect__tag_bg" :id="'task-coordinator'+uk" v-model="taskCoordinator" placeholder="Select Coordinator" :options="allUsers" :custom-label="labelForCoordinator" track-by="id">
                                     <template #noResult>
                                         Oops! No user found. Consider creating new user
                                     </template>
@@ -64,7 +63,16 @@
                                 <div ref="UsersExtra" style="display: inline;" v-show="popupVisible">
                                     <div class="row mt8">
                                         <label :for="'extraAssignTo'+uk" class="labels c1">Assign To</label>
-                                        <vue-multiselect class="options-list" :id="'extraAssignTo'+uk" v-model="popAssignTo" placeholder="Select user to assign" :options="allUsers" :custom-label="labelForCoordinator" track-by="id">
+                                        <vue-multiselect 
+                                            multiple 
+                                            class="options-list multiselect__tag_bg" 
+                                            :id="'extraAssignTo'+uk" 
+                                            v-model="popAssignTo" 
+                                            placeholder="Select user to assign" 
+                                            :options="allUsers" 
+                                            :custom-label="labelForCoordinator" 
+                                            track-by="id"
+                                        >
                                             <template #noResult>
                                                 Oops! No user found. Consider creating new user
                                             </template>
@@ -193,7 +201,15 @@
                                 </div>
 
                                 <div class="ml16">
-                                    <vue-multiselect v-model="task.assignedTo" :options="allUsers" :custom-label="labelForCoordinator" track-by="id" placeholder="Assigend To" class="sub-task-extra options-list">
+                                    <vue-multiselect 
+                                        multiple 
+                                        v-model="task.assignedTo" 
+                                        :options="allUsers" 
+                                        :custom-label="labelForCoordinator" 
+                                        track-by="id" 
+                                        placeholder="Assigend To" 
+                                        class="sub-task-extra options-list multiselect__tag_bg"
+                                    >
                                         <template #noResult>
                                             Oops! No user found. Consider creating new user
                                         </template>
@@ -278,12 +294,12 @@
                 taskMasterId: '',
                 repeat: false,
                 newSubTask: '',
-                // taskStatus: '',
+
                 taskTitle: '',
                 taskDescription: '',
                 taskClient: '',
                 taskCost: '',
-                taskCoordinator: '',
+                taskCoordinator: [],
                 save: false,
                 taskRepeat: '',
                 taskRepeatOn: '',
@@ -296,7 +312,7 @@
                 show: -1,
 
                 popupVisible: false,
-                popAssignTo: '',
+                popAssignTo: [],
                 popComments: '',
                 popCost: '',
                 popStatusId: '',
@@ -314,7 +330,7 @@
                 'allUsers'
             ]),
             ...mapGetters('clients', [
-                'allClients'
+                'clientsGetConfirmed'
             ]),
         },
         watch: {
@@ -384,7 +400,7 @@
                     unqId: this.unqId,
                     description: this.newSubTask,
                     statusId: 2,
-                    assignedTo: '',
+                    assignedTo: [],
                     comments: '',
                     cost: '',
                 })
@@ -425,14 +441,22 @@
                     title,
                     description,
                     cost,
-                    coordinatorId,
                     clientId,
                 } = data
-                const clientData = this.allClients.find(client => client.id == clientId)
+
+                const coordinatorIds = JSON.parse(data.coordinatorIds)
+
+                const clientData = this.clientsGetConfirmed.find(client => client.id == clientId)
                 this.taskTitle = title
                 this.taskDescription = description
                 this.taskCost = cost
-                this.taskCoordinator = this.allUsers.find(user => user.id == coordinatorId)
+                
+                if(coordinatorIds?.[0] !== null) {
+                    this.taskCoordinator = coordinatorIds?.map((coordinatorId) => {
+                        return this.allUsers.find(user => user.id == coordinatorId)
+                    })
+                }
+
                 this.taskClient = clientData
                 this.taskMasterId = this.tasksMasterListGet.find(task => task.id == taskMasterId)
                 this.clientContact = clientData
@@ -441,10 +465,23 @@
                 this.disabled = true
 
                 this.subTasks?.map((subTask) => {
-                    if (subTask.assignedTo?.id)
-                    subTask.assignedTo = subTask.assignedTo?.id
+                    if(subTask.assignedTo?.length > 0) {
+                        subTask.assignedTo = subTask.assignedTo.map((user) => {
+                            if (user?.id) return user.id
+                            else return user
+                        })
+                    }
                 })
 
+                this.taskCoordinator = 
+                    this.taskCoordinator?.length > 0 ?
+                    
+                    this.taskCoordinator?.map((userObj) => {
+                        if (userObj?.id) return userObj.id
+                    })
+                    :
+                    []
+                
                 let args = {
                     saved: new Number(this.save),
                     taskId: this.editTaskId,
@@ -453,14 +490,14 @@
                     description: this.taskDescription,
                     cost: this.taskCost,
                     clientId: this.taskClient,
-                    coordinatorId: this.taskCoordinator,
+                    coordinatorIds: JSON.stringify(this.taskCoordinator),
                     subTasks: JSON.stringify(this.subTasks),
                     removedSubTasks: JSON.stringify(this.removedSubTasksId),
                 }
 
                 let p
 
-                if (this.subTasks?.length == 0 && this.popAssignTo == '' && this.popComments == '' && this.popCost == '' && this.popStatusId == '') {
+                if (this.subTasks?.length == 0 && this.popAssignTo.length === 0 && this.popComments == '' && this.popCost == '' && this.popStatusId == '') {
                     this.popupVisible = true
 
                     p = swal({
@@ -471,7 +508,9 @@
                         if (value == null) throw null
                         else {
                             return {
-                                assignedTo: this.popAssignTo?.id,
+                                assignedTo: this.popAssignTo.map(user => {
+                                    if(user?.id) return user.id
+                                }),
                                 cost: this.popCost,
                                 comments: this.popComments,
                                 statusId: this.popStatusId
@@ -490,7 +529,9 @@
                     })
                 }
                 else if (this.subTasks?.length == 1 && this.subTasks[0]?.description == '_#_*&^') {
-                    this.subTasks[0].assignedTo = this.popAssignTo ?.id 
+                    this.subTasks[0].assignedTo = this.popAssignTo.map((user) => {
+                        if(user?.id) return user.id
+                    })
                     this.subTasks[0].comments = this.popComments
                     this.subTasks[0].statusId = this.popStatusId || 2
                     this.subTasks[0].cost = this.popCost
@@ -501,10 +542,7 @@
                 else {
                     p = Promise.resolve()
                 }
-
-                if (args.coordinatorId?.id) {
-                    args.coordinatorId = args.coordinatorId?.id
-                }
+                
                 if (args.clientId?.id) {
                     args.clientId = args.clientId?.id
                 }
@@ -513,6 +551,9 @@
                 }
 
                 p.then(() => {
+                    // let args = args
+                    // args.subTasks = subTasksRaw
+
                     if (this.editing == true ) {
                         useEditSwal({
                             text: args.title,
@@ -544,16 +585,14 @@
             }
         },
         created() {
-            ////////////////////////////////////////////////////
-                //get all clients if not in store
-                this.$store.dispatch('clients/clientsAll'),
-                
-                //get all tasksMaster if not in store
-                this.$store.dispatch('tasks/tasksMasterListSet'),
-                
-                //get all users if not in store 
-                this.$store.dispatch('users/usersAll')
-            ////////////////////////////////////////////////////
+            //get all clients if not in store
+            this.$store.dispatch('clients/clientsGetConfirmed'),
+            
+            //get all tasksMaster if not in store
+            this.$store.dispatch('tasks/tasksMasterListSet'),
+            
+            //get all users if not in store 
+            this.$store.dispatch('users/usersAll')
 
             if (window.history.state.taskId != undefined){ 
                 this.editing = true  
@@ -567,16 +606,21 @@
                 const taskData = (this['taskData'])(this.editTaskId)?.taskData?.[0]
                 const taskLogs = (this['taskData'])(this.editTaskId)?.taskLogs
                 const subTasksData = this['subTasksData'](this.editTaskId)
-                if (taskData != undefined && taskData != '') {
+                if (taskData !== undefined && taskData !== '') {
                     this.populateDataProperties(taskData)
                     this.taskLogs = taskLogs
                 }
-                if (subTasksData != undefined && subTasksData != '') {  
-                    this.unqId = subTasksData.length        
-                    for(let i =0; i<subTasksData.length; i++) {
-                        if (subTasksData[i].assignedTo?.id == undefined) {
-                            subTasksData[i].assignedTo = this.allUsers?.find(user => user.id == subTasksData[i].assignedTo)
+                if (subTasksData !== undefined && subTasksData !== '') {  
+                    this.unqId = subTasksData.length    
+
+                    for(let i = 0; i<subTasksData.length; i++) {
+                        console.log(subTasksData[i].assignedTo)
+                        if (typeof subTasksData[i].assignedTo?.[0] === "number") {
+                            subTasksData[i].assignedTo = subTasksData[i].assignedTo.map(userId => {
+                                return this.allUsers.find(user => user.id == userId)
+                            })
                         }
+                        else if (subTasksData[i].assignedTo === null ) subTasksData[i].assignedTo = []
                     }
                     this.subTasks = subTasksData
                 }
@@ -598,6 +642,7 @@
 </script>
 
 <style scoped>
+@import "../assets/stylesheet/multiselect.css";
 .st-description {
     display: inline;
 }

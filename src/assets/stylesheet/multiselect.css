@@ -39,3 +39,15 @@
 .multiselect__element:has(span.not-active) {
     display: none !important;
 }
+
+.multiselect__tag_bg .multiselect__tag {
+    background-color: #f3f3f4;
+    color: inherit;
+}
+.multiselect__tag-icon::after {
+    color: #676A6C !important;
+}
+.multiselect__tag-icon:focus:after,
+.multiselect__tag-icon:hover:after  {
+    color: #2e2f30 !important;
+}

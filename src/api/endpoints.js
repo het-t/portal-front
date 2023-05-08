@@ -28,6 +28,7 @@ const endpoints = {
     deleteTask: '/u/api/tasks/delete-task',
     changeStatusMyTask: '/u/api/myTasks/change-status',
     changeTaskStatus: '/u/api/tasks/change-status',
+    changeClientTag: '/u/api/clients/tag',
     
     admin: {
         createAdmin: '/u/api/orgs/admins/create-admin',
@@ -38,16 +39,17 @@ const endpoints = {
         get: '/u/api/settings/',
         waNotifications: {
             create: '/u/api/settings/notifications/wa/create',
-            getOtp: '/u/api/settings/notifications/wa/',
-            verifyOtp: '/u/api/settings/notifications/wa/',
+            getOtp: '/u/api/settings/notifications/wa/otp',
+            verifyOtp: '/u/api/settings/notifications/wa/otp',
             getHistory: '/u/api/settings/notifications/wa/history',
             consent: '/u/api/settings/notifications/wa/consent',
+            getQr: '/u/api/settings/notifications/wa/qr'
         }
     },
 
     profile: {
         getSettings: '/u/api/settings/'
-    }
+    },
 }
 
 export default endpoints

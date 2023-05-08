@@ -16,6 +16,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 /* import specific icons */
 import { faListCheck, 
+        faCheck,
+        faHandHoldingDollar,
         faUserGroup, 
         faSun, 
         faWaveSquare, 
@@ -49,6 +51,8 @@ import {
 } from '@fortawesome/free-regular-svg-icons'
 
 library.add(
+    faCheck,
+    faHandHoldingDollar,
     faGear,
     faSave,
     faUserGroup, 
