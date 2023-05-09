@@ -175,20 +175,24 @@ const actions = {
     subTasksDataSet({getters, commit, dispatch}, {taskId, force}) {
         const res = getters['subTasksData']?.(taskId)
         return new Promise((resolve, reject) => {
-            if (res == undefined || res == '' || force == true) {
+            if (res === undefined || res === '' || force == true) {
                 tasks.getSubTasks({taskId})
                 .then((res) => {
                     commit('subTasksDataSet', {
                         taskId, 
                         data: res.data.subTasksList
                     })
-                    for(let st of res.data.subTasksList) {
-                        if (st.assignedTo != undefined && st.assignedTo != '' && st.assignedTo != null) {
-                            dispatch('images/fetchProfilePic', {
-                                userId: st.assignedTo,
-                                width: 50,
-                                height: 50
-                            }, {root: true})
+
+                    for(let i = 0; i<res.data.subTasksList.length; i++) {
+                        if (typeof res.data.subTasksList[i].assignedTo === "string") {
+                            res.data.subTasksList[i].assignedTo = JSON.parse(res.data.subTasksList[i].assignedTo)
+                            res.data.subTasksList[i].assignedTo?.map((userId) => {
+                                dispatch('images/fetchProfilePic', {
+                                    userId,
+                                    width: 50,
+                                    height: 50
+                                }, {root: true})
+                            })
                         }
                     }
                     resolve()

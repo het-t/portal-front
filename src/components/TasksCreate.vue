@@ -155,15 +155,11 @@
                         <div v-for="(task, index) in subTasks" :key="index" class="mb8">
                             <div class="grid" v-if="task.description != '_#_*&^'">
 
-                                <div style="overflow: hidden;">
-                                    <font-awesome-icon class="profile-pic" style="border-radius: 100%;" 
-                                        v-if="$store.getters['images/getProfilePic'](`${task?.assignedTo?.id}_50x50`) == undefined || 
-                                        $store.getters['images/getProfilePic'](`${task?.assignedTo?.id}_50x50`) == ''"
-                                        :icon="['fas', 'user']"
-                                    ></font-awesome-icon>
-
-                                    <img loading="lazy" style="border-radius: 100%; width: 36px; height: 36px;" v-else :src="$store.getters['images/getProfilePic'](`${task?.assignedTo?.id}_50x50`)">
-                                </div>
+                                <font-awesome-icon tabindex="0" icon="fa-solid fa-minus"
+                                    @keyup.enter="removeSubTask(index)"
+                                    @click.prevent="removeSubTask(index)" 
+                                    class="pointer icon rmst"
+                                ></font-awesome-icon>
 
                                 <div class="pointer"
                                     tabindex="0"
@@ -179,13 +175,26 @@
                                     
                                     <span v-if="task?.status != undefined" class="ml8 st_status" :class="task.status">{{ task.status }}</span>
                                 </div>
-
-                                <font-awesome-icon tabindex="0" icon="fa-solid fa-minus"
-                                    @keyup.enter="removeSubTask(index)"
-                                    @click.prevent="removeSubTask(index)" 
-                                    class="pointer icon rmst"
-                                ></font-awesome-icon>
                                 
+                                <div style="overflow: hidden; display: flex; justify-content: flex-end;">
+                                    <div 
+                                        v-for="(user, index) in task.assignedTo" :key="user.id" 
+                                        :style="getStyle(task.assignedTo.length - index - 1)"
+                                        style="height: 36px; width: 36px; clip-path: circle(); position: relative; background-color: white;"
+                                    >
+                                        <font-awesome-icon 
+                                            v-if="$store.getters['images/getProfilePic'](`${user.id}_50x50`) == undefined || 
+                                            $store.getters['images/getProfilePic'](`${user.id}_50x50`) == ''"
+                                            :key="user.id"
+                                            class="profile-pic" style="border-radius: 100%; width: 36px; height: 36px;"
+                                            :icon="['fas', 'user']"
+                                        ></font-awesome-icon>
+
+                                        <img v-else :src="$store.getters['images/getProfilePic'](`${user.id}_50x50`)"
+                                            loading="lazy" style="width: 36px; height: 36px; border-radius: 100%;"
+                                        >
+                                    </div>
+                                </div>
                             </div>
 
                             <div v-if="task.description != '_#_*&^' && show == index"
@@ -359,6 +368,9 @@
         },
         methods: {
             rightCheck,
+            getStyle(index) {
+                return `left: ${8*(index)}px;`;
+            },
             labelForCoordinator({firstName, lastName, id}) {
                 return `${firstName} ${lastName} (${id})`
             },
@@ -614,7 +626,6 @@
                     this.unqId = subTasksData.length    
 
                     for(let i = 0; i<subTasksData.length; i++) {
-                        console.log(subTasksData[i].assignedTo)
                         if (typeof subTasksData[i].assignedTo?.[0] === "number") {
                             subTasksData[i].assignedTo = subTasksData[i].assignedTo.map(userId => {
                                 return this.allUsers.find(user => user.id == userId)
@@ -656,6 +667,7 @@
     border-radius: 50px 50px;
     padding: 0 6px;
     text-align: center;
+    white-space: nowrap;
 }
 
 svg.profile-pic {
@@ -716,9 +728,6 @@ option, select {
 .labels {
     align-self: center;
 }
-/* input, select {
-    width: fit-content;
-} */
 .sub-task-extra {
     width: 80% !important;
     border: none !important;
@@ -733,8 +742,7 @@ option, select {
 }
 .grid {
     display: grid;
-    /* grid-template-columns: 13px 10px 80% 22px; */
-    grid-template-columns: 36px auto 25px;
+    grid-template-columns: 25px auto auto;
     grid-template-rows: 2;
     column-gap: 12px;
     align-items: center;
