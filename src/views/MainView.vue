@@ -1,10 +1,10 @@
 <template>
   <div id="main">
     <div id="pa" :class="showLabels" ref="menu">
-
-      <div v-if="showLabels" class="logo-container">
-        <img class="mt8 mr8 ml8 mb8" id="logo" src="../assets/logo.png">
-      </div>
+<!-- 
+      <div class="logo-container">
+        <img style="height:50px; width: 100%;" src="../assets/logo/logo-500-wbg-bc-opt.png" alt="">
+      </div> -->
 
       <div id="nav">
         <div class="link-list">

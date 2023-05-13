@@ -151,7 +151,10 @@ let routesNew = [
     children: [
       {
         path: '',
-        alias: 'login',
+        component: () => import('@/components/TheLandingPage.vue')
+      },
+      {
+        path: 'login',
         name: 'login',
         component: () => import('@/components/LogIn.vue')
       }, 
