@@ -27,7 +27,7 @@
 <script>
 import { admin } from '@/api';
 import useCreateSwal from '@/helpers/swalCreate';
-import axios from 'axios';
+import axios from '../api/axiosInstance.js';
 
     export default {
         name: 'OrganizationsCreate',
@@ -46,13 +46,13 @@ import axios from 'axios';
 
                 useCreateSwal({
                     text: args.name,
-                    url: '/u/admin/orgs',
+                    url: 'admin/orgs',
                     promise: admin.orgs.create(args),
                     context: this
                 })
             },
             editOrg() {
-                axios.post('/u/api/orgs', {
+                axios.post('orgs', {
                     id: this.editOrgId,
                     name: this.orgName
                 })

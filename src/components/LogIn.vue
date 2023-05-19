@@ -34,7 +34,7 @@ import axios from '../api/axiosInstance.js'
         methods: {
             login() {
                 this.disabled = true
-                axios.post('api/login', {
+                axios.post('login', {
                     email: this.email,
                     password: this.pwd,
                     remember: this.remember
@@ -68,7 +68,7 @@ import axios from '../api/axiosInstance.js'
         mounted() {
             this.$refs['focus'].focus()
 
-            axios.get('api/', {
+            axios.get('/', {
                 withCredentials: true
             })
             .then((results) => {

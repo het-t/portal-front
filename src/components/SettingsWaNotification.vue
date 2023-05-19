@@ -115,7 +115,8 @@
 <script>
 import { settings } from '@/api/index.js'
 import TableMain from './TableMain.vue'
-import axios from 'axios'
+import axios from '../api/axiosInstance.js'
+
 import swal from 'sweetalert'
 
 export default {
@@ -232,7 +233,7 @@ export default {
             formData.append('consent', this.consent)
             formData.append('file', this.ntfFile)
             
-            axios.post('/u/api/settings/notifications/wa/create', formData, 
+            axios.post('settings/notifications/wa/create', formData, 
                 {
                     withCredentials: true,
                     headers: {

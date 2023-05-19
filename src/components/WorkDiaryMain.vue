@@ -198,7 +198,7 @@ import TablePagination from './TablePagination.vue'
                 if (this.user?.id) userId = this.user.id
                 else userId = this.user
 
-                makeGetReq('/u/api/workDiary/sub-tasks', {
+                makeGetReq('workDiary/sub-tasks', {
                     userId,
                     taskId,
                     fromDate: this.dates[0],

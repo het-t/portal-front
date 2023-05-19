@@ -80,7 +80,7 @@ export default {
             return count
         },
         save(arg) {
-            makePostReq('/u/api/settings/', arg)
+            makePostReq('settings/', arg)
             .catch(err => {
                 console.log(err)
             })

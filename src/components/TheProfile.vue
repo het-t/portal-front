@@ -44,7 +44,8 @@
 import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css';
 import swal from 'sweetalert'
-import axios from 'axios';
+import axios from '../api/axiosInstance.js';
+
 import TheSetting from './TheSetting.vue';
     export default {
         components: { Cropper, TheSetting },
@@ -93,7 +94,7 @@ import TheSetting from './TheSetting.vue';
                                 "profilePic.jpeg"
                             );
 
-                            axios.post('/u/api/settings/profile-pic', formData, {
+                            axios.post('settings/profile-pic', formData, {
                                 withCredetials: true,
                                 headers: {
                                     "Content-Type": "multipart/form-data"

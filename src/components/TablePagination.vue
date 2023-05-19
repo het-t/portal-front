@@ -24,7 +24,7 @@
 </template>
 
 <script>
-    import axios from 'axios'
+    import axios from '../api/axiosInstance.js'
 
     export default {
         name: 'TablePagination',
@@ -86,7 +86,7 @@
                     (pageDataStore?.length == 0) || 
                     (pageDataStore?.length < this.recordsPerPage && pageDataStore?.length >= 50)
                 ) || !this.isStoreAvailable) {
-                    axios.get(`/u/api/${this.tableName}`, {
+                    axios.get(`${this.tableName}`, {
                         params: {
                             from: (this.currentPage-1)*this.recordsPerPage,
                             recordsPerPage: this.recordsPerPage,
@@ -125,7 +125,7 @@
             }
 
             if (this.totalRecords == '' || this.totalRecords == undefined) {
-                axios.get(`/u/api/${this.tableName}/count`, {
+                axios.get(`${this.tableName}/count`, {
                     params: {
                         filters: this.filters
                     },

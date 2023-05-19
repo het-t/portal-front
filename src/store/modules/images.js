@@ -29,7 +29,7 @@ const actions = {
                     userId: `${userId}_${width}x${height}`, 
                     data: ''
                 })
-                makeGetReq('/u/api/settings/profile-pic', {
+                makeGetReq('settings/profile-pic', {
                     userId,
                     width,
                     height
