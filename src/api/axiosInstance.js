@@ -1,5 +1,7 @@
 import axios from 'axios'
 
 export default axios.create({
-    baseURL: 'https://corporatetasks.com/api/'
+    baseURL: window.location.hostname === 'localhost'
+             ? "/api" 
+             :"https://corporatetasks.com/api/"
 });
