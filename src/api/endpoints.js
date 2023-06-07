@@ -50,6 +50,11 @@ const endpoints = {
     profile: {
         getSettings: '/settings/'
     },
+
+    chatInternal: {
+        groups: '/chat/groups/',
+        message: '/chat/'
+    }
 }
 
 export default endpoints

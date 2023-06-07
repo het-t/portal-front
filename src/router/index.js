@@ -143,6 +143,10 @@ let workDiaryMainBreadcrumb = {
   }]
 }
 
+let chatInternal = {
+  title: 'chat'
+}
+
 let routesNew = [
   {
     path: '/',
@@ -369,6 +373,14 @@ let routesNew = [
             breadcrumb: workDiaryMainBreadcrumb
           }
         }]
+      },
+      {
+        path: 'chat',
+        name: 'chat_internal',
+        component: () => import('@/views/ChatInternal.vue'),
+        meta: {
+          breadcrumb: chatInternal
+        }
       },
       ///////////////////////
       {

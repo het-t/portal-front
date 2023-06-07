@@ -1,4 +1,5 @@
 import endpoints from "./endpoints.js"
+import makeDeleteReq from "./makeDeleteReq.js"
 import makeGetReq from "./makeGetReq.js"
 import makePostReq from './makePostReq.js'
 
@@ -78,6 +79,17 @@ const profile = {
     setProfilePic: (args) => makePostReq(endpoints.profile.setProfilePic, args)
 }
 
+const chatInternal = {
+    getMessages: (args) => makeGetReq(endpoints.chatInternal.message, args),
+    sendMessage: (args) => makePostReq(endpoints.chatInternal.message, args),
+
+    getGroups: () => makeGetReq(endpoints.chatInternal.groups),
+    deleteGroup: (args) => makeDeleteReq(endpoints.chatInternal.groups, args),
+    editGroup: (args) => makePostReq(`${endpoints.chatInternal.groups}${args.groupId}`, args),
+    
+    getGroupParticipents: (args) => makeGetReq(`${endpoints.chatInternal.groups}${args.groupId}`),
+}
+
 const getAllRights = () => makeGetReq(endpoints.getAllRights)
 
 const getUserRights = () => makeGetReq(endpoints.getUserRights)
@@ -95,4 +107,5 @@ export {
     subTasksMaster,
     settings,
     profile,
+    chatInternal
 }

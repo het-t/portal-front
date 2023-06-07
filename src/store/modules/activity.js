@@ -33,14 +33,6 @@ const mutations = {
     activityCountSet(state, activityCount) {
         state.activityCount = activityCount
     },
-    activityList() {
-    //     Object.defineProperty(state.activity, 
-    //         `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}_${filters[3]}_${filters[4]}`, {
-    //             value: data,
-    //             writable: true,
-    //             enumerable: true,
-    //     })
-    },
     sortSet(state, {sortBy, sortOrder}) {
         state.sortBy = sortBy
         state.sortOrder = sortOrder

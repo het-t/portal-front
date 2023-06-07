@@ -61,7 +61,6 @@ const mutations = {
         state.usersCount = usersCount
     },
     usersAll(state, usersList) {
-        console.log(state.allUsers, usersList)
         state.allUsers = usersList
     },
     usersDataSet(state, {index, data}) {

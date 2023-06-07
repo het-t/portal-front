@@ -606,11 +606,8 @@
             //get all users if not in store 
             this.$store.dispatch('users/usersAll')
 
-            if (window.history.state.taskId != undefined){ 
+            if (window.history.state.taskId != undefined || this.editTaskId != undefined){ 
                 this.editing = true  
-            }
-            else if (this.editTaskId != undefined) {
-                this.editing = true
             }
         },
         mounted() {
@@ -622,6 +619,7 @@
                     this.populateDataProperties(taskData)
                     this.taskLogs = taskLogs
                 }
+
                 if (subTasksData !== undefined && subTasksData !== '') {  
                     this.unqId = subTasksData.length    
 
