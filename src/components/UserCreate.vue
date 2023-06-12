@@ -68,7 +68,6 @@
 <script>
 import { users, admin } from '@/api/index.js'
 import useCreateSwal from '@/helpers/swalCreate'
-import useEditSwal from '../helpers/swalEdit'
 
     export default {
         name: 'CreateUser',
@@ -90,18 +89,12 @@ import useEditSwal from '../helpers/swalEdit'
         },
         mounted() {
             if (this.editUserId != undefined) {
-                const userData = this.$store.getters['users/usersDataGet'](this.editUserId)
+                const userData = this.$store.getters['users/getData'](this.editUserId)
 
-                if (userData != undefined && userData != '') {
-                    this.populateDataProperties(userData)
-                }
+                this.populateDataProperties(userData)
             }
             if (this.orgId == '') {
-                const rolesList = this.$store.getters['roles/allRoles']
-
-                if (rolesList != undefined && rolesList != '') {
-                    this.dbRoles = rolesList
-                }
+                this.dbRoles = this.$store.getters['roles/getList']({})
             }
             else {
                 this.orgId = this.$route.params?.orgId != undefined ? this.$route.params.orgId : ''
@@ -121,7 +114,7 @@ import useEditSwal from '../helpers/swalEdit'
                 this.$refs[newTab+this.uk+'focus'].focus()
             },
             canceled() {
-                if (this.editUserId != undefined) this.$emit("editingCompleted", {force: true})
+                if (this.editUserId != undefined) this.$emit("editingCompleted")
                 else {
                     if (this.orgId != '') this.$router.push('/u/admin/orgs')
                     else this.$router.push('/u/users/list')
@@ -151,21 +144,33 @@ import useEditSwal from '../helpers/swalEdit'
                 }
                 else {
                     if (!args.userId) {
-                        useCreateSwal({
-                            text: args.firstName + ' ' + args.lastName,
-                            url: '/u/users/list',
-                            promise: users.create(args),
-                            mutationFnName: 'users/refetch',
-                            context: this
+                        users.create(args)
+                        .then(() => {
+                            this.$toast.success(`Saved`)
+                            return this.$store.dispatch('users/fetchList', {force: true})
+                        })
+                        .then(() => {
+                            this.$router.push({name: 'users_list'})
+                        })
+                        .catch(() => {
+                            this.$toast.error(`Oops! We can't perform this action right now`)
+                        })
+                        .finally(() => {
+                            this.disabled = false
                         })
                     }
                     else {
-                        useEditSwal({
-                            text: args.firstName + ' ' + args.lastName,
-                            mutationFnName: 'users/refetch',
-                            mutationArgs: {userId: args.userId},
-                            promise: users.edit(args),
-                            context: this
+                        users.edit(args)
+                        .then(() => {
+                            this.$emit('editingCompleted')
+                            this.$toast.success(`Saved #${args.userId}`)
+                        })
+                        .catch(err => {
+                            this.$toast.error(`Oops! We can't perform this action right now`)
+                            console.log(err)
+                        })
+                        .finally(() => {
+                            this.disabled = false
                         })
                     }
                 }

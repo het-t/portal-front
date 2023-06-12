@@ -42,7 +42,8 @@ import { faListCheck,
         faUserCheck,
         faSave,
         faGear,
-        faArrowUpRightFromSquare
+        faArrowUpRightFromSquare,
+        faClipboardList
     } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -82,7 +83,8 @@ library.add(
     faArrowUpRightFromSquare,
     faThumbsUp,
     faThumbsDown,
-    faPaperPlane
+    faPaperPlane,
+    faClipboardList
 )
 
 let app = createApp(App)

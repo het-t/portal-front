@@ -1,5 +1,5 @@
 <template>
-    <td v-click-away="hide" @click.stop="showDots($event)" class="dots-parent p0">
+    <td v-click-away="hide" @click="showDots($event)" class="dots-parent p0">
         <div class="dots-parent">
             <font-awesome-icon :class="dotsVisibility" class="dots-img"  
                 :icon="['fas', 'ellipsis-vertical']" 
@@ -20,10 +20,14 @@ import {mixin as VueClickAway} from 'vue3-click-away'
         },
         methods: {
             showDots(e) {
+                e.stopPropagation();
+
                 this.dotsVisibility = 'dots-clicked'
                 this.$emit('openMenu', e)
             },
             hide(e) {
+                e.stopPropagation();
+
                 this.dotsVisibility = ''
                 this.$emit('hideMenu', e)
             }

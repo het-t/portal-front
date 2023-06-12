@@ -17,7 +17,14 @@
                             
                             <div class="row mt8">
                                 <label :for="'task-client'+uk" class="labels c1">client</label>
-                                <vue-multiselect :id="'task-client'+uk" v-model="taskClient" :options="clientsGetConfirmed" :custom-label="labelForClient" track-by="id" placeholder="Select Client">
+                                <vue-multiselect 
+                                    :id="'task-client'+uk" 
+                                    v-model="taskClient" 
+                                    :options="getClients" 
+                                    :custom-label="labelForClient" 
+                                    track-by="id" 
+                                    placeholder="Select Client"
+                                >
                                     <template #noResult>
                                         Oops! No client found. Consider creating new client
                                     </template>
@@ -26,7 +33,17 @@
 
                             <div class="row mt8">
                                 <label :for="'task-coordinator'+uk" class="labels c1">co-ordinator</label>
-                                <vue-multiselect multiple class="options-list multiselect__tag_bg" :id="'task-coordinator'+uk" v-model="taskCoordinator" placeholder="Select Coordinator" :options="allUsers" :custom-label="labelForCoordinator" track-by="id">
+
+                                <vue-multiselect 
+                                    multiple 
+                                    class="options-list multiselect__tag_bg" 
+                                    :id="'task-coordinator'+uk" 
+                                    v-model="taskCoordinator" 
+                                    placeholder="Select Coordinator" 
+                                    :options="getUsers" 
+                                    :custom-label="labelForCoordinator" 
+                                    track-by="id"
+                                >
                                     <template #noResult>
                                         Oops! No user found. Consider creating new user
                                     </template>
@@ -41,7 +58,14 @@
 
                             <div class="row mt8">
                                 <label :for="'task-tasks'+uk" class="labels c1">task</label>
-                                <vue-multiselect :id="'task-tasks'+uk" v-model="taskMasterId" placeholder="Select Task-Master" :options="tasksMasterListGet" :custom-label="labelForTaskMaster" track-by="id">
+                                <vue-multiselect 
+                                    :id="'task-tasks'+uk" 
+                                    v-model="taskMasterId" 
+                                    placeholder="Select Task-Master" 
+                                    :options="getTaskMasters" 
+                                    :custom-label="labelForTaskMaster" 
+                                    track-by="id"
+                                >
                                     <template #noResult>
                                         Oops! No task-master found. Consider creating new task-master
                                     </template>
@@ -69,7 +93,7 @@
                                             :id="'extraAssignTo'+uk" 
                                             v-model="popAssignTo" 
                                             placeholder="Select user to assign" 
-                                            :options="allUsers" 
+                                            :options="getUsers" 
                                             :custom-label="labelForCoordinator" 
                                             track-by="id"
                                         >
@@ -140,110 +164,8 @@
                 </div>
                 <div class="vr"></div>
 
-                <div class="fg pr16 sub-tasks-scroll">
-                    <div>   
-                        <div class="row mt8 mb16">
-                            <label :for="'task-sub-task'+uk" class="labels c1">sub task</label>
-                            <div style="width:80%; display:flex; align-items: center;">
-                                <input @keyup.enter="addSubTask()" v-model="newSubTask" style="width: 100%" type="text" :id="'task-sub-task'+uk">
-                                <font-awesome-icon tabindex="0" class="icon pointer add-st ml8" @keyup.enter="addSubTask()" @click.prevent="addSubTask()" icon="fa-solid fa-plus"></font-awesome-icon>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div v-if="subTasks" class="grid-wrapper">
-                        <div v-for="(task, index) in subTasks" :key="index" class="mb8">
-                            <div class="grid" v-if="task.description != '_#_*&^'">
-
-                                <font-awesome-icon tabindex="0" icon="fa-solid fa-minus"
-                                    @keyup.enter="removeSubTask(index)"
-                                    @click.prevent="removeSubTask(index)" 
-                                    class="pointer icon rmst"
-                                ></font-awesome-icon>
-
-                                <div class="pointer"
-                                    tabindex="0"
-                                    @keyup.enter="toggleDisplaySubTask(index)"
-                                    @click.prevent="toggleDisplaySubTask(index)"
-                                >
-                                    
-                                    <p contentEditable="true"
-                                        class="st-description"
-                                        :class="task.statusId == 5 || task.statusId == 6 ? 'done-st' : ''"
-                                        @input="updateSubTaskTitle(task, $event)"
-                                    >{{ task.description }}</p>
-                                    
-                                    <span v-if="task?.status != undefined" class="ml8 st_status" :class="task.status">{{ task.status }}</span>
-                                </div>
-                                
-                                <div style="overflow: hidden; display: flex; justify-content: flex-end;">
-                                    <div 
-                                        v-for="(user, index) in task.assignedTo" :key="user.id" 
-                                        :style="getStyle(task.assignedTo.length - index - 1)"
-                                        style="height: 36px; width: 36px; clip-path: circle(); position: relative; background-color: white;"
-                                    >
-                                        <font-awesome-icon 
-                                            v-if="$store.getters['images/getProfilePic'](`${user.id}_50x50`) == undefined || 
-                                            $store.getters['images/getProfilePic'](`${user.id}_50x50`) == ''"
-                                            :key="user.id"
-                                            class="profile-pic" style="border-radius: 100%; width: 36px; height: 36px;"
-                                            :icon="['fas', 'user']"
-                                        ></font-awesome-icon>
-
-                                        <img v-else :src="$store.getters['images/getProfilePic'](`${user.id}_50x50`)"
-                                            loading="lazy" style="width: 36px; height: 36px; border-radius: 100%;"
-                                        >
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div v-if="task.description != '_#_*&^' && show == index"
-                                class="hide ml24"
-                                :class="show == index ? 'show' : 'hide'" 
-                            >
-                                <div class="ml16">
-                                    <select v-model="task.statusId" class="sub-task-extra">
-                                        <option v-for="(status, index) in subTaskStatuses" :value="status.id" :key="index.toString()+uk">
-                                            {{status.status}}
-                                        </option>
-                                    </select>
-                                </div>
-
-                                <div class="ml16">
-                                    <vue-multiselect 
-                                        multiple 
-                                        v-model="task.assignedTo" 
-                                        :options="allUsers" 
-                                        :custom-label="labelForCoordinator" 
-                                        track-by="id" 
-                                        placeholder="Assigend To" 
-                                        class="sub-task-extra options-list multiselect__tag_bg"
-                                    >
-                                        <template #noResult>
-                                            Oops! No user found. Consider creating new user
-                                        </template>
-
-                                        <template v-slot:option="props">
-                                            <span class="p0 m0" style="height: 0 !important; width: 0 !important;" :class="props.option.isActive == 0 ? 'not-active' : ''">
-                                                {{props.option.firstName}} {{props.option.lastName}} ({{props.option.id}})
-                                            </span>
-                                        </template>
-                                    </vue-multiselect>
-                                </div>
-                                
-                                <div class="ml16">
-                                    <input v-model="task.cost" type="number" :id="'sub-task-cost'+uk" placeholder="Cost" class="sub-task-extra">
-                                </div>
-
-                                <div class="ml16">
-                                    <input v-model="task.comments" class="sub-task-extra" type="text" placeholder="Comments">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
-
         </div>
 
         <div class="card hide" :ref="'logs'+uk">            
@@ -256,7 +178,7 @@
                         <th>date</th>
                     </tr>
 
-                    <tr v-for="(logObj, index) in taskData(editTaskId)?.tasksLogs" :key="index"
+                    <tr v-for="(logObj, index) in taskData?.tasksLogs" :key="index"
                         class="tr">
                         <td>{{logObj.user}}</td>
                         <td>
@@ -279,10 +201,7 @@
 
 <script>
     import swal from 'sweetalert'
-    import { mapGetters } from 'vuex'
     import { tasks, subTasksMaster } from '@/api/index.js'
-    import useEditSwal from '../helpers/swalEdit'
-    import useCreateSwal from '@/helpers/swalCreate'
     import VueMultiselect from 'vue-multiselect'
     import rightCheck from '@/helpers/RightCheck'
 
@@ -330,17 +249,21 @@
             }
         },
         computed: {
-            ...mapGetters('tasks', [
-                'taskData',
-                'subTasksData',
-                'tasksMasterListGet'
-            ]),
-            ...mapGetters('users', [
-                'allUsers'
-            ]),
-            ...mapGetters('clients', [
-                'clientsGetConfirmed'
-            ]),
+            taskData() {
+                return this.$store.getters['tasks/getData'](this.editTaskId)
+            },
+            getSubTasks() {
+                return this.$store.getters['tasks/getSubTasks'](this.editTaskId)
+            },
+            getTaskMasters() {
+                return this.$store.getters['tasksMaster/getList']({})
+            },
+            getUsers() {
+                return this.$store.getters['users/getList']({})
+            },
+            getClients() {
+                return this.$store.getters['clients/getList']({})
+            }
         },
         watch: {
             taskMasterId(taskMasterId, oldTaskMasterId) {
@@ -389,7 +312,7 @@
                 }
 
                 ++this.i
-                const selectedTaskMaster = this['tasksMasterListGet'].find((o) => o.id == taskMasterId)
+                const selectedTaskMaster = this['getTaskMasters'].find((o) => o.id == taskMasterId)
                 subTasksMaster.get({taskMasterId})
                 .then((results) => {
                     this.subTasks = results.data.subTasksMasterList
@@ -443,10 +366,6 @@
                     }
                 }
             },
-            toggleDisplaySubTask(index) {
-                if (this.show == index) this.show = -1
-                else this.show = index
-            },
             populateDataProperties(data) {
                 const {
                     taskMasterId,
@@ -457,20 +376,19 @@
                 } = data
 
                 const coordinatorIds = JSON.parse(data.coordinatorIds)
-
-                const clientData = this.clientsGetConfirmed.find(client => client.id == clientId)
+                const clientData = this.getClients.find(client => client.id == clientId)
                 this.taskTitle = title
                 this.taskDescription = description
                 this.taskCost = cost
                 
                 if(coordinatorIds?.[0] !== null) {
                     this.taskCoordinator = coordinatorIds?.map((coordinatorId) => {
-                        return this.allUsers.find(user => user.id == coordinatorId)
+                        return this.getUsers.find(user => user.id == coordinatorId)
                     })
                 }
 
                 this.taskClient = clientData
-                this.taskMasterId = this.tasksMasterListGet.find(task => task.id == taskMasterId)
+                this.taskMasterId = this.getTaskMasters.find(task => task.id == taskMasterId)
                 this.clientContact = clientData
             },
             proceed() {
@@ -563,26 +481,36 @@
                 }
 
                 p.then(() => {
-                    // let args = args
-                    // args.subTasks = subTasksRaw
-
                     if (this.editing == true ) {
-                        useEditSwal({
-                            text: args.title,
-                            mutationFnName: 'tasks/refetch',
-                            mutationArgs: {saved: args.saved, taskId: args.taskId},
-                            promise: tasks.edit(args),
-                            context: this,
+                        tasks.edit(args)
+                        .then(() => {
+                            this.$emit('editingCompleted', 1)
+                            this.$toast.success(`Saved #${args.taskId}`)
+                        })
+                        .catch(err => {
+                            this.$toast.error(`Oops! We can't perform this action right now`)
+                            console.log(err)  
+                        })
+                        .finally(() => {
+                            this.disabled = false
                         })
                     }
                     else {
-                        useCreateSwal({
-                            text: args.title,
-                            mutationFnName: 'tasks/refetch',
-                            mutationArgs: {saved: args.saved},
-                            url: '/u/tasks/list',
-                            promise: tasks.create(args),
-                            context: this
+                        tasks.create(args)
+                        .then(() => {
+                            this.$toast.success(`Saved`)
+                            return this.$store.dispatch('tasks/fetchList', {
+                                force: true
+                            })
+                        })
+                        .then(() => {
+                            this.$router.push({name: 'tasks_list'})
+                        })
+                        .catch(() => {
+                            this.$toast.error(`Oops! We can't perform this action right now`)
+                        })
+                        .finally(() => {
+                            this.disabled = false
                         })
                     } 
                 })
@@ -597,14 +525,15 @@
             }
         },
         created() {
+
             //get all clients if not in store
-            this.$store.dispatch('clients/clientsGetConfirmed'),
+            this.$store.dispatch('clients/fetchList', {all: true}),
             
             //get all tasksMaster if not in store
-            this.$store.dispatch('tasks/tasksMasterListSet'),
+            this.$store.dispatch('tasksMaster/fetchList', {all: true}),
             
             //get all users if not in store 
-            this.$store.dispatch('users/usersAll')
+            this.$store.dispatch('users/fetchList', {all: true})
 
             if (window.history.state.taskId != undefined || this.editTaskId != undefined){ 
                 this.editing = true  
@@ -612,9 +541,9 @@
         },
         mounted() {
             if (this.editing == true) {
-                const taskData = (this['taskData'])(this.editTaskId)?.taskData?.[0]
-                const taskLogs = (this['taskData'])(this.editTaskId)?.taskLogs
-                const subTasksData = this['subTasksData'](this.editTaskId)
+                const taskData = (this['taskData'])?.taskData?.[0]
+                const taskLogs = (this['taskData'])?.taskLogs
+                const subTasksData = this['getSubTasks']
                 if (taskData !== undefined && taskData !== '') {
                     this.populateDataProperties(taskData)
                     this.taskLogs = taskLogs
@@ -626,7 +555,7 @@
                     for(let i = 0; i<subTasksData.length; i++) {
                         if (typeof subTasksData[i].assignedTo?.[0] === "number") {
                             subTasksData[i].assignedTo = subTasksData[i].assignedTo.map(userId => {
-                                return this.allUsers.find(user => user.id == userId)
+                                return this.getUsers.find(user => user.id == userId)
                             })
                         }
                         else if (subTasksData[i].assignedTo === null ) subTasksData[i].assignedTo = []

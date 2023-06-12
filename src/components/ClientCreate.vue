@@ -80,8 +80,6 @@
 
 <script>
 import {clients} from '@/api/index.js'
-import useEditSwal from '../helpers/swalEdit.js'
-import useCreateSwal from '@/helpers/swalCreate'
 
 export default {
     name: 'ClientCreate',
@@ -107,7 +105,7 @@ export default {
     },
     computed: {
         clientTypes() {
-            return this.$store.getters['clients/getAllTypesList']
+            return this.$store.getters['clients/getTypes']
         }
     },
     methods: {
@@ -123,9 +121,8 @@ export default {
             this.$refs[newTab+this.uk+'focus'].focus()
         },
         canceled() {
-            // to toggle the hidden-tr visibility
-            if (this.editing == true) this.$emit("editingCompleted")
-            this.$router.push('/u/clients/list') //prop->path to redirect
+            if (this.editing == true) this.$emit("editingCompleted", 2)
+            this.$router.push({name: 'clients-list'})
         },
         proceed() {
             this.disabled = true
@@ -146,26 +143,41 @@ export default {
             }
 
             if (args.clientId != undefined && args.clientId != '') {  
-                useEditSwal({
-                    text: args.clientName,
-                    mutationFnName: 'clients/refetch',
-                    promise: Promise.all([
-                        clients.edit(args),
-                    ]),
-                    context: this,
+                this.disabled = true
+
+                clients.edit(args)
+                .then(() => {
+                    this.$emit('editingCompleted', 1)
+                    this.$toast.success(`Saved #${args.clientId}`)
+                })
+                .catch(err => {
+                    this.$toast.error(`Oops! We can't perform this action right now`)
+                    console.log(err)
+                })
+                .finally(() => {
+                    this.disabled = false
                 })
                     
             }
             else {
-                useCreateSwal({
-                    text: args.clientName,
-                    url: '/u/clients/list',
-                    promise: Promise.all([ 
-                        clients.create(args),
-                    ]),
-                    mutationFnName: 'clients/RESET_STATE',
-                    mutationArgs: {},
-                    context: this
+                this.disabled = true
+
+                args.status = this.$store.getters['clients/getTagFilter']
+                clients.create(args)
+                .then(() => {
+                    this.$toast.success(`Saved`)
+                    return this.$store.dispatch('clients/fetchList', {
+                        force: true
+                    })
+                })
+                .then(() => {
+                    this.$router.push({name: 'clients_list'})
+                })
+                .catch(() => {
+                    this.$toast.error(`Oops! We can't perform this action right now`)
+                })
+                .finally(() => {
+                    this.disabled = false
                 })
             }
         }

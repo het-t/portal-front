@@ -1,129 +1,184 @@
 import { users } from "@/api"
+import formatFilters from "@/helpers/storeFiltersFormater"
 
 const state = {
-    usersCount: '', //no. of users for table pagination
+    count: {}, //no. of users for table pagination
     users: {},  //data of all visited users table pages 
-    allUsers: [],   //list of all users
-    usersData: {},  //list of data of users selected to edit
+    data: {},  //list of data of users selected to edit
     sortBy: 'id',
     sortOrder: 0,    //0-desc, 1-asc
-    currentPage: '',
-    paginationKey: 0
+    currentPage: 1,
+    recordsPerPage: 50,
+    filters: {
+        'name': '',
+        'email': '',
+        'rights': ''
+    }
 }
 
 const getters = {
-    allUsers(state) {
-        return state.allUsers
+    //
+    getList: (state) => ({from = null, to = null, sortBy = null, sortOrder = null, filters = Object.values(formatFilters(state.filters))}) => {
+        if (from !== null && to !== null) {
+            sortBy = state.sortBy
+            sortOrder = state.sortOrder
+        }
+        return state.users[`${from}_${to}_${sortBy}_${sortOrder}_${filters.join('_')}`]
     },
-    usersListGet: (state) => (index, sortBy, sortOrder, filters) => {
-        return state.users[`${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}`]
+    //
+    getCount(state) {
+        return state.count[Object.values(formatFilters(state.filters)).join('_')]
     },
-    usersCountGet(state) {
-        return state.usersCount
+    //
+    getData: (state) => (index) => {
+        return state.data[index]
     },
-    usersDataGet: (state) => (index) => {
-        return state.usersData[index]
+    //
+    getFilters(state) {
+        return state.filters
     },
-    sortGet(state) {
+    //
+    getSort(state) {
         return {
             sortBy: state.sortBy,
             sortOrder: state.sortOrder
         }
     },
-    getKey(state) {
-        return state.paginationKey
-    },
+    //
     getCurrentPage(state) {
         return state.currentPage
+    },
+    //
+    getRecordsPerPage(state) {
+        return state.recordsPerPage
     }
 }
 
 const mutations = {
-    RESET_STATE(state) {
-        state.usersCount = ''
-        state.users = {}
-        state.allUsers = []
-        state.usersData = {}
+    //
+    setList(state, {from = null, to = null, sortBy = null, sortOrder = null, filters = ['null', 'null', 'null'], data}) {
+        state.users[`${from}_${to}_${sortBy}_${sortOrder}_${filters.join('_')}`] = data
     },
-    deleteUser(state, {userId, filters}) {
-        const path = state.currentPage+'_'+state.sortBy+'_'+state.sortOrder+'_'+filters[0]+'_'+filters[1]+'_'+filters[2]
-        state.users[path].splice(state.users[path].findIndex(user => user.id == userId), 1)
+    //
+    setCount(state, {count}) {
+        state.count[Object.values(formatFilters(state.filters)).join('_')] = count
     },
-    usersList(state, {index, sortBy, sortOrder, filters, data}) {
-        Object.defineProperty(state.users, 
-            `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}`, {
-            value: data,
-            writable: true,
-            enumerable: true,
-        })    
+    //
+    setData(state, {index, data}) {
+        state.data[index] = data
     },
-    usersCountSet(state, usersCount) {
-        state.usersCount = usersCount
-    },
-    usersAll(state, usersList) {
-        state.allUsers = usersList
-    },
-    usersDataSet(state, {index, data}) {
-        Object.defineProperty(state.usersData, index, {
-            value: data,
-            writable: true,
-            enumerable: true,
-        })
-    },
-    sortSet(state, {sortBy, sortOrder}) {
+    //
+    setSort(state, {sortBy, sortOrder}) {
         state.sortBy = sortBy
         state.sortOrder = sortOrder
     },
-    currentPageSet(state, {index}) {
+    //
+    setCurrentPage(state, index) {
         state.currentPage = index
     },
-    refetch(state, {userId}) {
-        state.users = {}
-        state.usersCount = ''
-        state.allUsers = []
-
-        if (userId) state.usersData[userId] = {}
-        else state.userData = undefined
-        
-        if (state.paginationKey == 0) state.paginationKey = 1
-        else if (state.paginationKey == 1) state.paginationKey = 0
+    //
+    setRecordsPerPage(state, recordsPerPage) {
+        state.recordsPerPage = recordsPerPage
     },
-    paginate(state) {
-        if (state.paginationKey == 0) state.paginationKey = 1
-        else if (state.paginationKey == 1) state.paginationKey = 0
+    //
+    flush(state, {userId}) {
+        state.users = {}
+        delete state.data[userId]
     }
 }
 
 const actions = {
-    usersAll({getters, commit}) {
+    //
+    fetchCount({getters, commit}, {force = false}) {
         return new Promise((resolve, reject) => {
-            if (getters['allUsers']?.length == 0) {
-                users.get({
-                    from: null,
-                    recordsPerPage: null,
-                    filters: ['', '', '']
+            const formattedFilters = formatFilters(getters['getFilters'])
+
+            if (!getters['getCount'] || force === true) {
+                users.count({
+                    filters: formattedFilters
                 })
                 .then((res) => {
-                    commit('usersAll', res?.data?.usersList)
+                    commit('setCount', {
+                        count: res.data.count,
+                        filters: formattedFilters
+                    })
                     resolve()
                 })
-                .catch((err) => {
+                .catch(err => {
                     reject(err)
+                })
+            }
+        })
+    },
+    //
+    fetchList({getters, commit}, {force = false, all = false}) {
+        return new Promise((resolve, reject) => {
+            let {sortBy, sortOrder} = getters['getSort']
+            const currentPage = getters['getCurrentPage']
+            const recordsPerPage = getters['getRecordsPerPage']
+
+            let from, to, formattedFilters
+
+            if (all) {
+                from = null
+                to = null
+                sortBy = null
+                sortOrder = null
+                formattedFilters = formatFilters(state.filters)
+            }
+            else {
+                formattedFilters = formatFilters(getters['getFilters'])
+                from = (currentPage-1)*recordsPerPage
+                to = from + recordsPerPage
+            }
+
+            if (!getters['getList']({from, to, sortBy, sortOrder, filters: Object.values(formattedFilters)})?.length || force === true) {
+                users.getList({
+                    from,
+                    recordsPerPage,
+                    filters: formattedFilters,
+                    sortBy,
+                    sortOrder
+                })
+                .then((res) => {
+                    if (all) {
+                        commit('setList', {
+                            data: res.data,
+                            filters: Object.values(formattedFilters)
+                        })
+                    }
+                    else {
+                        commit('setList', {
+                            from,
+                            to,
+                            sortBy,
+                            sortOrder,
+                            filters: Object.values(formattedFilters),
+                            data: res.data
+                        })
+                    }
+                    resolve()
+                })
+                .catch(err => {
+                    console.log(err)
+                    reject()
                 })
             }
             else resolve()
         })
     },
-    usersDataSet({getters, commit}, {userId, force}) {
-        const res = getters['usersDataGet']?.(userId)
-        
+    //
+    fetchData({getters, commit}, {userId, force}) {  
         return new Promise((resolve, reject) => {
-            if (res == undefined || res == '' || force == true) {
+            if (!getters['getData'](userId) || force === true) {
                 users.getData({
-                    editUserId: userId
+                    id: userId
                 })
                 .then((res) => {
-                    commit('usersDataSet', {index: userId, data: res.data.userData})
+                    commit('setData', {
+                        index: userId, 
+                        data: res.data
+                    })
                     resolve()
                 })
                 .catch(err => {

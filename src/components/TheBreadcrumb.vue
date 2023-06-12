@@ -34,7 +34,6 @@ export default {
     name: 'TheBreadcrumb',
     methods: {
         routeChange(path, args) {
-            console.log(path)
             if (args != undefined) this.$router.push(path)
             else this.$router.push(path)
         }

@@ -1,46 +1,60 @@
 import endpoints from "./endpoints.js"
 import makeDeleteReq from "./makeDeleteReq.js"
 import makeGetReq from "./makeGetReq.js"
+import makePatchReq from "./makePatchReq.js"
 import makePostReq from './makePostReq.js'
+import makePutReq from "./makePutReq.js"
 
-const clients = {
-    get: (args) => makeGetReq(endpoints.getClients, args),
-    create: (args) => makeGetReq(endpoints.createClient, args),
-    getTypes: () => makeGetReq(endpoints.getClientsMasterTypes),
-    edit: (args) => makeGetReq(endpoints.editClient, args),
-    delete: (args) => makePostReq(endpoints.deleteClient, args),
-    tag: (args) => makePostReq(endpoints.changeClientTag, args)
-}
-
-const users = {
-    get: (args) => makeGetReq(endpoints.getAllUsers, args),
-    getData: (args) => makeGetReq(endpoints.getUserData, args),
-    create: (args) => makePostReq(endpoints.createUser, args),
-    edit: (args) => makePostReq(endpoints.editUser, args),
-    delete: (args) => makePostReq(endpoints.deleteUser, args)
+const activities = {
+    count: (args) => makeGetReq(endpoints.activities + '/count', args),
+    getList: (args) => makeGetReq(endpoints.activities, args)
 }
 
 const roles = {
-    get: (args) => makeGetReq(endpoints.getRoles, args),
-    getData: (args) => makeGetReq(endpoints.editRole, args),
-    create: (args) => makeGetReq(endpoints.createRole, args),
-    edit: (args) => makePostReq(endpoints.editRole, args),
-    delete: (args) => makePostReq(endpoints.deleteRole, args)
+    count: (args) => makeGetReq(endpoints.roles + '/count', args),
+    getList: (args) => makeGetReq(endpoints.roles, args),
+    getData: (args) => makeGetReq(endpoints.roles + '/' + args.roleId),
+    create: (args) => makePostReq(endpoints.roles, args),
+    edit: (args) => makePutReq(endpoints.roles + '/' + args.roleId, args),
+    delete: (args) => makeDeleteReq(endpoints.roles + '/' + args.roleId)
+}
+
+const clients = {
+    count: (args) => makeGetReq(endpoints.clients + '/count', args),
+    getList: (args) => makeGetReq(endpoints.clients, args),
+    getTypes: () => makeGetReq(endpoints.clients + '/types'),
+    create: (args) => makePostReq(endpoints.clients, args),
+    edit: (args) => makePutReq(endpoints.clients + '/' + args.clientId, args),
+    tag: (args) => makePatchReq(endpoints.clients + '/' + args.clientId, args),
+    delete: (args) => makeDeleteReq(endpoints.clients + '/' + args.clientId)
+}
+
+const users = {
+    count: (args) => makeGetReq(endpoints.users + '/count', args),
+    getList: (args) => makeGetReq(endpoints.users, args),
+    getRights: () => makeGetReq(endpoints.users + '/rights'),
+    getData: (args) => makeGetReq(endpoints.users + '/' + args.id),
+    create: (args) => makePostReq(endpoints.users, args),
+    edit: (args) => makePutReq(endpoints.users + '/' + args.userId, args),
+    delete: (args) => makeDeleteReq(endpoints.users + '/' + args.userId)
 }
 
 const tasks = {
-    get: (args) => makeGetReq(endpoints.getTasks, args),
-    getData: (args) => makeGetReq(endpoints.getTaskData, args),
-    create: (args) => makeGetReq(endpoints.createTask, args),
-    edit: (args) => makeGetReq(endpoints.editTask, args),
-    getSubTasks: (args) => makeGetReq(endpoints.getSubTasks, args),
-    delete: (args) => makePostReq(endpoints.deleteTask, args),
-    changeStatus: (args) => makePostReq(endpoints.changeTaskStatus, args)
+    count: (args) => makeGetReq(endpoints.tasks + '/count', args),
+    getList: (args) => makeGetReq(endpoints.tasks, args),
+    getData: (args) => makeGetReq(endpoints.tasks + '/' + args.taskId),
+    getSubTasks: (args) => makeGetReq(endpoints.tasks + '/' + args.taskId + '/sub-tasks'),
+    create: (args) => makePostReq(endpoints.tasks, args),
+    changeStatus: (args) => makePatchReq(endpoints.tasks + '/' + args.taskId, args),
+    edit: (args) => makePutReq(endpoints.tasks + '/' + args.taskId, args),
+    delete: (args) => makeDeleteReq(endpoints.tasks + '/' + args.taskId, args),
 }
 
 const tasksMaster = {
-    get: () => makeGetReq(endpoints.getTasksMaster),
-    edit: (args) => makeGetReq(endpoints.editTaskMaster, args),
+    count: (args) => makeGetReq(endpoints.taskMasters + '/count', args),
+    getList: (args) => makeGetReq(endpoints.taskMasters, args),
+    edit: (args) => makePutReq(endpoints.taskMasters + '/' + args.id, args),
+    delete: (args) => makeDeleteReq(endpoints.taskMasters + '/' + args.id)
 }
 
 const subTasksMaster = {
@@ -48,8 +62,9 @@ const subTasksMaster = {
 }
 
 const myTasks = {
-    get: () => makeGetReq(endpoints.getMyTasks),
-    changeStatus: (args) => makeGetReq(endpoints.changeStatusMyTask, args)
+    count: (args) => makeGetReq(endpoints.myTasks + '/count', args),
+    getList: (args) => makeGetReq(endpoints.myTasks, args),
+    changeStatus: (args) => makePatchReq(endpoints.myTasks + '/' + args.taskId, args)
 }
 
 const admin = {
@@ -90,14 +105,13 @@ const chatInternal = {
     getGroupParticipents: (args) => makeGetReq(`${endpoints.chatInternal.groups}${args.groupId}`),
 }
 
-const getAllRights = () => makeGetReq(endpoints.getAllRights)
-
-const getUserRights = () => makeGetReq(endpoints.getUserRights)
+const rights = {
+    getList: () => makeGetReq(endpoints.rights)
+}
 
 export {
-    getAllRights,
-    getUserRights,
     admin,
+    activities,
     clients,
     users,
     roles,
@@ -107,5 +121,6 @@ export {
     subTasksMaster,
     settings,
     profile,
-    chatInternal
+    chatInternal,
+    rights
 }

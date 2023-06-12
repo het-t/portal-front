@@ -15,14 +15,18 @@
         created() {
 
             Promise.all([
+                //get all users if not in store 
+                this.$store.dispatch('users/fetchList', {
+                    all: true,
+                }),
+
                 //get all clients if not in store
-                this.$store.dispatch('clients/clientsGetConfirmed'),
+                this.$store.dispatch('clients/fetchList', {
+                    all: true
+                }),
                 
                 //get all tasksMaster if not in store
-                this.$store.dispatch('tasks/tasksMasterListSet'),
-                
-                //get all users if not in store 
-                this.$store.dispatch('users/usersAll')
+                this.$store.dispatch('tasksMaster/fetchList', {all: true}),
 
             ])
             .then(() => {

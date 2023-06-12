@@ -23,7 +23,7 @@
                             <table-sort @clicked="i=!i; k=!k; p=!p; sort();" :key="j" sortBy="name" sortType="string" storeName="users"></table-sort>
 
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="nameH" type="text" class="header p0" required>
+                                <input v-model="filters.name" @input="updateFilters" ref="nameH" type="text" class="header p0" required>
                                 <span @click="$refs['nameH'].focus()" class="floating-label">name</span>
                             </div>
                         </div>
@@ -33,7 +33,7 @@
                             <table-sort @clicked="i=!i; j=!j; p=!p; sort();" :key="k" sortBy="email" sortType="string" storeName="users"></table-sort>
 
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="emailH" type="text" class="header p0" required>
+                                <input v-model="filters.email" ref="emailH" type="text" class="header p0" required>
                                 <span @click="$refs['emailH'].focus()" class="floating-label">username</span>
                             </div>
                         </div>
@@ -42,7 +42,7 @@
                         <div class="flex">
                             <table-sort @clicked="j=!j; k=!k; p=!p; sort();" :key="i" sortBy="rights" sortType="number" storeName="users"></table-sort>
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" v-model="filterFor[2]" ref="rightsH" type="text" class="header p0" required>
+                                <input v-model="filters.rights" ref="rightsH" type="text" class="header p0" required>
                                 <span @click="$refs['rightsH'].focus()" class="floating-label">rights</span>
                             </div>
                         </div>
@@ -52,13 +52,13 @@
             </template>
 
             <template #tbody>
-                <template v-for="(user, index) in users()" :key="user?.id">
+                <template v-for="(user, index) in users" :key="user?.id">
                     <template v-if="user.isActive == 1">
                         <tr 
                             class="tr edit-user-tr"
                             tabindex="0"
-                            @keyup.enter="editUser('row'+index, user.id, $event)"
-                            @click.prevent="editUser('row'+index, user.id, $event)"    
+                            @keyup.enter="editUser('row'+index, user.id, 0)"
+                            @click.prevent="editUser('row'+index, user.id, 0)"    
                         >
                             <td>
                                 {{user.firstName + ' ' + user.lastName}}
@@ -82,7 +82,7 @@
                                     :is="componentId?.[user.id]"
                                     :editUserId="user.id"
                                     :uk="index"
-                                    @editingCompleted="editUser('row'+index, user.id, $event)"
+                                    @editingCompleted="editUser('row'+index, user.id, 1)"
                                     class="user-create"
                                     :buttonsIndex=2    
                                 ></component>
@@ -97,18 +97,15 @@
             </template>
             
             <table-pagination 
-                :key="$store.getters['users/getKey']"
-                :filters="filterFor"
                 @tableData="usersList = $event"
-                tableName="users"
+                storeName="users"
             ></table-pagination>
         </table-main>
-
-            <!-- <TableFilter :tableData="usersList" @filtered="filteredUsersList = $event" class="mr16 ml16 mt16 actions"/> -->
     </div>
 </template>
 
 <script>
+    import swal from "sweetalert";
     import NoAccess from "./NoAccess.vue";
     import rightCheck from "@/helpers/RightCheck";
     import UserCreate from './UserCreate.vue';
@@ -117,16 +114,11 @@
     import DotsImg from './DotsImg.vue';
     import DotsMenu from './DotsMenu.vue'
     import SkeletonForm from '../skeletons/SkeletonForm.vue';
+    import TablePagination from './TablePagination.vue'
 
-    import { defineAsyncComponent } from '@vue/runtime-core';
     import TableSort from './TableSort.vue';
-    import useDeleteSwal from "@/helpers/swalDelete";
 
-    const TablePagination = defineAsyncComponent(
-        () => import('./TablePagination.vue'),
-    )
-
-export default {
+    export default {
     name: "UserList",
     data() {
         return {
@@ -142,42 +134,79 @@ export default {
 
             i:0, j:0, k:0, p:0,
 
-            filterFor: ['', '', ''], //0-name, 1-email, 2-rights
-
             componentId: {}
         };
     },
-    methods: {
+    computed: {
         users() {
-            if (this.usersList?.length != 0) return this.usersList
-            return this.$store.getters['users/usersListGet'](1, 'id', 0, this.filterFor)
+            const currentPage = this.$store.getters['users/getCurrentPage']
+            const recordsPerPage = this.$store.getters['users/getRecordsPerPage']
+
+            const from = (currentPage-1)*(recordsPerPage)
+            return this.$store.getters['users/getList']({
+                from,
+                to: from + recordsPerPage
+            })
         },
-        editUser(rowIndex, userId, {force}) {
+        filters() {
+            return this.$store.getters['users/getFilters']
+        }
+    },
+    methods: {
+        editUser(rowIndex, userId, editingStatus) {
             const show = this.$refs[rowIndex][0].classList.contains('hide')
             if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
             else this.$refs[rowIndex][0].classList.add('hide')
 
-
-            if (rightCheck('edit_user')) {
-                this.componentId[userId] = 'SkeletonForm'
-                Promise.all([
-                    this.$store.dispatch('users/usersDataSet', {userId, force})
-                ])
-                .then(() => {
-                    this.allow[userId] = true
-                    this.componentId[userId] = 'UserCreate'
+            if(editingStatus === 0) {
+                if (rightCheck('edit_user')) {
+                    this.componentId[userId] = 'SkeletonForm'
+                    Promise.all([
+                        this.$store.dispatch('users/fetchData', {
+                            userId
+                        })
+                    ])
+                    .then(() => {
+                        this.allow[userId] = true
+                        this.componentId[userId] = 'UserCreate'
+                    })
+                }
+                else this.componentId[userId] = 'NoAccess'
+            }
+            else {
+                this.$store.dispatch('users/fetchList', {
+                    force: true
                 })
             }
-            else this.componentId[userId] = 'NoAccess'
 
         },
         deleteUser(userId, userName) {
-            useDeleteSwal({
-                text: userName,
-                promise: () => users.delete({userId}),
-                context: this,
-                mutationFn: 'users/deleteUser',
-                mutationArgs: {userId, filters: this.filterFor}
+            swal({
+                icon: 'warning',
+                title: 'Alert',
+                text: `Do you really want to delete "${userName}"`,
+                buttons: true,
+                dangerMode: true
+            })
+            .then(value => {
+                if (value == null) throw null
+                return users.delete({userId})
+            })
+            .then(() => {
+                this.$toast.success(`Saved`)
+                this.$store.commit('users/flush', {userId})
+                return Promise.all([
+                    this.$store.dispatch('users/fetchList', {
+                        force: true,
+                        all: true
+                    }),
+                    this.$store.dispatch('users/fetchList', {
+                        force: true
+                    })
+                ])
+            })
+            .catch(err => {
+                console.log(err)
             })
         },
         menu(e, {userId, userName, visibility}) {

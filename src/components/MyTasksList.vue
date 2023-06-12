@@ -9,7 +9,7 @@
                             <table-sort :key="i" @clicked="j=!j; k=!k; l=!l; sort();" sortType="string" sortBy="title" storeName="myTasks"></table-sort>
 
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="taskH" class="header p0" type="text" required>
+                                <input v-model="filters.name" ref="taskH" class="header p0" type="text" required>
                                 <span @click="$refs['taskH'].focus()" class="floating-label">task</span>
                             </div>
                         </div>
@@ -20,7 +20,7 @@
                             <table-sort :key="l" @clicked="i=!i; j=!j; k=!k; sort();" sortType="string" sortBy="client" storeName="myTasks"></table-sort>
                             
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" v-model="filterFor[2]" ref="clientH" class="header p0" type="text" required>
+                                <input v-model="filters.client" ref="clientH" class="header p0" type="text" required>
                                 <span @click="$refs['clientH'].focus()" class="floating-label">client</span>
                             </div>
                         </div>
@@ -31,7 +31,7 @@
                             <table-sort :key="j" @clicked="i=!i; k=!k; l=!l; sort();" sortType="string" sortBy="desc" storeName="myTasks"></table-sort>
 
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="descH" class="header p0" type="text" required>
+                                <input v-model="filters.description" ref="descH" class="header p0" type="text" required>
                                 <span @click="$refs['descH'].focus()" class="floating-label">description</span>
                             </div>
                         </div>
@@ -42,7 +42,7 @@
                             <table-sort :key="k" @clicked="i=!i; j=!k; l=!l; sort();" sortType="string" sortBy="deadline" storeName="myTasks"></table-sort>
 
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" v-model="filterFor[3]" ref="deadlineH" class="header p0" type="text" required>
+                                <input v-model="filters.deadline" ref="deadlineH" class="header p0" type="text" required>
                                 <span @click="$refs['deadlineH'].focus()" class="floating-label">deadline</span>
                             </div>
                         </div>              
@@ -73,10 +73,8 @@
                 </tr>  
             </template>
 
-                <table-pagination :key="$store.getters['myTasks/getKey']"
-                    :filters="filterFor"
-                    @tableData="myTasksList = $event"
-                    tableName="myTasks"
+                <table-pagination
+                    storeName="myTasks"
                 ></table-pagination>
 
         </table-main>
@@ -86,23 +84,28 @@
 <script>
 import swal from 'sweetalert'
 import { myTasks } from '../api'
-import useEditSwal from '../helpers/swalEdit'
 import TableMain from './TableMain.vue'
 import TablePagination from './TablePagination.vue'
 import TableSort from './TableSort.vue'
+
 export default {
     components: { TableMain, TablePagination, TableSort },
     name: "MyTasksList",
     data() {
         return {
             subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "signed documents awaited"}, {id: 9, status: "pending for DSC"}, {id: 10, status: 'reassigned'}, {id: 11, status: 'approved'}, {id: 12, status: "Pending before authority"}],
-            myTasksList: [],
 
             i:0, j:0, k:0, l:0, p:0,
 
-            filterFor: ['', '', ''],
-
             polling: false
+        }
+    },
+    computed: {
+        myTasksList() {
+            return this.$store.getters['myTasks/getList']()
+        },
+        filters() {
+            return this.$store.getters['myTasks/getFilters']
         }
     },
     methods: {
@@ -118,20 +121,39 @@ export default {
                     if (!cost) throw null
                     return myTasks.changeStatus({taskId, subTaskId, statusId, cost, costSaved})
                 })
+                .then(() => {
+                    this.$store.commit('tasks/flush', {taskId})
+                    return this.$store.dispatch('myTasks/fetchList')
+                })
+                .then(() => {
+                    return this.$store.dispatch('tasks/fetchList', {
+                        force: true
+                    })
+                })
                 .catch(err => console.log(err))
                 .finally(() => {
-                    this.$store.commit("tasks/refetch", {})
-                    this.$store.commit("myTasks/refetch")
+                    this.$toast.success(`Saved`)
+                    this.polling = true
                 })
             }
             else {
                 this.polling = false
-                useEditSwal({
-                    text: '',
-                    mutationFnName: 'myTasks/refetch',
-                    mutationArgs: {},
-                    promise: myTasks.changeStatus({taskId, subTaskId, statusId, costSaved}),
-                    context: this
+                myTasks.changeStatus({taskId, subTaskId, statusId, costSaved})
+                .then(() => {
+                    this.$store.commit('tasks/flush', {taskId})
+                    return this.$store.dispatch('myTasks/fetchList')
+                })
+                .then(() => {
+                    return this.$store.dispatch('tasks/fetchList', {
+                        force: true
+                    })
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+                .finally(() => {
+                    this.$toast.success(`Saved`)
+                    this.polling = true
                 })
             }
         },
@@ -142,7 +164,7 @@ export default {
     mounted() {
         var polling = (context) => {
             setTimeout(() => {
-                this.$store.commit('myTasks/refetch')
+                this.$store.dispatch('myTasks/fetchList')
                 if (context?.polling) polling(context)
             }, 600000) 
         }

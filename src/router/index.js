@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import store from '@/store/index.js'
-import { getUserRights } from '@/api/index.js'
+import { users } from '@/api/index.js'
 
 let settingBreadcrumb = {
   title: 'settings',
@@ -321,6 +321,19 @@ let routesNew = [
       },
       /////////////////////
       {
+        path: 'tasksMaster',
+        component: () => import('@/views/TasksMasterView.vue'),
+        children: [
+          {
+            path: '',
+            alias: 'list',
+            name: 'tasks_master',
+            component: () => import('@/components/TasksMasterList.vue')
+          }
+        ]
+      },
+      /////////////////////
+      {
         path: 'activity',
         children: [
           {
@@ -412,11 +425,11 @@ router.beforeEach((to)=>{
     const userRights = store.getters['rights/getUserRights']
 
     if (!userRights.length) {
-      getUserRights()
+      users.getRights()
       .then((res) => {
-        store.commit('rights/setUserRights', res?.data?.userRights)
-        const allow = userRights.some((right) => right.code_name == to.name)
-        if (allow == false) return { name: 'no_access'}
+        store.commit('rights/setUserRights', res.data)
+        const allow = userRights.some((right) => right.code_name === to.name)
+        if (allow === false) return { name: 'no_access'}
         return true    
       })
     } 

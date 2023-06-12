@@ -1,6 +1,6 @@
 <template>
     <div class="ml24 mr24">
-        <router-view></router-view>
+        <router-view v-if="allow"></router-view>
     </div>
 </template>
 
@@ -9,17 +9,17 @@
         name: "RoleView",
         data() {
             return {
-                allow: false,
+                allow: true,
             }
         },
-        created() {
-            //get all rights if not available in store
-            Promise.all([
-                this.$store.dispatch('rights/setAllRightsList')
-            ])
-            .then(() => {
-                this.allow = true
-            })
-        }
+        // created() {
+        //     //get all rights if not available in store
+        //     Promise.all([
+        //         this.$store.dispatch('rights/setAllRightsList')
+        //     ])
+        //     .then(() => {
+        //         this.allow = true
+        //     })
+        // }
     }
 </script>

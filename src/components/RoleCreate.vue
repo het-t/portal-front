@@ -11,7 +11,7 @@
             <div class="row mt8">
                 <label class="labels c1">rights</label>
                 <div>
-                    <div class="mt16 flex" v-for="right in getAllRightsList" :key="right">
+                    <div class="mt16 flex" v-for="right in getList" :key="right">
                         <input v-model="roleRights" 
                             :id="right.id" 
                             :value="right.id" 
@@ -29,7 +29,7 @@
 
             <button 
                 :disabled="disabled === true"
-                @click.prevent="(editRoleId == undefined || editRoleId == '') ? createRole({roleName, roleRights}) : editRole()" 
+                @click.prevent="(editRoleId == undefined || editRoleId == '') ? createRole({roleName, roleRights}) : editRole({roleId: editRoleId, roleName, roleRights})" 
                 class="green button mt8"
             >save</button>
             <button 
@@ -43,8 +43,6 @@
 
 <script>
 import { roles } from '@/api'
-import useCreateSwal from '@/helpers/swalCreate'
-import useEditSwal from '../helpers/swalEdit'
 import { mapGetters } from 'vuex'
 
     export default {
@@ -60,58 +58,69 @@ import { mapGetters } from 'vuex'
         },
         computed: {
             ...mapGetters('rights', [
-                'getAllRightsList'
+                'getList'
             ]),
-            ...mapGetters('roles', [
-                'rolesDataGet'
-            ]),
+            getData() {
+                return this.$store.getters['roles/getData'](this.editRoleId)
+            }
         },
         methods: {
-            createRole({roleName, roleRights}) {
+            createRole(args) {
                 this.disabled = true
-                useCreateSwal({
-                    text: roleName,
-                    mutationFnName: 'roles/RESET_STATE',
-                    promise: roles.create({roleName, roleRights}),
-                    context: this,
-                    url: '/u/roles/list'
-                }) 
-            },
-            editRole() {
-                this.disabled = true
-                const args = {
-                    roleId: this.editRoleId,
-                    roleName: this.roleName,
-                    roleRights: this.roleRights
-                }
-                
-                useEditSwal({
-                    text: args.roleName,
-                    mutationFnName: 'roles/refetch',
-                    mutationArgs: {roleId: args.roleId},
-                    promise: roles.edit(args),
-                    context: this
+                roles.create(args)
+                .then(() => {
+                    this.$toast.success(`Saved`)
+                    return this.$store.dispatch('roles/fetchList', {
+                        force: true
+                    })
+                })
+                .then(() => {
+                    this.$router.push({name: 'roles_list'})
+                })
+                .catch(() => {
+                    this.$toast.error(`Oops! We can't perform this action right now`)
+                })
+                .finally(() => {
+                    this.disabled = false
                 })
             },
+            editRole(args) {
+                this.disabled = true
+
+                roles.edit(args)
+                .then(() => {
+                    this.$emit('editingCompleted', 1)
+                    this.$toast.success(`Saved #${args.roleId}`)
+                })
+                .catch(err => {
+                    this.$toast.error(`Oops! We can't perform this action right now`)
+                    console.log(err)
+                })
+                .finally(() => {
+                    this.disabled = false
+                })
+
+            },
             canceled() {
-                if (this.editRoleId != undefined) {
-                    this.$emit("editingCompleted", {force: true})
+                if (this.editRoleId !== undefined) {
+                    this.$emit("editingCompleted", 2)
                 }
-                else this.$router.push('/u/roles/list')
+                else this.$router.push({name: 'roles_list'})
             }
         },
-        created() {                       
-            this.rightsList = this.$store.getters['rights/getAllRightsList']    //action invoked in rolesview.js
-            
-            const roleDataStore = this.$store.getters['roles/rolesDataGet'](this.editRoleId)
-                        
-            if (roleDataStore != undefined && roleDataStore != '') {
-                this.roleName = roleDataStore[0].roleName
-                this.roleRights = roleDataStore.map(o => o.rightId)
-            }
+        created() {  
+            this.$store.dispatch('rights/fetchList')
+            .then(() => {
+                this.rightsList = this.$store.getters['rights/getAllRightsList']
+            })
         },
         mounted() {
             this.$refs['focus'].focus()
+
+            if (!isNaN(this.editRoleId)) {
+                this.roleName = this.getData[0].roleName
+                this.roleRights = this.getData.map(o => o.rightId)
+            }
         }
     }
 </script>

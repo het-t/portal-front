@@ -37,6 +37,13 @@
         </div>
 
         <div class="link-list">
+          <router-link :to="{name: 'tasks_master'}" tabindex="-1" class="pt16 pb16 link">
+            <font-awesome-icon :icon="['fas', 'clipboard-list']" class="pa-icon ml24 mr24"></font-awesome-icon>
+            <span v-if="showLabels">tasks&nbsp;master</span>
+          </router-link>
+        </div>
+
+        <div class="link-list">
           <router-link :to="{name: 'work_diary'}" tabindex="-1" class="pt16 pb16 link">
             <font-awesome-icon :icon="['fas', 'user-check']" class="pa-icon ml24 mr24"></font-awesome-icon>
             <span v-if="showLabels">Work&nbsp;Diary</span>
@@ -104,7 +111,7 @@
 
 <script>
 import LogOut from '@/components/LogOut.vue'
-import { getUserRights } from '../api'
+import { users } from '../api'
 import TheBreadcrumb from '../components/TheBreadcrumb.vue'
 import { mapGetters } from 'vuex'
 import rightCheck from '@/helpers/RightCheck'
@@ -142,9 +149,9 @@ import rightCheck from '@/helpers/RightCheck'
       }
     },
     created() {
-      getUserRights()
+      users.getRights()
       .then((res) => {
-        this.$store.commit('rights/setUserRights', res?.data?.userRights)
+        this.$store.commit('rights/setUserRights', res.data)
         this.checkIfAdmin()
       })
       .catch(() => {
@@ -163,9 +170,9 @@ import rightCheck from '@/helpers/RightCheck'
       if (this.$store.getters['rights/getComponenetsVisibility'] == 0) {
         if (this.getRightsAgain == true) {
           this.getRightsAgain = false
-          getUserRights()
+          users.getRights()
           .then((res) => {
-            this.$store.commit('rights/setUserRights', res?.data?.userRights)
+            this.$store.commit('rights/setUserRights', res.data)
             this.checkIfAdmin()
           })
           .catch(() => {

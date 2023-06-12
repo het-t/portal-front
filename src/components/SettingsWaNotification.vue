@@ -167,10 +167,10 @@ export default {
     },
     computed: {
         ClientType() {
-            return this.$store.getters['clients/getAllTypesList'].map(el => el.type)
+            return this.$store.getters['clients/getTypes'].map(el => el.type)
         },
         UserRole() {
-            return this.$store.getters['roles/allRoles'].map(el => el.name)
+            return this.$store.getters['roles/getAll'].map(el => el.name)
         },
         UserName() {
             return this.$store.getters['users/allUsers'].filter(el => el.isActive == 1).map(el => el.email)

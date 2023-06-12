@@ -20,7 +20,7 @@
                                 <table-sort @clicked="j=!j; k=!k; m=!m; n=!n; o=!o; p=!p;" :key="i" sortBy="user" sortType="string" storeName="activity"></table-sort>
 
                                 <div class="floating-container">
-                                    <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="userH" type="text" class="header p0" required>
+                                    <input v-model="filters.email" ref="userH" type="text" class="header p0" required>
                                     <span @click="$refs['userH'].focus()" class="floating-label">user</span>
                                 </div>
                             </div>
@@ -30,7 +30,7 @@
                                 <table-sort @clicked="i=!i; j=!j; m=!m; n=!n; o=!o; p=!p;" :key="k" sortBy="act" sortType="string" storeName="activity"></table-sort>
 
                                 <div class="floating-container">
-                                    <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="activityH" type="text" class="header p0" required>
+                                    <input v-model="filters.activity" ref="activityH" type="text" class="header p0" required>
                                     <span @click="$refs['activityH'].focus()" class="floating-label">activity</span>
                                 </div>
                             </div>
@@ -40,7 +40,7 @@
                                 <table-sort @clicked="i=!i; j=!j; k=!k; n=!n; o=!o; p=!p;" :key="m" sortBy="table" sortType="string" storeName="activity"></table-sort>
 
                                 <div class="floating-container">
-                                    <input v-debounce:700ms.lock="sort" v-model="filterFor[2]" ref="tableH" type="text" class="header p0" required>
+                                    <input v-model="filters.refTable" ref="tableH" type="text" class="header p0" required>
                                     <span @click="$refs['tableH'].focus()" class="floating-label">table</span>
                                 </div>
                             </div>
@@ -58,7 +58,7 @@
                                 <table-sort @clicked="i=!i; j=!j; k=!k; m=!m; o=!o; p=!p;" :key="n" sortBy="details" sortType="string" storeName="activity"></table-sort>
 
                                 <div class="floating-container">
-                                    <input v-debounce:700ms.lock="sort" v-model="filterFor[3]" ref="detailsH" type="text" class="header p0" required>
+                                    <input v-model="filters.detail" ref="detailsH" type="text" class="header p0" required>
                                     <span @click="$refs['detailsH'].focus()" class="floating-label">details</span>
                                 </div>
                             </div>
@@ -69,7 +69,7 @@
                                 <table-sort @clicked="i=!i; j=!j; k=!k; m=!m; n=!n; p=!p;" :key="o" sortBy="time" sortType="number" storeName="activity"></table-sort>
 
                                 <div class="floating-container">
-                                    <input v-debounce:700ms.lock="sort" v-model="filterFor[4]" ref="timeH" type="text" class="header p0" required>
+                                    <input v-model="filters.datetime" ref="timeH" type="text" class="header p0" required>
                                     <span @click="$refs['timeH'].focus()" class="floating-label">time</span>
                                 </div>
                             </div>
@@ -108,10 +108,9 @@
                 </table>
             </div>
             <div class="pagination mr16 ml16">
-                <TablePagination @tableData="tablePagination($event)"
-                    :filters="filterFor"
+                <TablePagination @tableData="activityData = $event"
                     :key="p"
-                    tableName="activity"
+                    storeName="activity"
                 />
             </div>
         </div>
@@ -129,15 +128,14 @@
                 activityData: [],
 
                 i:0, j:0, k:0, l:0, m:0, n:0, o:0, p:0,
-
-                filterFor: ['', '', '', '', '']
             };
         },
+        computed: {
+            filters() {
+                return this.$store.getters['activity/getFilters']
+            }
+        },
         methods: {
-            tablePagination(event) {
-                console.log("in user activity", event)
-                this.activityData = event
-            },
             sort() {
                 this.p = !this.p
             }

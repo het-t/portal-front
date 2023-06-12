@@ -50,10 +50,9 @@
                 <tr class="table-heading">
                     <th>
                         <div class="flex">
-                            <!-- l=!l; j=!j; k=!k; p=!p; m=!m;  -->
                             <table-sort @clicked="j=!j; l=!l; k=!k; m=!m; sort()" :key="i" sortBy="title" sortType="string" storeName="tasks"></table-sort>
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="nameH" type="text" class="header p0" required>
+                                <input v-model="filters.name" ref="nameH" type="text" class="header p0" required>
                                 <span @click="$refs['nameH'].focus()" class="floating-label">name</span>
                             </div>
                         </div>
@@ -63,7 +62,7 @@
                         <div class="flex">
                             <table-sort @clicked="i=!i; l=!l; k=!k; m=!m; sort()" :key="j" sortBy="description" sortType="string" storeName="tasks"></table-sort>
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="desH" type="text" class="header p0" required>
+                                <input v-model="filters.description" ref="desH" type="text" class="header p0" required>
                                 <span @click="$refs['desH'].focus()" class="floating-label">description</span>
                             </div>
                         </div>
@@ -73,7 +72,7 @@
                         <div class="flex">
                             <table-sort @clicked="i=!i; j=!j; l=!l; m=!m; sort()" :key="k" sortBy="client" sortType="string" storeName="tasks"></table-sort>
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" v-model="filterFor[2]" ref="clientH" type="text" class="header p0" required>
+                                <input v-model="filters.client" ref="clientH" type="text" class="header p0" required>
                                 <span @click="$refs['clientH'].focus()" class="floating-label">client</span>
                             </div>
                         </div>
@@ -83,7 +82,7 @@
                         <div class="flex">
                             <table-sort @clicked="i=!i; j=!j; k=!k; m=!m; sort()" :key="l" sortBy="progress" sortType="number" storeName="tasks"></table-sort>
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" v-model="filterFor[4]" ref="progH" type="text" class="header p0" required>
+                                <input v-model="filters.progress" ref="progH" type="text" class="header p0" required>
                                 <span @click="$refs['progH'].focus()" class="floating-label">progress</span>
                             </div>
                         </div>
@@ -98,8 +97,7 @@
                         <div class="flex">
                             <table-sort @clicked="i=!i; j=!j; k=!k; l=!l; sort()" :key="m" sortBy="status" sortType="number" storeName="tasks"></table-sort>
                             <div class="floating-container">
-                                <!-- <input v-debounce:700ms.lock="sort" v-model="filterFor[3]" ref="statusH" type="text" class="header p0" required> -->
-                                <select @change="sort" v-model="filterFor[3]" ref="statusH" class="header p0" required>
+                                <select @change="sort" v-model="filters.status" ref="statusH" class="header p0" required>
                                     <option value="1">InProgress</option>
                                     <option value="2">Unbilled</option>
                                     <option value="3">Billed</option>
@@ -113,14 +111,12 @@
             </template>
 
             <template #tbody>
-                <template v-for="(task, index) of tasks()" :key="task.id">
-                        <!-- v-show="task.id" -->
-
+                <template v-for="(task, index) of tasks" :key="task.id">
                     <tr
                         class="tr edit-task-tr" 
                         tabindex="0"
-                        @keyup.enter="editTask('row'+index, task.id, $event)"
-                        @click.prevent="editTask('row'+index, task.id, $event)"
+                        @keyup.enter="editTask('row'+index, task.id, 0)"
+                        @click.prevent="editTask('row'+index, task.id, 0)"
                     >
                         <td>
                             {{task.title}}
@@ -166,17 +162,13 @@
             </template>
 
             <table-pagination 
-                @tableData="tasksList = $event" 
-                :key="$store.getters['tasks/getKey']"
-                :filters="filterFor"
-                tableName="tasks"                
+                storeName="tasks"                
             />
         </table-main>
     </div>
 </template>
 
 <script>
-import useDeleteSwal from '@/helpers/swalDelete';
 import TasksCreate from './TasksCreate.vue';
 import TasksProgress from './TasksProgress.vue';
 import TableMain from './TableMain.vue';
@@ -188,32 +180,38 @@ import { tasks } from '../api';
 import TableSort from './TableSort.vue';
 import NoAccess from './NoAccess.vue';
 import rightCheck from '@/helpers/RightCheck';
-import useEditSwal from '../helpers/swalEdit';
+import swal from 'sweetalert';
 
 export default {
     name: "TasksList",
     data() {
         return {
-            tasksList: [],
             menuVisibisility: '',
             selectedTaskId: '',
             selectedTask: '',
 
             i:0, j:0, k:0, l:0, m:0,
 
-            filterFor: ['', '', '', '', ''],
-
             componentId: {},
         };
     },
+    computed: {
+        tasks() {
+            const currentPage = this.$store.getters['users/getCurrentPage']
+            const recordsPerPage = this.$store.getters['users/getRecordsPerPage']
+            const from = (currentPage-1)*(recordsPerPage)
+
+            return this.$store.getters['tasks/getList']({
+                from,
+                to: from + recordsPerPage
+            })
+        },
+        filters() {
+            return this.$store.getters['tasks/getFilters']
+        }
+    },
     methods: {
         rightCheck,
-        tasks() {
-            if (this.tasksList?.length != 0) {
-                return this.tasksList
-            }
-            return this.$store.getters['tasks/tasksListGet'](1, 'id', 0, this.filterFor)
-        },
         menu(e, {taskId, task, visibility}) {
             this.menuVisibisility = visibility
             this.selectedTaskId = taskId
@@ -221,50 +219,81 @@ export default {
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
         },
         changeTaskStatus(statusId) {
-
+            const taskId = this.selectedTaskId
             tasks.changeStatus({
-                taskId: this.selectedTaskId,
+                taskId,
                 statusId,               
             })
-            .then(() => 
-                useEditSwal({
-                    text: '',
-                    context: this,
-                    promise: Promise.resolve(),
-                    mutationFnName: 'tasks/refetch',
-                    mutationArgs: {taskId: this.selectedTaskId}
+            .then(() => {
+                this.$toast.success(`Saved`)
+                this.$store.commit('tasks/flush', {taskId})
+                return this.$store.dispatch('tasks/fetchList', {
+                    force: true
                 })
-            )
+            })
+            .catch(err => console.log(err))
         },
-        deleteTask(taskId, task) {
-            useDeleteSwal({
-                text: task,
-                context: this,
-                mutationFn: 'tasks/deleteTask',
-                promise: () => tasks.delete({taskId}),
-                mutationArgs: {taskId, filters: this.filterFor}
+        deleteTask(taskId, taskTitle) {
+            swal({
+                icon: 'warning',
+                title: 'Alert',
+                text: `Do you really want to delete "${taskTitle}"`,
+                buttons: true,
+                dangerMode: true
+            })
+            .then(value => {
+                if (value == null) throw null
+                return tasks.delete({taskId})
+            })
+            .then(() => {
+                this.$toast.success(`Saved`)
+                this.$store.commit('tasks/flush', {taskId})
+                return this.$store.dispatch('tasks/fetchList', {
+                    force: true
+                })
+            })
+            .catch(err => {
+                console.log(err)
             })
         },
-        editTask(rowIndex, taskId, {force}) {
+        editTask(rowIndex, taskId, editingStatus) {
             const show = this.$refs[rowIndex][0].classList.contains('hide')
             if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
             else this.$refs[rowIndex][0].classList.add('hide')
-            //get taskData and subTask to edit if not available in store
-            //and after getting data render corresponding taskcreate component
-            
-            if (rightCheck('edit_task')){
 
-                this.componentId[taskId] = 'SkeletonForm'
+            if (editingStatus === 0) {
+                if (rightCheck('edit_task')){
 
-                Promise.all([
-                    this.$store.dispatch('tasks/tasksDataSet', {taskId, force}),
-                    this.$store.dispatch('tasks/subTasksDataSet', {taskId, force})
-                ])
-                .then(() => {
-                    this.componentId[taskId] = 'TasksCreate'
-                })
+                    this.componentId[taskId] = 'SkeletonForm'
+
+                    Promise.all([
+                        this.$store.dispatch('tasks/fetchData', {taskId}),
+                        this.$store.dispatch('tasks/fetchSubTasks', {taskId})
+                    ])
+                    .then(() => {
+                        this.componentId[taskId] = 'TasksCreate'
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+                }
+                else this.componentId[taskId] = 'NoAccess'
             }
-            else this.componentId[taskId] = 'NoAccess'
+            else {
+                this.$store.dispatch('tasks/fetchList', {
+                    force: true
+                })
+                if(editingStatus === 1) {
+                    this.$store.dispatch('tasks/fetchData', {
+                        taskId,
+                        force: true
+                    })
+                    this.$store.dispatch('tasks/fetchSubTasks', {
+                        taskId,
+                        force: true
+                    })
+                }
+            }
         },
         sort() {
             this.$store.commit('tasks/paginate')

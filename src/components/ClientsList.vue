@@ -29,11 +29,11 @@
         </div>
 
         <div class="clientTag">
-            <div @click.prevent="clientStatus(1)" class="tag-container" :class="filterFor[4] === 1 ? 'active-tag' : ''">
+            <div @click.prevent="clientStatus(1)" class="tag-container" :class="filters.tag === 1 ? 'active-tag' : ''">
                 <span>Confirmed</span>
             </div>
 
-            <div @click.prevent="clientStatus(2)" class="tag-container" :class="filterFor[4] === 2 ? 'active-tag' : ''">
+            <div @click.prevent="clientStatus(2)" class="tag-container" :class="filters.tag === 2 ? 'active-tag' : ''">
                 <span>Leads</span>
             </div>
         </div>
@@ -47,7 +47,7 @@
                             <table-sort @clicked="l=!l; j=!j; k=!k; p=!p; sort();" :key="i" sortBy="name" sortType="string" storeName="clients"></table-sort>
 
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" v-model="filterFor[0]" ref="nameH" type="text" class="header p0" required>
+                                <input v-model="filters.name" ref="nameH" type="text" class="header p0" required>
                                 <span @click="$refs['nameH'].focus()" class="floating-label">name</span>
                             </div>                      
                         </div>
@@ -60,7 +60,7 @@
                             <table-sort @clicked="l=!l;k=!k; i=!i; p=!p; sort();" :key="j" sortBy="type" sortType="string" storeName="clients"></table-sort>
 
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" v-model="filterFor[1]" ref="typeH" type="text" class="header p0" required>
+                                <input v-model="filters.type" ref="typeH" type="text" class="header p0" required>
                                 <span @click="$refs['typeH'].focus()" class="floating-label">type</span>
                             </div>
                         </div>
@@ -70,7 +70,7 @@
                             <table-sort @clicked="l=!l; j=!j; i=!i; p=!p; sort();" :key="k" sortBy="ca" sortType="string" storeName="clients"></table-sort>
 
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" v-model="filterFor[2]" ref="caH" type="text" class="header p0" required>
+                                <input v-model="filters.ca" ref="caH" type="text" class="header p0" required>
                                 <span @click="$refs['caH'].focus()" class="floating-label">CA</span>
                             </div>
 
@@ -81,7 +81,7 @@
                             <table-sort @clicked="i=!i; j=!j; k=!k; p=!p; sort();" :key="l" sortBy="con" sortType="string" storeName="clients"></table-sort>
 
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" v-model="filterFor[3]" ref="conH" type="text" class="header p0" required>
+                                <input v-model="filters.contact" ref="conH" type="text" class="header p0" required>
                                 <span @click="$refs['conH'].focus()" class="floating-label">contact</span>
                             </div>
                         </div>
@@ -91,11 +91,11 @@
             </template>
 
             <template #tbody>
-                <template v-for="(client, index) in clientList" :key="index">
+                <template v-for="(client, index) in clients" :key="index">
                     <tr class="tr hidden-tr-parent" 
                         tabindex="0" 
-                        @click.stop="editClient('row'+index, client.id)"
-                        @keyup.enter="editClient('row'+index, client.id)"
+                        @click.stop="editClient('row'+index, client.id, 0)"
+                        @keyup.enter="editClient('row'+index, client.id, 0)"
                     >
                         <td>
                             {{client.name}}
@@ -145,7 +145,7 @@
                                 :is="componentId?.[client.id]"
                                 :uk="index"
                                 :clientData="JSON.stringify(client)" 
-                                @editingCompleted="editClient('row'+index, client.id)"
+                                @editingCompleted="editClient('row'+index, client.id, 1)"
                             ></component>
                         </td>
                     </tr>
@@ -153,10 +153,7 @@
             </template>
 
             <table-pagination 
-                @tableData="clientList = $event"
-                :filters="filterFor"
-                :key="$store.getters['clients/getKey']"
-                tableName="clients"
+                storeName="clients"
             />
         </table-main>
    </div>
@@ -172,7 +169,7 @@
     import { clients } from '../api'
     import TableSort from './TableSort.vue'
     import rightCheck from '@/helpers/RightCheck'
-    import useDeleteSwal from '@/helpers/swalDelete'
+    import swal from 'sweetalert'
 
     export default {
         components: { 
@@ -186,8 +183,6 @@
         },
         data() {
             return {
-                clientList: '',
-
                 selectedClientId: '',
                 selectedClient: '',
 
@@ -195,26 +190,45 @@
 
                 i:0, j:0, k:0, l:0, p:0,
 
-                filterFor: ['', '', '', '', 1],
-
                 componentId: {}
+            }
+        },
+        computed: {
+            clients() {
+                const currentPage = this.$store.getters['users/getCurrentPage']
+                const recordsPerPage = this.$store.getters['users/getRecordsPerPage']
+
+                const from = (currentPage-1)*(recordsPerPage)
+
+                return this.$store.getters['clients/getList']({
+                    from,
+                    to: from + recordsPerPage
+                })
+            },
+            filters() {
+                return this.$store.getters['clients/getFilters']
             }
         },
         methods: {
             clientStatus(status) {
-                this.$store.commit('clients/setClientStatus', status)
-                this.filterFor[4] = status
-                this.sort()
+                this.$store.commit('clients/setTagFilter', status)
             },
-            editClient(rowIndex, clientId) {
+            editClient(rowIndex, clientId, editingStatus) {
                 const show = this.$refs[rowIndex][0].classList.contains('hide')
                 if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
                 else this.$refs[rowIndex][0].classList.add('hide')
 
-                if (rightCheck('edit_client')) {
-                    this.componentId[clientId] = 'ClientCreate'
+                if(editingStatus === 0) {
+                    if (rightCheck('edit_client')) {
+                        this.componentId[clientId] = 'ClientCreate'
+                    }
+                    else this.componentId[clientId] = 'NoAccess'
                 }
-                else this.componentId[clientId] = 'NoAccess'
+                else {
+                    this.$store.dispatch('clients/fetchList', {
+                        force: true
+                    })
+                }
             },
             menu(e, {client, clientId, visibility}) {
                 this.menuVisibisility = visibility
@@ -222,22 +236,52 @@
                 this.selectedClient = client
                 if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
             },
-            deleteClient(clientId, client) {
-                useDeleteSwal({
-                    text: client,
-                    promise: () => clients.delete({clientId}),
-                    mutationFn: 'clients/deleteClient',
-                    mutationArgs: {clientId, filters:this.filterFor},
-                    context: this
+            deleteClient(clientId, clientName) {
+                swal({
+                    icon: 'warning',
+                    title: 'Alert',
+                    text: `Do you really want to delete "${clientName}"`,
+                    buttons: true,
+                    dangerMode: true
                 })
-            },
-            changeClientTag(clientId, tag) {
-                clients.tag({
-                    id: clientId,
-                    tagId: tag
+                .then(value => {
+                    if (value == null) throw null
+                    return clients.delete({clientId})
                 })
                 .then(() => {
-                    this.$store.commit('clients/refetch')
+                    this.$toast.success(`Saved`)
+                    this.$store.commit('clients/flush')
+                    return Promise.all([
+                        this.$store.dispatch('clients/fetchList', {
+                            force: true,
+                            all: true
+                        }),
+                        this.$store.dispatch('clients/fetchList', {
+                            force: true
+                        })
+                    ])
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+            },
+            changeClientTag(clientId, tagId) {
+                clients.tag({
+                    id: clientId,
+                    tagId: tagId
+                })
+                .then(() => {
+                    this.$toast.success(`Saved`)
+                    this.$store.commit('clients/flush')
+                    return Promise.all([
+                        this.$store.dispatch('clients/fetchList', {
+                            force: true,
+                            all: true
+                        }),
+                        this.$store.dispatch('clients/fetchList', {
+                            force: true,
+                        }),  
+                    ])
                 })
                 .catch(err => console.log(err))
             },

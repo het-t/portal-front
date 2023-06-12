@@ -13,7 +13,9 @@
             }
         },
         created() {
-            this.$store.dispatch('roles/rolesAll')
+            this.$store.dispatch('roles/fetchList', {
+                all: true
+            })
             .then(() => {
                 this.allow = true
             })

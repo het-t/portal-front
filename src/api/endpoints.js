@@ -30,6 +30,15 @@ const endpoints = {
     changeTaskStatus: '/tasks/change-status',
     changeClientTag: '/clients/tag',
     
+    roles: '/roles',
+    clients: '/clients',
+    users: '/users',
+    tasks: '/tasks',
+    taskMasters: '/tasksMaster',
+    rights: '/rights',
+    activities: '/activities',
+    myTasks: '/myTasks',
+    
     admin: {
         createAdmin: '/orgs/admins/create-admin',
         createOrg: '/orgs/create-org'

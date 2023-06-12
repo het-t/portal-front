@@ -2,146 +2,149 @@
     <div class="flex table-pagination">
         <div class="recordsPerPage">
             <label for="recordsPerPage">entries</label>
-            <select @change="getPageData()" id="recordsPerPage" v-model="recordsPerPage"> 
+            <select 
+                v-model="localRecordsPerPage"
+                @change="pageSizeChange" 
+                id="recordsPerPage"
+            > 
                 <option :value=50>50</option>
                 <option :value=100>100</option>
                 <option :value=150>150</option>
                 <option :value=200>200</option>
             </select>
         </div>
+
         <ul>
             <li class="neutral">
                 <button @click="pageChange(1)">&lt;</button>
             </li>
+
             <li class="neutral" v-for="n in showPage()" :key="n">
-                <button :class="(n == currentPage) ? 'green' : ''" @click="pageChange(n)">{{n}}</button>
+                <button 
+                    @click="pageChange(n)"
+                    :class="(n == currentPage) ? 'green' : ''" 
+                >{{n}}</button>
             </li>
+
             <li class="neutral">
-                <button @click="pageChange(pageCount)">&gt;</button>
+                <button @click="pageChange(totalPages)">&gt;</button>
             </li>
         </ul>
     </div>
 </template>
 
-<script>
-    import axios from '../api/axiosInstance.js'
+<script setup>
+import {onMounted, defineProps, computed, defineEmits, watch, ref} from 'vue'
+import { useStore } from 'vuex';
+import { debounce } from 'vue-debounce';
 
-    export default {
-        name: 'TablePagination',
-        data() {
-            return {
-                pageData: '',
-                currentPage: 1,
-                recordsPerPage: 50,
-                pageCount: '',
-                noCachingTotalRecords: ''
-            }
-        },
-        computed: {
-            totalRecords() {
-                if (this.noCachingTotalRecords != '') return this.noCachingTotalRecords
-                return this.$store.getters?.[`${this.tableName}/${this.tableName}CountGet`]
-            },
-            isStoreAvailable() {
-                return !(this.noCaching == true)
-            }
-        },
-        props: {
-            tableName: String,
-            sortBy: String,
-            sortOrder: Number,
-            filters: Array,
-            noCaching: Boolean
-        },
-        methods: {
-            showPage() {
-                if (!isNaN(this.pageCount)) {
-                    let numShown = 5;
-                    numShown = Math.min(numShown, this.pageCount)
-                    let first = this.currentPage - Math.floor(numShown / 2)
-                    first = Math.max(first, 1)
-                    first = Math.min(first, this.pageCount - numShown + 1)
-                    return [...Array(numShown)].map((k,i) => i + first)
-                }
-                else {
-                    return 0
-                }
-            },
-            pageChange(page) {
-                this.currentPage = page
-                if (this.isStoreAvailable) this.$store.commit(`${this.tableName}/currentPageSet`, {index: page})
-                this.getPageData()
-            },
-            getPageData() {
-                this.pageCount = Math.ceil(this.totalRecords / this.recordsPerPage)
+const emits = defineEmits(['tableData'])
 
-                let {sortBy, sortOrder} = this.$store.getters?.[`${this.tableName}/sortGet`] ?
-                                        this.$store.getters?.[`${this.tableName}/sortGet`] :
-                                        {}
+const store = useStore()
 
-                let pageDataStore = this.$store.getters?.[`${this.tableName}/${this.tableName}ListGet`]?.(this.currentPage, sortBy, sortOrder, this.filters)
+const localRecordsPerPage = ref(50)
 
-                if ((
-                    (pageDataStore == undefined) || 
-                    (pageDataStore?.length == 0) || 
-                    (pageDataStore?.length < this.recordsPerPage && pageDataStore?.length >= 50)
-                ) || !this.isStoreAvailable) {
-                    axios.get(`${this.tableName}`, {
-                        params: {
-                            from: (this.currentPage-1)*this.recordsPerPage,
-                            recordsPerPage: this.recordsPerPage,
-                            sortBy,
-                            sortOrder,
-                            filters: this.filters
-                        },
-                        withCredentials: true
-                    })
-                    .then((res) => {
-                        if (this.isStoreAvailable) {
-                            this.$store.commit(`${this.tableName}/${this.tableName}List`, {
-                                index: this.currentPage, 
-                                sortBy, 
-                                sortOrder,
-                                filters: this.filters,
-                                data: res.data[this.tableName+'List']
-                            })   
-                        }
-                        this.$emit("tableData", res.data[this.tableName+'List'])                
-                    })
-                } 
-                else {
-                    this.$emit("tableData", pageDataStore)
-                }
-            },
-        },
-        created() {
-            if (this.isStoreAvailable){ 
-                const currentPageInStore = this.$store.getters[`${this.tableName}/getCurrentPage`]
-
-                if (currentPageInStore == '' || currentPageInStore == undefined) {
-                    this.$store.commit(`${this.tableName}/currentPageSet`, {index: this.currentPage})
-                }
-                else this.currentPage = currentPageInStore
-            }
-
-            if (this.totalRecords == '' || this.totalRecords == undefined) {
-                axios.get(`${this.tableName}/count`, {
-                    params: {
-                        filters: this.filters
-                    },
-                    withCredentials: true
-                })
-                .then((res) => {
-                    this.noCachingTotalRecords = res.data.count
-                    if (this.isStoreAvailable)this.$store.commit?.(`${this.tableName}/${this.tableName}CountSet`, res?.data?.count)
-                    this.getPageData()
-                })
-            }
-            else {
-                this.getPageData()
-            }            
-        }
+const props = defineProps({
+    storeName: String,
+    storeActionToFetchData: {
+        type: String,
+        default: 'fetchList'
+    },
+    storeGetterToGetData:  {
+        type: String,
+        default: 'getList'
+    },
+    storeActionToFetchNoOfRecords:  {
+        type: String,
+        default: 'fetchCount'
+    },
+    storeGetterToGetNoOfRecords:  {
+        type: String,
+        default: 'getCount'
     }
+})
+
+const filters = computed(() => store.getters[props.storeName + '/getFilters'])
+
+const debouncedApiCall = debounce(() => {
+    getData(false);
+}, 700);
+    
+watch(
+    filters.value, 
+    () => {
+        debouncedApiCall()
+    },     
+    {deep: true}
+)
+
+const recordsPerPage = computed(() => store.getters[props.storeName + '/getRecordsPerPage'])
+watch(
+    recordsPerPage,
+    () => {
+        getData(false)
+    }
+)
+function pageSizeChange() {
+    store.commit(props.storeName + '/setRecordsPerPage', localRecordsPerPage.value)
+    getData(false)
+}
+
+const noOfRecords = computed(() => store.getters[props.storeName + '/' + props.storeGetterToGetNoOfRecords])
+const totalPages = computed(() => Math.ceil(noOfRecords.value / recordsPerPage.value))
+
+const currentPage = computed(() => store.getters[props.storeName + '/getCurrentPage'])
+watch(
+    currentPage,
+    () => {
+        getData(false)
+    }
+)
+
+function showPage() {
+    if (!isNaN(totalPages.value)) {
+        let numShown = 5;
+        numShown = Math.min(numShown, totalPages.value)
+        let first = currentPage.value - Math.floor(numShown / 2)
+        first = Math.max(first, 1)
+        first = Math.min(first, totalPages.value - numShown + 1)
+        return [...Array(numShown)].map((k,i) => i + first)
+    }
+    return 1
+}
+
+function pageChange(n) {
+    store.commit(`${props.storeName}/setCurrentPage`, n)
+}
+
+function getData(force) {
+    const dataGetter = computed(() => store.getters[props.storeName + '/' + props.storeGetterToGetData])
+
+    store.dispatch(props.storeName + '/' + props.storeActionToFetchData, {
+        recordsPerPage: recordsPerPage.value,
+        force
+    })
+    .then(() => {
+        emits('tableData', dataGetter.value({
+            from: (currentPage.value-1)*recordsPerPage.value,
+            to: (currentPage.value-1)*recordsPerPage.value + recordsPerPage.value,
+            all: false
+        }))
+    })
+}
+
+function fetchCount() {
+    return store.dispatch(props.storeName + '/' + props.storeActionToFetchNoOfRecords, {
+        filters: filters.value
+    })
+}
+
+onMounted(() => {
+    fetchCount()
+    .then(() => {
+        getData(false)
+    })
+})
 </script>
 
 <style scoped>
@@ -181,4 +184,4 @@
     button {
         color: grey;
     }
-</style>>
+</style>

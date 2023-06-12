@@ -1,99 +1,73 @@
-import { roles } from "@/api"
+import { tasksMaster } from "@/api/index.js"
 import formatFilters from "@/helpers/storeFiltersFormater"
 
 const state = {
-    count: {}, //no. of roles
-    roles: {},      //table data of visited pages
-    data: {},   //list of data of roles selected to edit
+    count: {},
+    list: {},
+    data: {},
     sortBy: 'id',
-    sortOrder: 0,    //0-desc, 1-asc
-    recordsPerPage: 50,
+    sortOrder: 0,
     currentPage: 1,
+    recordsPerPage: 50,
     filters: {
-        name: '',
-        rights: ''
+        title: ''
     }
 }
 
 const getters = {
-    //
-    getFilters(state) {
-        return state.filters
-    },
-    //
-    getRecordsPerPage(state) {
-        return state.recordsPerPage
-    },
-    //
     getCount(state) {
-        return state.count[Object.values(formatFilters(state.filters)).join('_')]
+        return state.count[Object.values(formatFilters(state.filters))]
     },
-    //
     getList: (state) => ({from = null, to = null, sortBy = null, sortOrder = null, filters = Object.values(formatFilters(state.filters))}) => {
         if (from !== null && to !== null) {
             sortBy = state.sortBy
             sortOrder = state.sortOrder
         }
-        return state.roles[`${from}_${to}_${sortBy}_${sortOrder}_${filters.join('_')}`]
+        return state.list[`${from}_${to}_${sortBy}_${sortOrder}_${filters.join('_')}`]
     },
-    //
-    getData: (state) => (index) => {
-        return state.data[index]
-    },
-    //
     getSort(state) {
         return {
             sortBy: state.sortBy,
             sortOrder: state.sortOrder
         }
     },
+    getFilters(state) {
+        return state.filters
+    },
     getCurrentPage(state) {
         return state.currentPage
+    },
+    getRecordsPerPage(state) {
+        return state.recordsPerPage
     }
 }
 
 const mutations = {
-    setRecordsPerPage(state, value) {
-        state.recordsPerPage = value
-    },
-    //
     setCount(state, {count}) {
         state.count[Object.values(formatFilters(state.filters)).join('_')] = count
     },
-    //
     setList(state, {from = null, to = null, sortBy = null, sortOrder = null, filters = ['null', 'null'], data}) {
-        state.roles[`${from}_${to}_${sortBy}_${sortOrder}_${filters.join('_')}`] = data
-    },
-    //
-    setData(state, {index, data}) {
-        state.data[index] = data
+        state.list[`${from}_${to}_${sortBy}_${sortOrder}_${filters.join('_')}`] = data
     },
     setSort(state, {sortBy, sortOrder}) {
         state.sortBy = sortBy
         state.sortOrder = sortOrder
     },
-    deleteRole(state, {roleId, filters}) {
-        const path = state.currentPage+'_'+state.sortBy+'_'+state.sortOrder+'_'+filters[0]+'_'+filters[1]
-        state.roles[path].splice(state.roles[path].findIndex(role => role.id == roleId), 1)
+    setCurrentPage(state, n) {
+        state.currentPage = n
     },
-    setCurrentPage(state, index) {
-        state.currentPage = index
-    },
-    flush(state, {roleId}) {
-        state.roles = {}
-        delete state.data[roleId]
+    setRecordsPerPage(state, recordsPerPage) {
+        state.recordsPerPage = recordsPerPage
     }
 }
 
 const actions = {
-    //
-    fetchCount({getters, commit}, {filters, force = false}) { 
-
+    fetchCount({getters, commit}, {force = false}) {
         return new Promise((resolve, reject) => {
-            const formattedFilters = formatFilters(filters)
+            const formattedFilters = formatFilters(getters['getFilters'])
 
-            if (!getters['getCount'] || force === true) {
-                roles.count({
+            if (!getters['getCount'] || force === true) {                
+                tasksMaster.count({
                     filters: formattedFilters
                 })
                 .then((res) => {
@@ -108,9 +82,8 @@ const actions = {
                 })
             }
             else resolve()
-        }) 
-    }, 
-    //
+        })
+    },
     fetchList({getters, commit}, {force = false, all = false}) {
         return new Promise((resolve, reject) => {
             let {sortBy, sortOrder} = getters['getSort']
@@ -118,9 +91,9 @@ const actions = {
             const recordsPerPage = getters['getRecordsPerPage']
 
             let from, to, formattedFilters
-            
+
             if (all) {
-                from = null
+                from = null 
                 to = null
                 sortBy = null
                 sortOrder = null
@@ -132,14 +105,13 @@ const actions = {
                 to = from + recordsPerPage
             }
 
-            if (!getters['getList']({from, to, sortBy, sortOrder, filters: Object.values(formattedFilters)}) || force === true) {
-
-                roles.getList({
+            if (!getters['getList']({from, to, sortBy, sortOrder, filters:  Object.values(formattedFilters)}) || force == true) {
+                tasksMaster.getList({
                     from,
                     recordsPerPage,
                     filters: formattedFilters
                 })
-                .then((res) => {
+                .then(res => {
                     if (all) {
                         commit('setList', {
                             data: res.data,
@@ -150,7 +122,7 @@ const actions = {
                         commit('setList', {
                             data: res.data,
                             from,
-                            to: from + recordsPerPage,
+                            to,
                             sortBy,
                             sortOrder,
                             filters: Object.values(formattedFilters)
@@ -164,27 +136,7 @@ const actions = {
             }
             else resolve()
         })
-    },
-    fetchData({getters, commit}, {roleId, force}) {
-        return new Promise((resolve, reject) => {
-            if (!getters['getData'](roleId) || force === true) {
-                roles.getData({
-                    roleId
-                })
-                .then((res) => {
-                    commit('setData', {
-                        index: roleId, 
-                        data: res.data
-                    })
-                    resolve()
-                })
-                .catch(err => {
-                    reject(err)
-                })
-            }
-            else resolve()
-        })
-    }
+    } 
 }
 
 export default {

@@ -1,7 +1,7 @@
 import axios from './axiosInstance.js'
 
-export default function makeDeleteReq (url, args) {
-    return axios.delete(url, {
+export default function makePutReq (url, args) {
+    return axios.put(url, {
         withCredentials: true,
         params: args
     })
