@@ -158,12 +158,20 @@
                             <label :for="'save-task-template'+uk">save task template for future use </label>
                         </div>
 
-                        <button :disabled="disabled === true" @click.prevent="proceed()" class="green mt16 button">save</button>
+                        <button :disabled="disabled === true" @click.prevent="changeFlag()" class="green mt16 button">save</button>
                         <button :disabled="disabled === true" @click.prevent="canceled()" class="neutral ml8 mt16 button">cancel</button>
                     </form>
                 </div>
                 <div class="vr"></div>
 
+                <TasksCreateSubTasks 
+                    :uk="uk"
+                    :flag="flag"
+                    :editTaskId="editTaskId"
+                    :taskMaster="taskMasterId"
+                    @dataToSave="proceed($event)"
+                    @popUpVisibilityChanged="popUpVisibilityChanged($event)"
+                ></TasksCreateSubTasks>
 
             </div>
         </div>
@@ -178,7 +186,7 @@
                         <th>date</th>
                     </tr>
 
-                    <tr v-for="(logObj, index) in taskData?.tasksLogs" :key="index"
+                    <tr v-for="(logObj, index) in taskLogs" :key="index"
                         class="tr">
                         <td>{{logObj.user}}</td>
                         <td>
@@ -201,28 +209,24 @@
 
 <script>
     import swal from 'sweetalert'
-    import { tasks, subTasksMaster } from '@/api/index.js'
+    import { tasks } from '@/api/index.js'
     import VueMultiselect from 'vue-multiselect'
     import rightCheck from '@/helpers/RightCheck'
+    import TasksCreateSubTasks from './TasksCreateSubTasks.vue'
 
     export default {
         name: 'TasksCreate',
         props: ['editTaskId', 'uk'],
         components: {
             VueMultiselect,
+            TasksCreateSubTasks
         },
         data() {
             return {
+                flag: false,
                 editing: false,
-                subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "signed documents awaited"}, {id: 9, status: "pending for DSC"}, {id: 10, status: 'reassigned'}, {id: 11, status: 'approved'}, {id: 12, status: "Pending before authority"}],
-                
-                subTasks: [],
-                removedSubTasksId: [],
-
                 taskMasterId: '',
                 repeat: false,
-                newSubTask: '',
-
                 taskTitle: '',
                 taskDescription: '',
                 taskClient: '',
@@ -236,64 +240,37 @@
                 taskLogs: [],
                 disabled: false,
 
-                i:0,
-                show: -1,
-
                 popupVisible: false,
                 popAssignTo: [],
                 popComments: '',
                 popCost: '',
                 popStatusId: '',
 
-                unqId: 0
+                subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "signed documents awaited"}, {id: 9, status: "pending for DSC"}, {id: 10, status: 'reassigned'}, {id: 11, status: 'approved'}, {id: 12, status: "Pending before authority"}],
             }
         },
         computed: {
             taskData() {
                 return this.$store.getters['tasks/getData'](this.editTaskId)
             },
-            getSubTasks() {
-                return this.$store.getters['tasks/getSubTasks'](this.editTaskId)
-            },
             getTaskMasters() {
-                return this.$store.getters['tasksMaster/getList']({})
+                return this.$store.getters['tasksMaster/getList']({
+                    filters: ['null', 'null']
+                })
             },
             getUsers() {
-                return this.$store.getters['users/getList']({})
+                return this.$store.getters['users/getList']({
+                    filters: ['null', 'null', 'null']
+                })
             },
             getClients() {
-                return this.$store.getters['clients/getList']({})
+                return this.$store.getters['clients/getList']({
+                    filters: ['null', 'null', 'null', 'null', 1]
+                })
             }
-        },
-        watch: {
-            taskMasterId(taskMasterId, oldTaskMasterId) {
-                if (oldTaskMasterId == '') oldTaskMasterId = undefined
-                if (taskMasterId == '') taskMasterId = undefined
-
-                if (this.i != 0) {
-                    //while editing place all sub-tasks to be removed
-                    if (this.editing == true) {
-                        let removeSubTasksId = this.subTasks?.map(st => st?.id)
-                        if (removeSubTasksId?.length != 0) this.removedSubTasksId?.push(...removeSubTasksId)
-                    }
-                    //fetch sub-task of selected taskMaster
-                    this.taskMasterSelected(taskMasterId?.id)
-                }
-                else if (this.i == 0) {
-                    if (this.editing != true) {
-                        this.taskMasterSelected(taskMasterId?.id)
-                    }
-                    else {
-                        ++this.i
-                    }
-                }
-            },
         },
         methods: {
             rightCheck,
-            getStyle(index) {
-                return `left: ${8*(index)}px;`;
-            },
             labelForCoordinator({firstName, lastName, id}) {
                 return `${firstName} ${lastName} (${id})`
             },
@@ -302,22 +279,6 @@
             },
             labelForTaskMaster({title, id}) {
                 return `${title} (${id})`
-            },
-            taskMasterSelected(taskMasterId) {
-                if (taskMasterId?.id) taskMasterId = taskMasterId.id
-                if (taskMasterId == undefined) {
-                    this.taskCost = ''
-                    this.subTasks = []
-                    return
-                }
-
-                ++this.i
-                const selectedTaskMaster = this['getTaskMasters'].find((o) => o.id == taskMasterId)
-                subTasksMaster.get({taskMasterId})
-                .then((results) => {
-                    this.subTasks = results.data.subTasksMasterList
-                    this.taskCost = selectedTaskMaster?.cost
-                })
             },
             openTab(e, newTab) {
                 var tabs = e.target.parentElement.getElementsByClassName('tab')
@@ -328,43 +289,6 @@
                 this.$refs['logs'+this.uk]?.classList?.add('hide')
                 this.$refs[newTab+this.uk]?.classList?.remove('hide')
                 this.$refs['details'+this.uk+'focus'].focus()
-            },
-            addSubTask() {
-                ++this.unqId
-                this.subTasks.push({
-                    unqId: this.unqId,
-                    description: this.newSubTask,
-                    statusId: 2,
-                    assignedTo: [],
-                    comments: '',
-                    cost: '',
-                })
-                document.getElementById('task-sub-task'+this.uk).focus()
-                this.newSubTask = ''
-
-                if (this.subTasks?.length == 0 || ( this.subTasks.length == 1 && this.subTasks[0].description == '_#_*&^')) {
-                    this.popupVisible = true
-                }
-                else this.popupVisible = false
-            },
-            removeSubTask(index) {
-                const rmSubTask = this.subTasks.splice(index, 1)
-                if (rmSubTask[0]?.id) {
-                    this.removedSubTasksId.push(rmSubTask[0]?.id)
-                }
-                if (this.subTasks?.length == 0 || ( this.subTasks.length == 1 && this.subTasks[0].description == '_#_*&^')) {
-                    this.popupVisible = true
-                }
-                else this.popupVisible = false
-            },
-            updateSubTaskTitle(task, e) {
-                for(let i = 0; i!=this.subTasks.length; i++) {
-                    if (((this.subTasks[i]?.id == task.id) && task.id != undefined) || 
-                        ((this.subTasks[i]?.unqId == task.unqId) && task.unqId != undefined)
-                    ) {
-                        this.subTasks[i].description = e.target.innerText
-                    }
-                }
             },
             populateDataProperties(data) {
                 const {
@@ -391,10 +315,20 @@
                 this.taskMasterId = this.getTaskMasters.find(task => task.id == taskMasterId)
                 this.clientContact = clientData
             },
-            proceed() {
+            changeFlag() {
+                this.flag = true
+            },
+            popUpVisibilityChanged({visibility, subTask}) {
+                this.popupVisible = visibility
+                this.popAssignTo = subTask.assignedTo,
+                this.popComments = subTask.comments
+                this.popCost = subTask.cost
+                this.popStatusId = subTask.statusId
+            },
+            proceed({subTasks, removedSubTasks}) {
                 this.disabled = true
 
-                this.subTasks?.map((subTask) => {
+                subTasks?.map((subTask) => {
                     if(subTask.assignedTo?.length > 0) {
                         subTask.assignedTo = subTask.assignedTo.map((user) => {
                             if (user?.id) return user.id
@@ -421,13 +355,13 @@
                     cost: this.taskCost,
                     clientId: this.taskClient,
                     coordinatorIds: JSON.stringify(this.taskCoordinator),
-                    subTasks: JSON.stringify(this.subTasks),
-                    removedSubTasks: JSON.stringify(this.removedSubTasksId),
+                    subTasks: JSON.stringify(subTasks),
+                    removedSubTasks: JSON.stringify(removedSubTasks),
                 }
 
                 let p
 
-                if (this.subTasks?.length == 0 && this.popAssignTo.length === 0 && this.popComments == '' && this.popCost == '' && this.popStatusId == '') {
+                if (subTasks?.length == 0 && this.popAssignTo.length === 0 && this.popComments == '' && this.popCost == '' && this.popStatusId == '') {
                     this.popupVisible = true
 
                     p = swal({
@@ -448,23 +382,24 @@
                         }
                     })
                     .then((value) => {
-                        this.subTasks = [{
+                        const subTasks = [{
                             description: '_#_*&^',
                             assignedTo: value.assignedTo,
                             statusId: value.statusId || 2,
                             comments: value.comments,
                             cost: value.cost,
                         }]
-                        args.subTasks = JSON.stringify(this.subTasks)
+                        args.subTasks = JSON.stringify(subTasks)
                     })
                 }
-                else if (this.subTasks?.length == 1 && this.subTasks[0]?.description == '_#_*&^') {
-                    this.subTasks[0].assignedTo = this.popAssignTo.map((user) => {
+                else if (subTasks?.length == 1 && subTasks[0]?.description == '_#_*&^') {
+                    subTasks[0].assignedTo = this.popAssignTo.map((user) => {
                         if(user?.id) return user.id
                     })
-                    this.subTasks[0].comments = this.popComments
-                    this.subTasks[0].statusId = this.popStatusId || 2
-                    this.subTasks[0].cost = this.popCost
+                    subTasks[0].comments = this.popComments
+                    subTasks[0].statusId = this.popStatusId || 2
+                    subTasks[0].cost = this.popCost
+                        //check usability of this line
                     args.subTasks = JSON.stringify(this.subTasks)
 
                     p = Promise.resolve()
@@ -505,7 +440,7 @@
                         })
                         .then(() => {
                             this.$router.push({name: 'tasks_list'})
-                        })
+                         })
                         .catch(() => {
                             this.$toast.error(`Oops! We can't perform this action right now`)
                         })
@@ -543,34 +478,10 @@
             if (this.editing == true) {
                 const taskData = (this['taskData'])?.taskData?.[0]
                 const taskLogs = (this['taskData'])?.taskLogs
-                const subTasksData = this['getSubTasks']
+
                 if (taskData !== undefined && taskData !== '') {
                     this.populateDataProperties(taskData)
                     this.taskLogs = taskLogs
-                }
-
-                if (subTasksData !== undefined && subTasksData !== '') {  
-                    this.unqId = subTasksData.length    
-
-                    for(let i = 0; i<subTasksData.length; i++) {
-                        if (typeof subTasksData[i].assignedTo?.[0] === "number") {
-                            subTasksData[i].assignedTo = subTasksData[i].assignedTo.map(userId => {
-                                return this.getUsers.find(user => user.id == userId)
-                            })
-                        }
-                        else if (subTasksData[i].assignedTo === null ) subTasksData[i].assignedTo = []
-                    }
-                    this.subTasks = subTasksData
-                }
-
-                if (this.subTasks?.length === 1) {
-                    if (this.subTasks[0].description == '_#_*&^') {
-                        this.popupVisible = true
-                        this.popAssignTo = this.subTasks[0].assignedTo,
-                        this.popComments = this.subTasks[0].comments
-                        this.popCost = this.subTasks[0].cost
-                        this.popStatusId = this.subTasks[0].statusId
-                    }
                 }
             }
 
@@ -581,53 +492,7 @@
 
 <style scoped>
 @import "../assets/stylesheet/multiselect.css";
-.st-description {
-    display: inline;
-}
-.st-description:focus {
-    outline: none !important;
-    border-bottom: solid 1px #e0e0e0;
-}
-.st_status {
-    border: solid 1px #e0e0e0;
-    color:#e0e0e0;
-    border-radius: 50px 50px;
-    padding: 0 6px;
-    text-align: center;
-    white-space: nowrap;
-}
 
-svg.profile-pic {
-    width: 30px;
-    height: 26px;
-    padding-bottom: 4px;
-    color: #e0e0e0;
-    border-radius: 100%;
-    border: solid 1px #e0e0e0;
-}
-.done-st {
-    color: #a0a0a0;
-    text-decoration: line-through;
-}
-.add-st {
-    width: 13px;
-    height: 13px;
-    padding: 8px;
-}
-.rmst {
-    padding: 4px;
-}
-.icon {
-    border-radius: 100%;
-    color: #8888888f;
-    border: solid 1px #e0e0e0;
-}
-.icon:hover {
-    border-color: #c2c2c2;
-}
-.pointer {
-    cursor: pointer;
-}
 option, select {
     text-transform: capitalize;
 }
@@ -655,29 +520,6 @@ option, select {
 .labels {
     align-self: center;
 }
-.sub-task-extra {
-    width: 80% !important;
-    border: none !important;
-    border-bottom: solid 1px #e7eaec !important;
-}
-.sub-task-extra:focus {
-    border: none !important;
-    outline-color: #e7eaec;
-}
-.grid-wrapper {
-    width: 100%;
-}
-.grid {
-    display: grid;
-    grid-template-columns: 25px auto auto;
-    grid-template-rows: 2;
-    column-gap: 12px;
-    align-items: center;
-    line-height: 1.5rem;
-}
-.grid:hover .dots-img {
-    visibility: visible !important;
-}
 .flex {
     display: flex;
     column-gap: 12px;
@@ -687,9 +529,5 @@ option, select {
     width: fit-content;
     border: none;
     border-bottom: solid 1px #e7eaec;
-}
-.sub-tasks-scroll {
-    max-height: 720px;
-    overflow-y: auto;
 }
 </style>

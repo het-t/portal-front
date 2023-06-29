@@ -64,12 +64,13 @@ const props = defineProps({
     }
 })
 
-const filters = computed(() => store.getters[props.storeName + '/getFilters'])
 
 const debouncedApiCall = debounce(() => {
     getData(false);
 }, 700);
     
+const filters = computed(() => store.getters[props.storeName + '/getFilters'])
+
 watch(
     filters.value, 
     () => {
@@ -78,6 +79,15 @@ watch(
     {deep: true}
 )
 
+const sorting = computed(() => store.getters[props.storeName + '/getSort'])
+
+watch(
+    sorting,
+    () => {
+        debouncedApiCall()
+    },
+    {deep: true}
+)
 const recordsPerPage = computed(() => store.getters[props.storeName + '/getRecordsPerPage'])
 watch(
     recordsPerPage,

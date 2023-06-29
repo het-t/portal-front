@@ -28,6 +28,7 @@ body, #app {
     display: flex;
     overflow: hidden;
 }
+
 #pa {
     width: 180px;
     justify-content: center;

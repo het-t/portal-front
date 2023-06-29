@@ -1,20 +1,32 @@
 <template>
     <div class="pr16 pl16">
         <div class="flex-wd-options mb8">
-            <vue-multiselect v-model="user" :options="allUsers" :custom-label="labelForCoordinator" track-by="id" placeholder="select user" id="username">
+            <vue-multiselect 
+                v-if="users?.length"
+                v-model="filters.userId" 
+                :options="users" 
+                :custom-label="labelForCoordinator" 
+                track-by="id" 
+                placeholder="select user" 
+                id="username"
+            >
                 <template #noResult>
                     Oops! No user found. Consider creating new user
                 </template>
 
                 <template v-slot:option="props">
-                    <span class="p0 m0" style="height: 0 !important; width: 0 !important;" :class="props.option.isActive == 0 ? 'not-active' : ''">
+                    <span 
+                        class="p0 m0" 
+                        style="height: 0 !important; width: 0 !important;" 
+                        :class="props.option.isActive == 0 ? 'not-active' : ''"
+                    >
                         {{props.option.firstName}} {{props.option.lastName}} ({{props.option.id}})
                     </span>
                 </template>
             </vue-multiselect>
 
             <date-picker
-                @datePicker="dates = $event"
+                @datePicker="filters.datefrom = $event?.[0], filters.dateto = $event?.[1]"
             >
             </date-picker>
         </div>
@@ -25,7 +37,7 @@
                     <th>
                         <div class="flex">
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" v-model="filters[3]" :focus="floatingLabelsFocus.includes('title')" type="text" class="header p0" required>
+                                <input v-model="filters.title" :focus="floatingLabelsFocus.includes('title')" type="text" class="header p0" required>
                                 <span @click="floatingLabelsFocus.push('title')" class="floating-label">Title</span>
                             </div>
                         </div>
@@ -33,7 +45,7 @@
                     <th>
                         <div class="flex">
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" v-model="filters[4]" :focus="floatingLabelsFocus.includes('client')" type="text" class="header p0" required>
+                                <input v-model="filters.client" :focus="floatingLabelsFocus.includes('client')" type="text" class="header p0" required>
                                 <span @click="floatingLabelsFocus.push('client')" class="floating-label">Client</span>
                             </div>
                         </div>
@@ -41,7 +53,7 @@
                     <th>
                         <div class="flex">
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" v-model="filters[5]" :focus="floatingLabelsFocus.includes('desc')" type="text" class="header p0" required>
+                                <input v-model="filters.description" :focus="floatingLabelsFocus.includes('desc')" type="text" class="header p0" required>
                                 <span @click="floatingLabelsFocus.push('desc')" class="floating-label">Description</span>
                             </div>
                         </div>
@@ -49,7 +61,7 @@
                     <th>
                         <div class="flex">
                             <div class="floating-container">
-                                <input v-debounce:700ms.lock="sort" v-model="filters[6]" :focus="floatingLabelsFocus.includes('co')" type="text" class="header p0" required>
+                                <input v-model="filters.coordinator" :focus="floatingLabelsFocus.includes('co')" type="text" class="header p0" required>
                                 <span @click="floatingLabelsFocus.push('co')" class="floating-label">Coordinator</span>
                             </div>
                         </div>
@@ -57,7 +69,7 @@
                     <th>
                         <div class="flex">
                             <div class="floating-container">
-                                <select @change="sort" v-model="filters[7]" ref="status" class="header p0" required>
+                                <select @change="sort" v-model="filters.status" ref="status" class="header p0" required>
                                     <option value="1">InProgress</option>
                                     <option value="2">Unbilled</option>
                                     <option value="3">Billed</option>
@@ -72,7 +84,7 @@
             <template #tbody>
                 <template v-for="(task, index) in tasks" :key="index">
                     <tr class="tr edit-tr"                          
-                        @keyup.enter="getSubTasks('row'+index)"
+                        @keyup.enter="getSubTasks('row'+index, {taskId: task.id})"
                         @click.prevent="getSubTasks('row'+index, {taskId: task.id})">
                             <td>{{ task?.title }}</td>
                             <td>{{ task?.client }}</td>
@@ -87,44 +99,18 @@
 
                     <tr class="tr tr-hidden hide" :ref="('row'+index)">
                         <td colspan="5" class="p0">
-                            <table-main>
-                                <template #thead> 
-                                    <tr>
-                                        <th>description</th>
-                                        <th>activity</th>
-                                        <th>status</th>
-                                        <th>time</th>
-                                    </tr>
-                                </template>
-
-                                <template #tbody>
-                                    <tr v-for="(subTask, index) in subTasks[task.id]" :key="index" class="tr">
-                                        <td v-if="subTask.description != '_#_*&^'">{{ subTask.description }}</td>
-                                        <td v-else>{{ task.title }}</td>
-                                        <td>
-                                            {{ subTask.action }} {{ subTask.key }}
-                                            <span v-if="subTask.action == 'updated'">
-                                                from
-                                                {{ subTask.before || '-' }} to {{ subTask.after || '-' }}
-                                            </span>
-                                        </td>
-                                        <td>{{ subTask.status }}</td>
-                                        <td>{{ new Date(subTask.timestamp).toLocaleString() }}</td>
-                                    </tr>
-                                </template>
-                            </table-main>
+                            <WorkDiaryMainSubTasks
+                                v-if="componentId[task.id] === true"
+                                :taskId="task.id"
+                            >
+                            </WorkDiaryMainSubTasks>
                         </td>
                     </tr>
                 </template>
             </template>
 
             <table-pagination
-                :key="key"
-                v-if="getData == true"
-                @tableData="tasks = $event"
-                :filters="filters"
-                tableName="workDiary"
-                :noCaching="true"  
+                storeName="workDiary"
             ></table-pagination>
 
         </table-main>
@@ -133,57 +119,44 @@
 
 <script>
 import TableMain from './TableMain.vue'
-import { mapGetters } from 'vuex'
 import VueMultiselect from 'vue-multiselect'
-import makeGetReq from '../api/makeGetReq'
 import DatePicker from './DatePicker.vue'
 import TablePagination from './TablePagination.vue'
+import WorkDiaryMainSubTasks from './WorkDiaryMainSubTasks.vue'
 
     export default {
-        components: { TableMain, VueMultiselect, DatePicker, TablePagination },
+        components: { TableMain, DatePicker, TablePagination, VueMultiselect, WorkDiaryMainSubTasks },
         name: 'WorkDiaryMain',
         data() {
             return {
-                tasks: [],
-                subTasks: [],
                 user: '',
                 dates: [],
                 getData: false,
-                key: 0,
                 floatingLabelsFocus: [],
-                filters: ['', '', '', '', '', '', '', ''], 
-                //wdUserId, datetime_for, datetime_to, task-title, task-client,                                
-                //task-description, task-coordinator, task-status
+                componentId: {}
             }
         },
         computed: {
-            ...mapGetters('users', [
-                'allUsers'
-            ]),
-        },
-        watch: {
-            user(newValue) {
-                this.filters[0] = newValue?.id
-                this.tasks = []
-                this.subTasks = []
-
-                if (newValue != null) {
-                    this.getData = true
-                    this.key = !this.key
-                }
-                else this.getData = false
+            filters() {
+                return this.$store.getters['workDiary/getFilters']
             },
-            dates(newValue) {
-                this.filters[1] = newValue?.[0] 
-                this.filters[2] = newValue?.[1]
+            users() {
+                return this.$store.getters['users/getList']({
+                    from: null,
+                    to: null,
+                    filters: ['null', 'null', 'null']
+                })
+            },
+            tasks() {
+                const currentPage = this.$store.getters['workDiary/getCurrentPage']
+                const recordsPerPage = this.$store.getters['workDiary/getRecordsPerPage']
+                const from = (currentPage-1)*(recordsPerPage)
 
-                if (this.user != '' && this.user != null) {
-                    this.tasks = []
-                    this.subTasks = []
-                    this.getData = true
-                    this.key = !this.key
-                }
-            }
+                return this.$store.getters['workDiary/getList']({
+                    from,
+                    to: from + recordsPerPage
+                })
+            },
         },
         methods: {
             labelForCoordinator({firstName, lastName, id}) {
@@ -194,26 +167,19 @@ import TablePagination from './TablePagination.vue'
                 if (show == true) this.$refs[rowIndex][0].classList.remove('hide')
                 else this.$refs[rowIndex][0].classList.add('hide')
 
-                let userId
-                if (this.user?.id) userId = this.user.id
-                else userId = this.user
-
-                makeGetReq('workDiary/sub-tasks', {
-                    userId,
-                    taskId,
-                    fromDate: this.dates[0],
-                    toDate: this.dates[1]
-                })
-                .then((subTasks) => {
-                    this.subTasks[taskId] = subTasks.data
-                })
-            },
-            sort() {
-                this.key = !this.key
+                if (show === true) {
+                    this.$store.dispatch('workDiary/fetchData', {taskId})
+                    .then(() => {
+                        this.componentId[taskId] = true
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+                }
             }
         },
         created() {
-            this.$store.dispatch('users/usersAll')
+            this.$store.dispatch('users/fetchList', {all: true})
         },
     }   
 </script>

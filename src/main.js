@@ -89,12 +89,15 @@ library.add(
 
 let app = createApp(App)
 
+app
+.use(Toaster, {
+    position: 'top-right'
+})
+.provide('toast', app.config.globalProperties.$toast)
+
 app.use(VueCookies)
     .directive('debounce', vue3Debounce({ lock: true }))
     .use(store)
     .use(router)
-    .use(Toaster, {
-        position: 'top-right'
-    })
     .component("font-awesome-icon", FontAwesomeIcon)
     .mount('#app')

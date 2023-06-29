@@ -321,7 +321,7 @@ let routesNew = [
       },
       /////////////////////
       {
-        path: 'tasksMaster',
+        path: 'tasks-master',
         component: () => import('@/views/TasksMasterView.vue'),
         children: [
           {

@@ -135,11 +135,6 @@
                 return this.$store.getters['activity/getFilters']
             }
         },
-        methods: {
-            sort() {
-                this.p = !this.p
-            }
-        },
         components: { 
             TablePagination,
             TableSort,

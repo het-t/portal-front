@@ -50,7 +50,7 @@
                 <tr class="table-heading">
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="j=!j; l=!l; k=!k; m=!m; sort()" :key="i" sortBy="title" sortType="string" storeName="tasks"></table-sort>
+                            <table-sort @clicked="j=!j; l=!l; k=!k; m=!m;" :key="i" sortBy="title" sortType="string" storeName="tasks"></table-sort>
                             <div class="floating-container">
                                 <input v-model="filters.name" ref="nameH" type="text" class="header p0" required>
                                 <span @click="$refs['nameH'].focus()" class="floating-label">name</span>
@@ -60,7 +60,7 @@
 
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="i=!i; l=!l; k=!k; m=!m; sort()" :key="j" sortBy="description" sortType="string" storeName="tasks"></table-sort>
+                            <table-sort @clicked="i=!i; l=!l; k=!k; m=!m;" :key="j" sortBy="description" sortType="string" storeName="tasks"></table-sort>
                             <div class="floating-container">
                                 <input v-model="filters.description" ref="desH" type="text" class="header p0" required>
                                 <span @click="$refs['desH'].focus()" class="floating-label">description</span>
@@ -70,7 +70,7 @@
 
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="i=!i; j=!j; l=!l; m=!m; sort()" :key="k" sortBy="client" sortType="string" storeName="tasks"></table-sort>
+                            <table-sort @clicked="i=!i; j=!j; l=!l; m=!m;" :key="k" sortBy="client" sortType="string" storeName="tasks"></table-sort>
                             <div class="floating-container">
                                 <input v-model="filters.client" ref="clientH" type="text" class="header p0" required>
                                 <span @click="$refs['clientH'].focus()" class="floating-label">client</span>
@@ -80,7 +80,7 @@
                     
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="i=!i; j=!j; k=!k; m=!m; sort()" :key="l" sortBy="progress" sortType="number" storeName="tasks"></table-sort>
+                            <table-sort @clicked="i=!i; j=!j; k=!k; m=!m;" :key="l" sortBy="progress" sortType="number" storeName="tasks"></table-sort>
                             <div class="floating-container">
                                 <input v-model="filters.progress" ref="progH" type="text" class="header p0" required>
                                 <span @click="$refs['progH'].focus()" class="floating-label">progress</span>
@@ -95,7 +95,7 @@
                     </th>
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="i=!i; j=!j; k=!k; l=!l; sort()" :key="m" sortBy="status" sortType="number" storeName="tasks"></table-sort>
+                            <table-sort @clicked="i=!i; j=!j; k=!k; l=!l;" :key="m" sortBy="status" sortType="number" storeName="tasks"></table-sort>
                             <div class="floating-container">
                                 <select @change="sort" v-model="filters.status" ref="statusH" class="header p0" required>
                                     <option value="1">InProgress</option>
@@ -106,6 +106,24 @@
                             </div>
                         </div>
                     </th>
+
+                    <th>
+                        <div class="flex">
+                            <table-sort :key="n" sortBy="tag" sortType="text" storeName="tasks"></table-sort>
+                            <div class="floating-container">
+                                <vue-multiselect 
+                                    id="task-tag"    
+                                    v-model="filters.tags"
+                                    :options="getTags"
+                                    track-by="id"
+                                >
+
+                                </vue-multiselect>
+                                <span class="floating-label">tag</span>
+                            </div>
+                        </div>
+                    </th>
+
                     <div style="border: none !important;"></div>
                 </tr>
             </template>
@@ -197,8 +215,8 @@ export default {
     },
     computed: {
         tasks() {
-            const currentPage = this.$store.getters['users/getCurrentPage']
-            const recordsPerPage = this.$store.getters['users/getRecordsPerPage']
+            const currentPage = this.$store.getters['tasks/getCurrentPage']
+            const recordsPerPage = this.$store.getters['tasks/getRecordsPerPage']
             const from = (currentPage-1)*(recordsPerPage)
 
             return this.$store.getters['tasks/getList']({
@@ -294,9 +312,6 @@ export default {
                     })
                 }
             }
-        },
-        sort() {
-            this.$store.commit('tasks/paginate')
         }
     }, 
     components: { 

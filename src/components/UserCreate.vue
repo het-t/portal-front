@@ -94,7 +94,9 @@ import useCreateSwal from '@/helpers/swalCreate'
                 this.populateDataProperties(userData)
             }
             if (this.orgId == '') {
-                this.dbRoles = this.$store.getters['roles/getList']({})
+                this.dbRoles = this.$store.getters['roles/getList']({
+                    filters: ['null', 'null']
+                })
             }
             else {
                 this.orgId = this.$route.params?.orgId != undefined ? this.$route.params.orgId : ''

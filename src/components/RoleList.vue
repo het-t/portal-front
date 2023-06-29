@@ -19,7 +19,7 @@
                 <tr>
                     <th>
                         <div class="flex">
-                            <table-sort :key="i" @clicked="j=!j; p=!p; sort();" sortType="string" sortBy="name" storeName="roles"></table-sort>
+                            <table-sort :key="i" @clicked="j=!j; p=!p;" sortType="string" sortBy="name" storeName="roles"></table-sort>
 
                             <div class="floating-container">
                                 <input v-model="filters.name" ref="nameH" class="header p0" type="text" required>
@@ -29,7 +29,7 @@
                     </th>
                     <th>
                         <div class="flex">
-                            <table-sort :key="j" @clicked="i!=i; p=!p; sort();" sortType="number" sortBy="rights" storeName="roles"></table-sort>
+                            <table-sort :key="j" @clicked="i!=i; p=!p;" sortType="number" sortBy="rights" storeName="roles"></table-sort>
 
                             <div class="floating-container">
                                 <input v-model="filters.rights" ref="rightsH" type="text" class="header p0" required>
@@ -118,8 +118,8 @@ import swal from 'sweetalert'
     },
     computed: {
         roles() {
-            const currentPage = this.$store.getters['users/getCurrentPage']
-            const recordsPerPage = this.$store.getters['users/getRecordsPerPage']
+            const currentPage = this.$store.getters['roles/getCurrentPage']
+            const recordsPerPage = this.$store.getters['roles/getRecordsPerPage']
 
             const from = (currentPage-1)*(recordsPerPage)
 
@@ -197,9 +197,6 @@ import swal from 'sweetalert'
             this.editRoleId = roleId
             this.editRoleName = roleName
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
-        },
-        sort() {
-            this.$store.commit('roles/paginate')
         }
     },
     components: { TablePagination, DotsMenu, DotsImg, TableSort, RoleCreate, SkeletonForm, NoAccess, TableMain }

@@ -15,7 +15,8 @@ const state = {
         description: '',
         client: '',
         progress: '',
-        status: ''
+        status: '',
+        tags: []
     }
 }
 
@@ -84,7 +85,7 @@ const mutations = {
         state.sortOrder = sortOrder
     },
     //
-    setCurrentPage(state, {index}) {
+    setCurrentPage(state, index) {
         state.currentPage = index
     },
     setRecordsPerPage(state, recordsPerPage) {
@@ -93,8 +94,14 @@ const mutations = {
     flush(state, {taskId}) {
         state.tasks = {}
 
-        delete state.subTasksData[taskId]
-        delete state.tasksData[taskId]
+        if (taskId) {
+            delete state.subTasksData[taskId]
+            delete state.tasksData[taskId]
+        }
+        else {
+            state.tasksData = {}
+            state.subTasksData = {}
+        }
     }
 }
 
@@ -144,12 +151,14 @@ const actions = {
                 to = from + recordsPerPage
             }
 
-            if(!getters['getList']({from, to, sortBy, sortOrder, filters: Object.values(formattedFilters)}) || force === true) {
+            if(!getters['getList']({from, to, sortBy, sortOrder, filters: Object.values(formattedFilters)})?.length || force === true) {
                 
                 tasks.getList({
                     from,
                     recordsPerPage,
-                    filters: formattedFilters       
+                    filters: formattedFilters   ,
+                    sortBy,
+                    sortOrder    
                 })
                 .then(res => {
                     if (all) {
@@ -184,7 +193,7 @@ const actions = {
                 tasks.getData({taskId})
                 .then((res) => {
                     commit('setData',{
-                        taskId: taskId,
+                        taskId,
                         taskData: res.data
                     })
                     resolve()

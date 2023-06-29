@@ -42,7 +42,7 @@ const getters = {
 }
 
 const mutations = {
-    setCount(state, count) {
+    setCount(state, {count}) {
         state.count = count
     },
     setList(state, {data}) {
@@ -52,8 +52,11 @@ const mutations = {
         state.sortBy = sortBy
         state.sortOrder = sortOrder
     },
-    setCurrentPage(state, {index}) {
+    setCurrentPage(state, index) {
         state.currentPage = index
+    },
+    setRecordsPerPage(state, recordsPerPage) {
+        state.recordsPerPage = recordsPerPage
     },
     refetch(state) {
         state.count = undefined
@@ -73,7 +76,6 @@ const actions = {
             })
             .then((res) => {
                 commit('setCount', {
-                    filters: formattedFilters,
                     count: res.data.count
                 })
                 resolve()

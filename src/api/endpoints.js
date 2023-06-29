@@ -38,6 +38,7 @@ const endpoints = {
     rights: '/rights',
     activities: '/activities',
     myTasks: '/myTasks',
+    workDiary: '/workDiary',
     
     admin: {
         createAdmin: '/orgs/admins/create-admin',

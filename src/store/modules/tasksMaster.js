@@ -4,13 +4,14 @@ import formatFilters from "@/helpers/storeFiltersFormater"
 const state = {
     count: {},
     list: {},
-    data: {},
+    subTasks: {},
     sortBy: 'id',
     sortOrder: 0,
     currentPage: 1,
     recordsPerPage: 50,
     filters: {
-        title: ''
+        title: '',
+        description: ''
     }
 }
 
@@ -39,6 +40,9 @@ const getters = {
     },
     getRecordsPerPage(state) {
         return state.recordsPerPage
+    },
+    getSubTasks: (state) => (taskMasterId) => {
+        return state.subTasks[taskMasterId]
     }
 }
 
@@ -58,6 +62,9 @@ const mutations = {
     },
     setRecordsPerPage(state, recordsPerPage) {
         state.recordsPerPage = recordsPerPage
+    },
+    setSubTasks(state, {taskMasterId, data}) {
+        state.subTasks[taskMasterId] = data
     }
 }
 
@@ -109,6 +116,8 @@ const actions = {
                 tasksMaster.getList({
                     from,
                     recordsPerPage,
+                    sortBy,
+                    sortOrder,
                     filters: formattedFilters
                 })
                 .then(res => {
@@ -136,7 +145,26 @@ const actions = {
             }
             else resolve()
         })
-    } 
+    },
+    fetchSubTasks({getters, commit}, {taskMasterId, force = false}) {
+        return new Promise((resolve, reject) => {
+            if (!getters['getSubTasks'](taskMasterId)?.length || force === true) {
+                tasksMaster.getSubTasks({taskMasterId})
+                .then((res) => {
+                    commit('setSubTasks', {
+                        taskMasterId,
+                        data: res.data
+                    })
+                    resolve()
+                })
+                .catch(err => {
+                    console.log(err)
+                    reject()
+                })
+            }
+            else resolve()
+        })
+    }
 }
 
 export default {

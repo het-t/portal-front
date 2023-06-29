@@ -137,7 +137,9 @@ const actions = {
                 roles.getList({
                     from,
                     recordsPerPage,
-                    filters: formattedFilters
+                    filters: formattedFilters,
+                    sortBy,
+                    sortOrder
                 })
                 .then((res) => {
                     if (all) {

@@ -1,12 +1,11 @@
 <template>
     <div>
         <table-main>
-
             <template #thead>
                 <tr class="table-heading">
                     <th>
                         <div class="flex">
-                            <table-sort :key="i" @clicked="j=!j; k=!k; l=!l; sort();" sortType="string" sortBy="title" storeName="myTasks"></table-sort>
+                            <table-sort :key="i" @clicked="j=!j; k=!k; l=!l;" sortType="string" sortBy="title" storeName="myTasks"></table-sort>
 
                             <div class="floating-container">
                                 <input v-model="filters.name" ref="taskH" class="header p0" type="text" required>
@@ -17,7 +16,7 @@
 
                     <th>
                         <div class="flex">
-                            <table-sort :key="l" @clicked="i=!i; j=!j; k=!k; sort();" sortType="string" sortBy="client" storeName="myTasks"></table-sort>
+                            <table-sort :key="l" @clicked="i=!i; j=!j; k=!k;" sortType="string" sortBy="client" storeName="myTasks"></table-sort>
                             
                             <div class="floating-container">
                                 <input v-model="filters.client" ref="clientH" class="header p0" type="text" required>
@@ -28,7 +27,7 @@
 
                     <th>
                         <div class="flex">
-                            <table-sort :key="j" @clicked="i=!i; k=!k; l=!l; sort();" sortType="string" sortBy="desc" storeName="myTasks"></table-sort>
+                            <table-sort :key="j" @clicked="i=!i; k=!k; l=!l;" sortType="string" sortBy="desc" storeName="myTasks"></table-sort>
 
                             <div class="floating-container">
                                 <input v-model="filters.description" ref="descH" class="header p0" type="text" required>
@@ -39,7 +38,7 @@
 
                     <th>
                         <div class="flex">
-                            <table-sort :key="k" @clicked="i=!i; j=!k; l=!l; sort();" sortType="string" sortBy="deadline" storeName="myTasks"></table-sort>
+                            <table-sort :key="k" @clicked="i=!i; j=!k; l=!l;" sortType="string" sortBy="deadline" storeName="myTasks"></table-sort>
 
                             <div class="floating-container">
                                 <input v-model="filters.deadline" ref="deadlineH" class="header p0" type="text" required>
@@ -156,9 +155,6 @@ export default {
                     this.polling = true
                 })
             }
-        },
-        sort() {
-            this.$store.commit('myTasks/paginate')
         }
     },
     mounted() {

@@ -20,7 +20,7 @@
                 <tr>
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="i=!i; k=!k; p=!p; sort();" :key="j" sortBy="name" sortType="string" storeName="users"></table-sort>
+                            <table-sort @clicked="i=!i; k=!k; p=!p;" :key="j" sortBy="name" sortType="string" storeName="users"></table-sort>
 
                             <div class="floating-container">
                                 <input v-model="filters.name" @input="updateFilters" ref="nameH" type="text" class="header p0" required>
@@ -30,7 +30,7 @@
                     </th>
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="i=!i; j=!j; p=!p; sort();" :key="k" sortBy="email" sortType="string" storeName="users"></table-sort>
+                            <table-sort @clicked="i=!i; j=!j; p=!p;" :key="k" sortBy="email" sortType="string" storeName="users"></table-sort>
 
                             <div class="floating-container">
                                 <input v-model="filters.email" ref="emailH" type="text" class="header p0" required>
@@ -40,7 +40,7 @@
                     </th>
                     <th>
                         <div class="flex">
-                            <table-sort @clicked="j=!j; k=!k; p=!p; sort();" :key="i" sortBy="rights" sortType="number" storeName="users"></table-sort>
+                            <table-sort @clicked="j=!j; k=!k; p=!p;" :key="i" sortBy="rights" sortType="number" storeName="users"></table-sort>
                             <div class="floating-container">
                                 <input v-model="filters.rights" ref="rightsH" type="text" class="header p0" required>
                                 <span @click="$refs['rightsH'].focus()" class="floating-label">rights</span>
@@ -214,9 +214,6 @@
             this.selectedUserId = userId
             this.selectedUserName = userName
             if (visibility == true) e.target.parentElement.appendChild(this.$refs['menu'])
-        },
-        sort() {
-            this.$store.commit('users/paginate')
         }
     },
     components: { 

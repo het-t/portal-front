@@ -53,8 +53,10 @@ const tasks = {
 const tasksMaster = {
     count: (args) => makeGetReq(endpoints.taskMasters + '/count', args),
     getList: (args) => makeGetReq(endpoints.taskMasters, args),
-    edit: (args) => makePutReq(endpoints.taskMasters + '/' + args.id, args),
-    delete: (args) => makeDeleteReq(endpoints.taskMasters + '/' + args.id)
+    getData: (args) => makeGetReq(endpoints.taskMasters + '/' + args.taskMasterId),
+    getSubTasks: (args) => makeGetReq(endpoints.taskMasters + '/' + args.taskMasterId),
+    edit: (args) => makePutReq(endpoints.taskMasters + '/' + args.taskMasterId, args),
+    delete: (args) => makeDeleteReq(endpoints.taskMasters + '/' + args.taskMasterId)
 }
 
 const subTasksMaster = {
@@ -65,6 +67,12 @@ const myTasks = {
     count: (args) => makeGetReq(endpoints.myTasks + '/count', args),
     getList: (args) => makeGetReq(endpoints.myTasks, args),
     changeStatus: (args) => makePatchReq(endpoints.myTasks + '/' + args.taskId, args)
+}
+
+const workDiary = {
+    count: (args) => makeGetReq(endpoints.workDiary + '/count', args),
+    getList: (args) => makeGetReq(endpoints.workDiary + '/' + args.filters.userId, args),
+    getData: (args) => makeGetReq(endpoints.workDiary + '/' + args.filters.userId + '/' + args.filters.taskId, args)
 }
 
 const admin = {
@@ -116,6 +124,7 @@ export {
     users,
     roles,
     myTasks,
+    workDiary,
     tasks,
     tasksMaster,
     subTasksMaster,

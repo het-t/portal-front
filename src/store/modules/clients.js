@@ -87,7 +87,7 @@ const mutations = {
         state.sortOrder = sortOrder
     },
     //
-    setCurrentPage(state, {index}) {
+    setCurrentPage(state, index) {
         state.currentPage = index
     },
     setRecordsPerPage(state, n) {

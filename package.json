@@ -20,6 +20,7 @@
     "firebase-tools": "^11.19.0",
     "ladda": "^2.0.3",
     "sweetalert": "^2.1.2",
+    "uuid": "^9.0.0",
     "vue": "^3.2.13",
     "vue-advanced-cropper": "^2.8.8",
     "vue-cookies": "^1.8.1",
