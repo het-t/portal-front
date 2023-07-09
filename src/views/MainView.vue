@@ -39,7 +39,7 @@
         <div class="link-list">
           <router-link :to="{name: 'edit_tasks_master'}" tabindex="-1" class="pt16 pb16 link">
             <font-awesome-icon :icon="['fas', 'clipboard-list']" class="pa-icon"></font-awesome-icon>
-            <span v-if="showLabels">tasks&nbsp;master</span>
+            <span v-if="showLabels">task&nbsp;templates</span>
           </router-link>
         </div>
 

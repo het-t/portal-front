@@ -5,7 +5,8 @@
                 <div class="table-main-head ml16 mb16">
                     <slot name="tableHeader"></slot>
                 </div>
-                <table>
+                
+                <table style="min-height: 400px; width: 100%; overflow-x: auto;">
                     <thead>
                         <slot name="thead"></slot>
                     </thead>
@@ -15,7 +16,7 @@
                     </tbody>
                 </table>
                 
-                <slot></slot>
+                    <slot></slot>
             </div>
         </div>
 

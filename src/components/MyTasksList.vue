@@ -70,22 +70,24 @@
                     </td> -->
 
                     <td style="min-width: 200px;">
-                        <vue-multiselect
-                            v-model="task.subTaskTags"
-                            @tag="createNewTag($event, task)"
-                            @select="changeTags(task, $event, 'add')"
-                            @remove="changeTags(task, $event, 'remove')"
-                            :options="subTasksTagsInStore"
-                            :custom-label="({name}) => name"
-                            :taggable="true"
-                            tag-placeholder="Add this as new tag"
-                            :multiple="true"
-                            :allow-empty="true"
-                            track-by="id"
-                            placeholder=""
-                            class="multiselect__tag_bg"
-                        >
-                        </vue-multiselect>
+                        <div>
+                            <vue-multiselect
+                                v-model="task.subTaskTags"
+                                @tag="createNewTag($event, task)"
+                                @select="changeTags(task, $event, 'add')"
+                                @remove="changeTags(task, $event, 'remove')"
+                                :options="subTasksTagsInStore"
+                                :custom-label="({name}) => name"
+                                :taggable="true"
+                                tag-placeholder="Add this as new tag"
+                                :multiple="true"
+                                :allow-empty="true"
+                                track-by="id"
+                                placeholder=""
+                                class="multiselect__tag_bg"
+                            >
+                            </vue-multiselect>
+                        </div>
                     </td>
 
                     <td>

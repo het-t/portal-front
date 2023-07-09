@@ -82,6 +82,7 @@ import { mapGetters } from 'vuex'
                 })
                 .finally(() => {
                     this.disabled = false
+                    this.$store.dispatch('users/fetchList', {force: true})
                 })
             },
             editRole(args) {
@@ -92,12 +93,12 @@ import { mapGetters } from 'vuex'
                     this.$emit('editingCompleted', 1)
                     this.$toast.success(`Saved #${args.roleId}`)
                 })
-                .catch(err => {
+                .catch(() => {
                     this.$toast.error(`Oops! We can't perform this action right now`)
-                    console.log(err)
                 })
                 .finally(() => {
                     this.disabled = false
+                    this.$store.dispatch('users/fetchList', {force: true})
                 })
 
             },

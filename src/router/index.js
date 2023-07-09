@@ -148,10 +148,10 @@ let chatInternal = {
 }
 
 let tasksMasterBreadcrumb = {
-  title: 'task masters',
+  title: 'task templates',
   path: [{
     text: 'list',
-    route: '/u/task-master'
+    route: '/u/task-templates'
   }]
 }
 
@@ -329,7 +329,7 @@ let routesNew = [
       },
       /////////////////////
       {
-        path: 'tasks-master',
+        path: 'task-templates',
         component: () => import('@/views/TasksMasterView.vue'),
         children: [
           {
