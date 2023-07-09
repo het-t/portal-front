@@ -22,9 +22,9 @@
                         <div :id="('i3'+uk)" class="row mt8">
                             <label :for="('user-gender'+uk)" class="labels c1">gender</label>
                             <select v-model="userGender" :id="('user-gender'+uk)">
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
-                                <option value="others">Others</option>
+                                <option value=1>Male</option>
+                                <option value=2>Female</option>
+                                <option value=3>Others</option>
                             </select>
                         </div>
 
@@ -43,7 +43,7 @@
                         <div v-if="orgId == ''" :id="('i6'+uk)" class="row mt8">
                             <label :for="('user-role'+uk)" class="labels c1">role</label>
                             <select v-model="userRole" :id="('user-role'+uk)">
-                                <option v-for="(role) in dbRoles" :key="role.id" :value="role.name">
+                                <option v-for="(role) in dbRoles" :key="role.id" :value="role.id">
                                     {{role.name}}
                                 </option>
                             </select>
