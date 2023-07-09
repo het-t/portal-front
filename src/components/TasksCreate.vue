@@ -23,7 +23,7 @@
                                     :options="getClients" 
                                     :custom-label="labelForClient" 
                                     track-by="id" 
-                                    placeholder="Select Client"
+                                    placeholder=""
                                 >
                                     <template #noResult>
                                         Oops! No client found. Consider creating new client
@@ -39,7 +39,7 @@
                                     class="options-list multiselect__tag_bg" 
                                     :id="'task-coordinator'+uk" 
                                     v-model="taskCoordinator" 
-                                    placeholder="Select Coordinator" 
+                                    placeholder="" 
                                     :options="getUsers" 
                                     :custom-label="labelForCoordinator" 
                                     track-by="id"
@@ -57,11 +57,11 @@
                             </div>
 
                             <div class="row mt8">
-                                <label :for="'task-tasks'+uk" class="labels c1">task</label>
+                                <label :for="'task-tasks'+uk" class="labels c1">template</label>
                                 <vue-multiselect 
                                     :id="'task-tasks'+uk" 
                                     v-model="taskMasterId" 
-                                    placeholder="Select Task-Master" 
+                                    placeholder="" 
                                     :options="getTaskMasters" 
                                     :custom-label="labelForTaskMaster" 
                                     track-by="id"
@@ -83,7 +83,7 @@
                                     <label :for="'contactPhone'+uk" class="labels c1">Phone</label>
                                     <input :value="clientContact?.conPhone" :id="'contactPhone'+uk" type="text" disabled>
                                 </div>    
-                                
+
                                 <div ref="UsersExtra" style="display: inline;" v-show="popupVisible">
                                     <div class="row mt8">
                                         <label :for="'extraAssignTo'+uk" class="labels c1">Assign To</label>
@@ -92,7 +92,7 @@
                                             class="options-list multiselect__tag_bg" 
                                             :id="'extraAssignTo'+uk" 
                                             v-model="popAssignTo" 
-                                            placeholder="Select user to assign" 
+                                            placeholder="" 
                                             :options="getUsers" 
                                             :custom-label="labelForCoordinator" 
                                             track-by="id"
@@ -111,21 +111,49 @@
 
                                     <div class="row mt8">
                                         <label class="labels c1" :for="'extraStatus'+uk">Status</label>
-                                        <select :id="'extraStatus'+uk" v-model="popStatusId">
-                                            <option v-for="(status) in subTaskStatuses" :value="status.id" :key="status.id">
-                                                {{status.status}}
-                                            </option>
-                                        </select>
+                                        <vue-multiselect
+                                            v-model="popStatusId"
+                                            :options="subTasksStatuses"
+                                            :custom-label="({name}) => name"
+                                            :multiple="false"
+                                            :allowEmpty="false"
+                                            track-by="id"
+                                            placeholder=""
+                                            class="options-list multiselect__tag_bg"
+                                        >
+                                            <template #noResult>
+                                                Oops! No client found. Consider creating new client
+                                            </template>
+                                        </vue-multiselect>
                                     </div>
 
                                     <div class="row mt8">
                                         <label class="labels c1" :for="'extraCost'+uk">Cost</label>
-                                        <input :id="'extraCost'+uk" v-model="popCost" type="number" placeholder="Cost">
+                                        <input :id="'extraCost'+uk" v-model="popCost" type="number">
                                     </div>
 
                                     <div class="row mt8">
+                                        <label class="labels c1" :for="'sub-tasks-tags'+uk">Tags</label>
+                                        <vue-multiselect
+                                            :id="'sub-tasks-tags'+uk"
+                                            v-model="popTagsIds"
+                                            @tag="createNewTag($event, task)"
+                                            :options="subTasksTagsInStore"
+                                            :custom-label="({name}) => name"
+                                            :taggable="true"
+                                            tag-placeholder="Add this as new tag"
+                                            :multiple="true"
+                                            :allow-empty="true"
+                                            track-by="id"
+                                            placeholder=""
+                                            class="multiselect__tag_bg"
+                                        >
+                                        </vue-multiselect>
+                                    </div>
+                                    
+                                    <div class="row mt8">
                                         <label class="labels c1" :for="'extraComments'+uk">Comments</label>
-                                        <input :id="'extraComments'+uk" v-model="popComments" type="text" placeholder="Comments">
+                                        <input :id="'extraComments'+uk" v-model="popComments" type="text">
                                     </div>
                                 </div>
                             </div>
@@ -137,7 +165,12 @@
 
                             <div class="row mt8">
                                 <label :for="'task-description'+uk" class="labels c1">description</label>
-                                <textarea v-model="taskDescription" name="task-description" :id="'task-description'+uk" cols="30" rows="5" placeholder="Description"></textarea>
+                                <textarea 
+                                    v-model="taskDescription" 
+                                    name="task-description" 
+                                    :id="'task-description'+uk" 
+                                    cols="30" rows="5" 
+                                ></textarea>
                             </div>
 
                         </div>
@@ -185,20 +218,32 @@
                         <th style="border-right: solid 1px #eeeeee;">sub-task</th>
                         <th>date</th>
                     </tr>
-
                     <tr v-for="(logObj, index) in taskLogs" :key="index"
                         class="tr">
                         <td>{{logObj.user}}</td>
                         <td>
-                            {{(logObj.action + ' ' + logObj.key)}}
-                            <span v-if="logObj.after != null">
-                                to {{logObj.after}}
-                            </span>
-                            <span v-if="(logObj.before != null)">
-                                from {{logObj.before}}
-                            </span>
+                            <template v-if="logObj?.msg === null">
+                                {{(logObj.action + ' ' + logObj.key)}}
+                                
+                                <span v-if="logObj.after != null">
+                                    to {{logObj.after}}
+                                </span>
+                                
+                                <span v-if="(logObj.before != null)">
+                                    from {{logObj.before}}
+                                </span>
+                            </template>
+
+                            <template v-else>
+                                {{ logObj.msg }}
+                            </template>
                         </td>
-                        <td style="border-right: solid 1px #eeeeee;">{{logObj?.subTask != '_#_*&^' && logObj?.subTask ? logObj.subTask : "Not Available"}}</td>
+
+                        <td style="border-right: solid 1px #eeeeee;"
+                        >
+                            {{logObj?.subTask != '_#_*&^' && logObj?.subTask ? logObj.subTask : "N/A"}}
+                        </td>
+                        
                         <td>{{ new Date(logObj.timestamp).toLocaleString() }}</td>
                     </tr>
                 </table>
@@ -244,12 +289,14 @@
                 popAssignTo: [],
                 popComments: '',
                 popCost: '',
-                popStatusId: '',
-
-                subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "signed documents awaited"}, {id: 9, status: "pending for DSC"}, {id: 10, status: 'reassigned'}, {id: 11, status: 'approved'}, {id: 12, status: "Pending before authority"}],
+                popStatusId: {id: 1, name: 'To Do'},
+                popTagsIds: [],
             }
         },
         computed: {
+            subTasksStatuses() {
+                return this.$store.getters['tasks/getSubTasksStatuses']
+            },
             taskData() {
                 return this.$store.getters['tasks/getData'](this.editTaskId)
             },
@@ -267,6 +314,9 @@
                 return this.$store.getters['clients/getList']({
                     filters: ['null', 'null', 'null', 'null', 1]
                 })
+            },
+            subTasksTagsInStore() {
+                return this.$store.getters['tasks/getSubTasksTags']
             }
         },
         methods: {
@@ -279,6 +329,9 @@
             },
             labelForTaskMaster({title, id}) {
                 return `${title} (${id})`
+            },
+            createNewTag(newTag, task) {
+                this.$store.commit('tasks/setNewTag', {newTag, task})
             },
             openTab(e, newTab) {
                 var tabs = e.target.parentElement.getElementsByClassName('tab')
@@ -320,10 +373,20 @@
             },
             popUpVisibilityChanged({visibility, subTask}) {
                 this.popupVisible = visibility
-                this.popAssignTo = subTask.assignedTo,
-                this.popComments = subTask.comments
-                this.popCost = subTask.cost
-                this.popStatusId = subTask.statusId
+                if (visibility === true && subTask !== undefined) {
+                    this.popAssignTo = subTask.assignedTo,
+                    this.popComments = subTask.comments
+                    this.popCost = subTask.cost
+                    this.popStatusId = subTask.statusId
+                    this.popTagsIds = subTask.tagsIds
+                }
+                else {
+                    this.popAssignTo = [],
+                    this.popComments = ''
+                    this.popCost = ''
+                    this.popStatusId = ''
+                    this.popTagsIds = []
+                }
             },
             proceed({subTasks, removedSubTasks}) {
                 this.disabled = true
@@ -335,8 +398,10 @@
                             else return user
                         })
                     }
+                    if(subTask.statusId?.id) {
+                        subTask.statusId = subTask.statusId.id
+                    }
                 })
-
                 this.taskCoordinator = 
                     this.taskCoordinator?.length > 0 ?
                     
@@ -361,7 +426,7 @@
 
                 let p
 
-                if (subTasks?.length == 0 && this.popAssignTo.length === 0 && this.popComments == '' && this.popCost == '' && this.popStatusId == '') {
+                if (subTasks?.length == 0 && this.popupVisible === false) {
                     this.popupVisible = true
 
                     p = swal({
@@ -377,7 +442,8 @@
                                 }),
                                 cost: this.popCost,
                                 comments: this.popComments,
-                                statusId: this.popStatusId
+                                statusId: this.popStatusId.id,
+                                tagsIds: this.popTagsIds
                             }
                         }
                     })
@@ -385,22 +451,47 @@
                         const subTasks = [{
                             description: '_#_*&^',
                             assignedTo: value.assignedTo,
-                            statusId: value.statusId || 2,
+                            statusId: value.statusId || {id: 1, name: 'To Do'}.id,
                             comments: value.comments,
                             cost: value.cost,
+                            tagsIds: value.tagsIds
                         }]
                         args.subTasks = JSON.stringify(subTasks)
                     })
                 }
+                else if (subTasks?.length === 0 && this.popupVisible === true) {
+                    let statusId;
+                    if (this.popStatusId.id !== undefined) statusId = this.popStatusId.id
+
+                    const subTask = [{
+                        description: '_#_*&^',
+                        assignedTo: this.popAssignTo.map(user => {
+                            if(user?.id) return user.id
+                        }),
+                        statusId: statusId || {id: 1, name: 'To Do'}.id,
+                        comments: this.popComments,
+                        cost: this.popCost,
+                        tagsIds: this.popTagsIds
+                    }]
+                    args.subTasks = JSON.stringify(subTask)
+
+                    p = Promise.resolve()
+                }
                 else if (subTasks?.length == 1 && subTasks[0]?.description == '_#_*&^') {
+                    subTasks[0].tagsIds = this.popTagsIds
+
                     subTasks[0].assignedTo = this.popAssignTo.map((user) => {
                         if(user?.id) return user.id
                     })
                     subTasks[0].comments = this.popComments
-                    subTasks[0].statusId = this.popStatusId || 2
+                    if(this.popStatusId.id !== undefined) {
+                        subTasks[0].statusId = this.popStatusId.id
+                    }
+                    else subTasks[0].statusId = 1
+                    
                     subTasks[0].cost = this.popCost
-                        //check usability of this line
-                    args.subTasks = JSON.stringify(this.subTasks)
+
+                    args.subTasks = JSON.stringify(subTasks)
 
                     p = Promise.resolve()
                 }

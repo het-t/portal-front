@@ -14,11 +14,17 @@
                 <td v-if="subTask.description != '_#_*&^'">{{ subTask.description }}</td>
                 <td v-else>{{ task.title }}</td>
                 <td>
-                    {{ subTask.action }} {{ subTask.key }}
-                    <span v-if="subTask.action == 'updated'">
-                        from
-                        {{ subTask.before || '-' }} to {{ subTask.after || '-' }}
-                    </span>
+                    <template v-if="subTask.msg === null">
+                        {{ subTask.action }} {{ subTask.key }}
+                        <span v-if="subTask.action == 'updated'">
+                            from
+                            {{ subTask.before || '-' }} to {{ subTask.after || '-' }}
+                        </span>
+                    </template>
+
+                    <template v-else>
+                        {{ subTask.msg }}
+                    </template>
                 </td>
                 <td>{{ subTask.status }}</td>
                 <td>{{ new Date(subTask.timestamp).toLocaleString() }}</td>

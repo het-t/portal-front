@@ -14,7 +14,6 @@
     margin: 0 !important;
     background-color: #f3f3f4 !important;
     font-family: 'Open Sans', sans-serif;
-    /* font-size: 13px; */
 }
 .multiselect__tags {
     color: #676a6c;
@@ -22,7 +21,6 @@
 }
 .sub-task-extra .multiselect__tags {
     border: none;
-    /* border-bottom: solid 1px #e7eaec !important; */
 }
 .multiselect__content-wrapper {
     border: solid 1px grey;

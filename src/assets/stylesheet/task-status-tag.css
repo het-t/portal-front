@@ -1,16 +1,15 @@
-.task-status {
-    font-size: 12px;
-    border: solid 1px #a0a0a0;
-    color: #a0a0a0;
-    padding: 4px 12px;
-    border-radius: 12px;
-    width: fit-content;
+.task-status, .sub-task-status {
+    font-size: 12px !important;
+    border: solid 1px rgba(120, 120, 120, 0.502) !important;
+    padding: 4px 12px !important;
+    border-radius: 8px !important;
+    text-align: center !important;
 }   
-.Unbilled {
-    border-color: red;
-    color: red;
+.Unbilled, .Cancel {
+    border-color: rgba(255, 0, 0, 0.3) !important;
+    color: red !important;
 }
-.Billed {
-    border-color: green;
-    color: green;
+.Billed, .Done {
+    border-color: rgba(0, 128, 0, 0.5) !important;
+    color: green !important;
 }

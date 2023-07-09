@@ -66,13 +66,20 @@ const subTasksMaster = {
 const myTasks = {
     count: (args) => makeGetReq(endpoints.myTasks + '/count', args),
     getList: (args) => makeGetReq(endpoints.myTasks, args),
-    changeStatus: (args) => makePatchReq(endpoints.myTasks + '/' + args.taskId, args)
+    changeStatus: (args) => makePatchReq(endpoints.myTasks + '/' + args.taskId + '/status', args),
+    changeTags: (args) => makePatchReq(endpoints.myTasks + '/' + args.taskId + '/tags', args)
 }
 
 const workDiary = {
     count: (args) => makeGetReq(endpoints.workDiary + '/count', args),
     getList: (args) => makeGetReq(endpoints.workDiary + '/' + args.filters.userId, args),
     getData: (args) => makeGetReq(endpoints.workDiary + '/' + args.filters.userId + '/' + args.filters.taskId, args)
+}
+
+const tags = {
+    getList: (tableId) => makeGetReq(endpoints.tags + '/' + tableId),
+    create: (args) => makePostReq(endpoints.tags, args),
+    edit: (args) => makePutReq(endpoints.tags + '/' + args.tableId, args)  
 }
 
 const admin = {
@@ -128,6 +135,7 @@ export {
     tasks,
     tasksMaster,
     subTasksMaster,
+    tags,
     settings,
     profile,
     chatInternal,

@@ -81,6 +81,9 @@ const mutations = {
         const dateto = state.filters.dateto ? state.filters.dateto : 'null'
 
         state.subTasks[`${userId}_${datefrom}_${dateto}_${taskId}`] = data
+    },
+    flushMyTaskStatusChange(state) {
+        state.subTasks = {}
     }
 }
 

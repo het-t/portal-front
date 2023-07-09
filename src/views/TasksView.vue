@@ -28,6 +28,8 @@
                 //get all tasksMaster if not in store
                 this.$store.dispatch('tasksMaster/fetchList', {all: true}),
 
+                this.$store.dispatch('tasks/fetchSubTasksTags', {force: true})
+
             ])
             .then(() => {
                 this.allow = true

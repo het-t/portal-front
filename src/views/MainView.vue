@@ -9,21 +9,21 @@
       <div id="nav">
         <div class="link-list">
           <router-link :to="{name: 'users_list'}" tabindex="-1" class="pt16 pb16 link">
-            <font-awesome-icon :icon="['fas', 'user-group']" id="users-icon" class="pa-icon ml24 mr24"></font-awesome-icon>
+            <font-awesome-icon :icon="['fas', 'user-group']" id="users-icon" class="pa-icon"></font-awesome-icon>
             <span v-if="showLabels">users</span>
           </router-link>
         </div>
 
         <div class="link-list">
           <router-link :to="{name: 'roles_list'}" tabindex="-1" class="pt16 pb16 link">
-            <font-awesome-icon :icon="['fas', 'user-gear']" class="pa-icon ml24 mr24"></font-awesome-icon>
+            <font-awesome-icon :icon="['fas', 'user-gear']" class="pa-icon"></font-awesome-icon>
             <span v-if="showLabels">roles</span>
           </router-link>
         </div>
         
         <div class="link-list">
           <router-link :to="{name: 'clients_list'}" tabindex="-1" class="pt16 pb16 link">
-            <font-awesome-icon :icon="['fas', 'address-book']" class="pa-icon ml24 mr24"></font-awesome-icon>
+            <font-awesome-icon :icon="['fas', 'address-book']" class="pa-icon"></font-awesome-icon>
             <span v-if="showLabels">clients</span>
           </router-link>
         </div>
@@ -31,49 +31,49 @@
         
         <div class="link-list">
           <router-link :to="{name: 'tasks_list'}" tabindex="-1" class="pt16 pb16 link">
-            <font-awesome-icon :icon="['fas', 'list-check']" class="pa-icon ml24 mr24"></font-awesome-icon>
+            <font-awesome-icon :icon="['fas', 'list-check']" class="pa-icon"></font-awesome-icon>
             <span v-if="showLabels">tasks</span>
           </router-link>
         </div>
 
         <div class="link-list">
-          <router-link :to="{name: 'tasks_master'}" tabindex="-1" class="pt16 pb16 link">
-            <font-awesome-icon :icon="['fas', 'clipboard-list']" class="pa-icon ml24 mr24"></font-awesome-icon>
+          <router-link :to="{name: 'edit_tasks_master'}" tabindex="-1" class="pt16 pb16 link">
+            <font-awesome-icon :icon="['fas', 'clipboard-list']" class="pa-icon"></font-awesome-icon>
             <span v-if="showLabels">tasks&nbsp;master</span>
           </router-link>
         </div>
 
         <div class="link-list">
           <router-link :to="{name: 'work_diary'}" tabindex="-1" class="pt16 pb16 link">
-            <font-awesome-icon :icon="['fas', 'user-check']" class="pa-icon ml24 mr24"></font-awesome-icon>
+            <font-awesome-icon :icon="['fas', 'user-check']" class="pa-icon"></font-awesome-icon>
             <span v-if="showLabels">Work&nbsp;Diary</span>
           </router-link>
         </div>
 
         <div class="link-list">
           <router-link :to="{name: 'my_tasks_list'}" tabindex="-1" class="pt16 pb16 link">
-            <font-awesome-icon :icon="['fas', 'sun']" class="pa-icon ml24 mr24"></font-awesome-icon>
+            <font-awesome-icon :icon="['fas', 'sun']" class="pa-icon"></font-awesome-icon>
             <span v-if="showLabels">my&nbsp;tasks</span>
           </router-link>
         </div>
 
         <div class="link-list">
           <router-link :to="{name: 'activity'}" tabindex="-1" class="pt16 pb16 link">
-            <font-awesome-icon :icon="['fas', 'wave-square']" class="pa-icon ml24 mr24"></font-awesome-icon>
+            <font-awesome-icon :icon="['fas', 'wave-square']" class="pa-icon"></font-awesome-icon>
             <span v-if="showLabels">activity</span>
           </router-link>
         </div>
 
         <div class="link-list">
           <router-link :to="{name: 'settings'}" tabindex="-1" class="pt16 pb16 link">
-            <font-awesome-icon :icon="['fas', 'gear']" class="pa-icon ml24 mr24"></font-awesome-icon>
+            <font-awesome-icon :icon="['fas', 'gear']" class="pa-icon"></font-awesome-icon>
             <span v-if="showLabels">Settings</span>
           </router-link>
         </div>
 
         <div class="link-list">
           <router-link v-if="rightCheck('admin_panel') == true" :to="{name: 'admin_panel'}" tabindex="-1" class="pt16 pb16 link">
-            <font-awesome-icon :icon="['fas', 'gear']" class="pa-icon ml24 mr24"></font-awesome-icon>
+            <font-awesome-icon :icon="['fas', 'gear']" class="pa-icon"></font-awesome-icon>
             <span v-if="showLabels">admin</span>
           </router-link>
         </div>
@@ -213,6 +213,10 @@ import rightCheck from '@/helpers/RightCheck'
     background-color: #293846;
     box-shadow: 0 0 5px #293846;
     height: 50px;
+  }
+  .link-list .pa-icon {
+    margin-left: 18px;
+    margin-right: 18px;
   }
 </style>
 

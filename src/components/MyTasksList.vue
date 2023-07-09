@@ -36,7 +36,7 @@
                         </div>
                     </th>
 
-                    <th>
+                    <!-- <th>
                         <div class="flex">
                             <table-sort :key="k" @clicked="i=!i; j=!k; l=!l;" sortType="string" sortBy="deadline" storeName="myTasks"></table-sort>
 
@@ -45,7 +45,9 @@
                                 <span @click="$refs['deadlineH'].focus()" class="floating-label">deadline</span>
                             </div>
                         </div>              
-                    </th>
+                    </th> -->
+
+                    <th>tags</th>
 
                     <th>status</th>
                 </tr>
@@ -59,15 +61,51 @@
                     <td>
                         {{task.client }}
                     </td>
+                    
                     <td v-if="task.description != '_#_*&^'">{{task.description}}</td>
                     <td v-else></td>
-                    <td>
+                    
+                    <!-- <td>
                         {{task.deadline}}
+                    </td> -->
+
+                    <td style="min-width: 200px;">
+                        <vue-multiselect
+                            v-model="task.subTaskTags"
+                            @tag="createNewTag($event, task)"
+                            @select="changeTags(task, $event, 'add')"
+                            @remove="changeTags(task, $event, 'remove')"
+                            :options="subTasksTagsInStore"
+                            :custom-label="({name}) => name"
+                            :taggable="true"
+                            tag-placeholder="Add this as new tag"
+                            :multiple="true"
+                            :allow-empty="true"
+                            track-by="id"
+                            placeholder=""
+                            class="multiselect__tag_bg"
+                        >
+                        </vue-multiselect>
                     </td>
+
                     <td>
-                        <select @change="changeStatus(task.costSaved, task.taskId, task.id, task.statusId)" v-model="task.statusId" name="" id="">
-                            <option v-for="status in subTaskStatuses" :value="status.id" :key="status.id">{{status.status}}</option>
-                        </select>
+                        <div class="ml16">
+                            <vue-multiselect
+                                @select="changeStatus(task.costSaved, task.taskId, task.id, $event)"
+                                v-model="task.statusId"
+                                :options="subTasksStatuses"
+                                :custom-label="({name}) => name"
+                                :multiple="false"
+                                :allowEmpty="false"
+                                track-by="id"
+                                placeholder="Status"
+                                style="min-width: 250px;"
+                            >
+                                <template #noResult>
+                                    Oops! No client found. Consider creating new client
+                                </template>
+                            </vue-multiselect>
+                        </div>
                     </td>
                 </tr>  
             </template>
@@ -86,35 +124,87 @@ import { myTasks } from '../api'
 import TableMain from './TableMain.vue'
 import TablePagination from './TablePagination.vue'
 import TableSort from './TableSort.vue'
+import VueMultiselect from 'vue-multiselect'
 
 export default {
-    components: { TableMain, TablePagination, TableSort },
+    components: { TableMain, TablePagination, TableSort, VueMultiselect },
     name: "MyTasksList",
     data() {
         return {
-            subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "signed documents awaited"}, {id: 9, status: "pending for DSC"}, {id: 10, status: 'reassigned'}, {id: 11, status: 'approved'}, {id: 12, status: "Pending before authority"}],
-
             i:0, j:0, k:0, l:0, p:0,
 
             polling: false
         }
     },
     computed: {
+        subTasksTagsInStore() {
+            return this.$store.getters['tasks/getSubTasksTags']
+        },
+        subTasksStatuses() {
+            return this.$store.getters['tasks/getSubTasksStatuses']
+        },
         myTasksList() {
-            return this.$store.getters['myTasks/getList']()
+            const res = this.$store.getters['myTasks/getList']()
+            
+            if (res?.length) 
+                res.map((st) => {
+                    st.statusId = this.subTasksStatuses.find((status) => {
+                        return st.statusId === status.id
+                    })
+                    return st
+                })
+            return res
         },
         filters() {
             return this.$store.getters['myTasks/getFilters']
         }
     },
     methods: {
-        changeStatus(costSaved, taskId, subTaskId, statusId) {
-            if (costSaved == 0 && statusId == 5) {
+        createNewTag(newTag, task) {
+            this.$store.commit('tasks/setNewTag', {newTag, task})
+        },
+        changeTags(subTask, e, action) {
+            let tags = subTask.subTaskTags?.length > 0 ? [...subTask.subTaskTags] : []
 
+            if(action === 'remove') {
+                tags?.map((tag, i) => {
+                    if(tag.id === e.id) {
+                        tags.splice(i, 1)
+                    }
+                })
+            }
+            else {
+                tags.push({id: e.id, name: e.name})
+            }
+
+            myTasks.changeTags({
+                taskId: subTask.taskId,
+                subTaskId: subTask.id,
+                tags: JSON.stringify(tags)
+            })
+            .then(() => {
+                this.$toast.success(`Saved`)
+            })
+            .catch(() => {
+                this.$toast.error(`Oops! We can't perform this action right now`)
+            })
+            .finally(() => {
+                this.$store.dispatch('tasks/fetchSubTasks', {
+                    taskId: subTask.taskId,
+                    force: true
+                })
+                this.$store.dispatch('myTasks/fetchList')
+            })
+        },
+        changeStatus(costSaved, taskId, subTaskId, statusId) {
+            statusId = statusId.id
+
+           
+            if (costSaved == 0 && statusId == 3) {
                 swal({
                     text: "Provide the cost of sub-task before marking it done",
                     content: "input",
-                    buttons: true
+                    button: true
                 })
                 .then((cost) => {
                     if (!cost) throw null
@@ -125,14 +215,18 @@ export default {
                     return this.$store.dispatch('myTasks/fetchList')
                 })
                 .then(() => {
+                    this.$toast.success(`Saved`)
+
                     return this.$store.dispatch('tasks/fetchList', {
                         force: true
                     })
                 })
-                .catch(err => console.log(err))
+                .catch(() => {
+                    this.$toast.error(`Oops! We can't perform this action right now`)
+                })
                 .finally(() => {
-                    this.$toast.success(`Saved`)
                     this.polling = true
+                    this.$store.commit('workDiary/flushMyTaskStatusChange')
                 })
             }
             else {
@@ -143,16 +237,18 @@ export default {
                     return this.$store.dispatch('myTasks/fetchList')
                 })
                 .then(() => {
+                    this.$toast.success(`Saved`)
+
                     return this.$store.dispatch('tasks/fetchList', {
                         force: true
                     })
                 })
-                .catch(err => {
-                    console.log(err)
+                .catch(() => {
+                    this.$toast.error(`Oops! We can't perform this action right now`)
                 })
                 .finally(() => {
-                    this.$toast.success(`Saved`)
                     this.polling = true
+                    this.$store.commit('workDiary/flushMyTaskStatusChange')
                 })
             }
         }

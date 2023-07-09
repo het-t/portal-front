@@ -103,6 +103,11 @@ const actions = {
                 sortOrder
             })
             .then(res => {
+
+                res.data.map((st) => {
+                    if(st.subTaskTags) st.subTaskTags = JSON.parse(st.subTaskTags)
+                    if (st.subTaskTags?.[0].id === null) st.subTaskTags = []
+                })
                 commit('setList', {
                     data: res.data
                 })

@@ -25,14 +25,13 @@
                         @keyup.enter="toggleDisplaySubTask(index)"
                         @click.prevent="toggleDisplaySubTask(index)"
                     >
-                        
                         <p contentEditable="true"
                             class="st-description"
-                            :class="task.statusId == 5 || task.statusId == 6 ? 'done-st' : ''"
+                            :class="task.statusId?.id === 3 || task.statusId?.id === 5 ? 'done-st' : ''"
                             @input="updateSubTaskTitle(task, $event)"
                         >{{ task.description }}</p>
                         
-                        <span v-if="task?.status != undefined" class="ml8 st_status" :class="task.status">{{ task.status }}</span>
+                        <span v-if="task.statusId?.id != undefined" class="ml8 st_status" :class="task.statusId?.name">{{ task.statusId.name }}</span>
                     </div>
                     
                     <div style="overflow: hidden; display: flex; justify-content: flex-end;">
@@ -61,14 +60,6 @@
                     :class="state.show == index ? 'show' : 'hide'" 
                 >
                     <div class="ml16">
-                        <select v-model="task.statusId" class="sub-task-extra">
-                            <option v-for="(status, index) in state.subTaskStatuses" :value="status.id" :key="index.toString()+props.uk">
-                                {{status.status}}
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="ml16">
                         <vue-multiselect 
                             multiple 
                             v-model="task.assignedTo" 
@@ -87,6 +78,40 @@
                                     {{props.option.firstName}} {{props.option.lastName}} ({{props.option.id}})
                                 </span>
                             </template>
+                        </vue-multiselect>
+                    </div>
+
+                    <div class="ml16">
+                        <vue-multiselect
+                            v-model="task.statusId"
+                            :options="subTasksStatuses"
+                            :custom-label="({name}) => name"
+                            :multiple="false"
+                            :allowEmpty="false"
+                            track-by="id"
+                            placeholder="Status"
+                            class="sub-task-extra options-list multiselect__tag_bg"
+                        >
+                            <template #noResult>
+                                Oops! No client found. Consider creating new client
+                            </template>
+                        </vue-multiselect>
+                    </div>
+
+                    <div class="ml16">
+                        <vue-multiselect
+                            v-model="task.tagsIds"
+                            @tag="createNewTag($event, task)"
+                            :options="subTasksTagsInStore"
+                            :custom-label="({name}) => name"
+                            :taggable="true"
+                            tag-placeholder="Add this as new tag"
+                            :multiple="true"
+                            :allow-empty="true"
+                            track-by="id"
+                            placeholder="Tags"
+                            class="sub-task-extra options-list multiselect__tag_bg"
+                        >
                         </vue-multiselect>
                     </div>
                     
@@ -114,8 +139,7 @@ const state = reactive({
     subTasks: [],
     removedSubTaskId: [],
     unqId: 0,
-    newSubTask: '',
-    subTaskStatuses: [{id: 1, status: "hold"}, {id: 2, status: "to do"}, {id: 3, status: "in progress"}, {id: 4, status: "pending for approval"}, {id: 5, status: "done"}, {id: 6, status: "cancel"}, {id: 7, status: "pending with client"}, {id: 8, status: "signed documents awaited"}, {id: 9, status: "pending for DSC"}, {id: 10, status: 'reassigned'}, {id: 11, status: 'approved'}, {id: 12, status: "Pending before authority"}],
+    newSubTask: ''
 })
 
 const props = defineProps({
@@ -210,12 +234,16 @@ function toggleDisplaySubTask(index) {
     else state.show = index
 }
 
+function createNewTag(newTag, task) {
+    store.commit('tasks/setNewTag', {newTag, task})
+}
+
 function removeSubTask(index) {
     const rmSubTask = state.subTasks.splice(index, 1)
     if (rmSubTask[0]?.id && rmSubTask[0]?.saved !== 0) {
         state.removedSubTaskId.push(rmSubTask[0]?.id)
     }
-    if (state.subTasks?.length == 0 || ( state.subTasks.length == 1 && state.subTasks[0].description == '_#_*&^')) {
+    if (state.subTasks?.length == 0 || (state.subTasks.length == 1 && state.subTasks[0].description == '_#_*&^')) {
         emits("popUpVisibilityChanged", {
             visibility: true,
             subTask: state.subTasks[0]
@@ -244,7 +272,7 @@ function addSubTask() {
     state.subTasks.push({
         unqId: state.unqId,
         description: state.newSubTask,
-        statusId: 2,
+        statusId: {id: 1, name: 'To Do'},
         assignedTo: [],
         comments: '',
         cost: '',
@@ -253,11 +281,11 @@ function addSubTask() {
     document.getElementById('task-sub-task'+props.uk).focus()
     state.newSubTask = ''
 
-    if (state.subTasks?.length == 0 || (state.subTasks.length == 1 && state.subTasks[0].description == '_#_*&^')) {
+    if (state.subTasks.length > 1 && state.subTasks[0].description == '_#_*&^') {
         emits("popUpVisibilityChanged", {
-            visibility: true,
-            subTask: state.subTasks[0]
+            visibility: true
         })
+        this.removeSubTask(0)
     }
     else {
         emits("popUpVisibilityChanged", {
@@ -278,6 +306,10 @@ const getSubTasks = computed(() => {
 })
 const getUsers = computed(() => store.getters['users/getList']({}))
 
+const subTasksTagsInStore = computed(() => store.getters['tasks/getSubTasksTags'])
+
+const subTasksStatuses = computed(() => store.getters['tasks/getSubTasksStatuses'])
+
 onMounted(() => {
     const subTasksData = getSubTasks.value
 
@@ -285,6 +317,12 @@ onMounted(() => {
         state.unqId = subTasksData.length    
 
         for(let i = 0; i<subTasksData.length; i++) {
+            if (subTasksData[i].statusId?.id === undefined) {
+                subTasksData[i].statusId = subTasksStatuses.value.find((status) => 
+                status.id === subTasksData[i].statusId
+            )
+            }
+
             if (typeof subTasksData[i].assignedTo?.[0] === "number") {
                 subTasksData[i].assignedTo = subTasksData[i].assignedTo.map(userId => {
                     return getUsers.value.find(user => user.id == userId)
@@ -295,19 +333,18 @@ onMounted(() => {
         state.subTasks = subTasksData
     }
 
-    if (state.subTasks?.length === 1) {
-        if (state.subTasks[0].description == '_#_*&^') {
-            emits("popUpVisibilityChanged", {
-                visibility: true,
-                subTask: state.subTasks[0]
-            })
-        }
+    if (state.subTasks.length === 1 && state.subTasks[0].description === '_#_*&^') {
+        emits("popUpVisibilityChanged", {
+            visibility: true,
+            subTask: state.subTasks[0]
+        })
     }
 })
 </script>
 
 <style scoped>
 @import "../assets/stylesheet/multiselect.css";
+@import "../assets/stylesheet/task-status-tag.css";
 
 .st-description {
     display: inline;
@@ -315,14 +352,6 @@ onMounted(() => {
 .st-description:focus {
     outline: none !important;
     border-bottom: solid 1px #e0e0e0;
-}
-.st_status {
-    border: solid 1px #e0e0e0;
-    color:#e0e0e0;
-    border-radius: 50px 50px;
-    padding: 0 6px;
-    text-align: center;
-    white-space: nowrap;
 }
 svg.profile-pic {
     width: 30px;
@@ -332,8 +361,17 @@ svg.profile-pic {
     border-radius: 100%;
     border: solid 1px #e0e0e0;
 }
+.st_status {
+    border: solid 1px #e0e0e0;
+    border: solid 1px rgba(120, 120, 120, 0.5);
+    border-radius: 4px;
+    padding: 2px 8px;
+    text-align: center;
+    white-space: nowrap;
+    text-transform: capitalize;
+}
+
 .done-st {
-    color: #a0a0a0;
     text-decoration: line-through;
 }
 .add-st {
@@ -373,6 +411,7 @@ option, select {
 }
 .grid-wrapper {
     width: 100%;
+    min-height: 500px;
     max-height: 700px;
     overflow-y: auto;
 }

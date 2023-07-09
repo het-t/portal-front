@@ -65,7 +65,11 @@ body, #app {
 a, button {
     cursor: pointer;
 }
-
+.link-list {
+    box-sizing: content-box;
+    padding: 3px 7px 3px 5px;
+    border-radius: 3px;
+}
 .link-list span {
     color: #a7b1c2;
 }
@@ -80,7 +84,7 @@ a, button {
     color: white;
     background-color: #293846;
 }
-.link-list:hover, .link:hover,
+.link-list:hover .link, .link:hover,
 .link-list:hover span, .link:hover span, .link:hover span{
     color: white !important;
     background-color: #293846;

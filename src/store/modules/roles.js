@@ -11,8 +11,8 @@ const state = {
     currentPage: 1,
     filters: {
         name: '',
-        rights: ''
-    }
+        rights: '',
+    },
 }
 
 const getters = {

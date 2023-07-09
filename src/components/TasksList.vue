@@ -98,7 +98,7 @@
                             <table-sort @clicked="i=!i; j=!j; k=!k; l=!l;" :key="m" sortBy="status" sortType="number" storeName="tasks"></table-sort>
                             <div class="floating-container">
                                 <select @change="sort" v-model="filters.status" ref="statusH" class="header p0" required>
-                                    <option value="1">InProgress</option>
+                                    <option value="1">In Progress</option>
                                     <option value="2">Unbilled</option>
                                     <option value="3">Billed</option>
                                 </select>
@@ -107,12 +107,13 @@
                         </div>
                     </th>
 
-                    <th>
+                    <!-- <th>
                         <div class="flex">
-                            <table-sort :key="n" sortBy="tag" sortType="text" storeName="tasks"></table-sort>
+                            <table-sort :key="n" sortBy="tag" sortType="string" storeName="tasks"></table-sort>
                             <div class="floating-container">
                                 <vue-multiselect 
-                                    id="task-tag"    
+                                    id="task-tag"   
+                                    class="header p0" 
                                     v-model="filters.tags"
                                     :options="getTags"
                                     track-by="id"
@@ -122,7 +123,7 @@
                                 <span class="floating-label">tag</span>
                             </div>
                         </div>
-                    </th>
+                    </th> -->
 
                     <div style="border: none !important;"></div>
                 </tr>
@@ -149,9 +150,15 @@
                         <td v-if="rightCheck('see_pricing')">
                             {{task?.total}}
                         </td>
+                    
                         <td class="dots">
                             <div class="task-status" :class="task.status">{{ task.status }}</div>
                         </td>
+<!-- 
+                        <td>
+                            {{ task.tag }}
+                        </td> -->
+                        
                         <div class="dots">
                             <dots-img 
                                 @openMenu="menu($event, {task: task.title, taskId: task.id, visibility: true})" 
@@ -199,6 +206,7 @@ import TableSort from './TableSort.vue';
 import NoAccess from './NoAccess.vue';
 import rightCheck from '@/helpers/RightCheck';
 import swal from 'sweetalert';
+// import VueMultiselect from 'vue-multiselect';
 
 export default {
     name: "TasksList",
@@ -224,6 +232,9 @@ export default {
                 to: from + recordsPerPage
             })
         },
+        // getTags() {
+        //     return this.$store.getters['tasks/getTags']
+        // },
         filters() {
             return this.$store.getters['tasks/getFilters']
         }
@@ -324,6 +335,7 @@ export default {
         SkeletonForm, 
         TableSort,
         NoAccess,
+        // VueMultiselect
     }
 }
 </script>

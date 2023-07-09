@@ -147,6 +147,14 @@ let chatInternal = {
   title: 'chat'
 }
 
+let tasksMasterBreadcrumb = {
+  title: 'task masters',
+  path: [{
+    text: 'list',
+    route: '/u/task-master'
+  }]
+}
+
 let routesNew = [
   {
     path: '/',
@@ -327,8 +335,12 @@ let routesNew = [
           {
             path: '',
             alias: 'list',
-            name: 'tasks_master',
-            component: () => import('@/components/TasksMasterList.vue')
+            name: 'edit_tasks_master',
+            component: () => import('@/components/TasksMasterList.vue'), 
+            meta: {
+              protected: true,
+              breadcrumb: tasksMasterBreadcrumb
+            }
           }
         ]
       },

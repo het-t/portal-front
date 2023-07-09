@@ -1,4 +1,4 @@
-import { tasks } from "@/api"
+import { tags, tasks } from "@/api"
 import formatFilters from "@/helpers/storeFiltersFormater"
 
 const state = {
@@ -17,10 +17,27 @@ const state = {
         progress: '',
         status: '',
         tags: []
-    }
+    },
+    tags: [],
+    subTasksStatuses: [
+        {id: 1, name: 'To Do'},
+        {id: 2, name: 'In Progress'},
+        {id: 3, name: 'Done'},
+        {id: 4, name: 'Pending For Approval'},
+        {id: 5, name: 'Cancel'},
+        {id: 6, name: 'Paused'},
+        {id: 7, name: 'Reassigned'},
+        {id: 8, name: 'Approved'}
+    ]
 }
 
 const getters = {
+    getSubTasksStatuses(state) {
+        return state.subTasksStatuses
+    },
+    getSubTasksTags(state) {
+        return state.tags
+    }, 
     //
     getData: (state) => (taskId) => {
         return state.tasksData[taskId]
@@ -48,7 +65,6 @@ const getters = {
             sortOrder: state.sortOrder
         }
     },
-    //
     getCurrentPage(state) {
         return state.currentPage
     },
@@ -84,7 +100,18 @@ const mutations = {
         state.sortBy = sortBy
         state.sortOrder = sortOrder
     },
-    //
+    setSubTasksTags(state, tags) {
+        state.tags = tags
+    },
+    setNewTag(state, {newTag, task}) {
+        const newTagObj = {
+            id: state.tags.length*(-1), 
+            name: newTag
+        }
+
+        state.tags.push(newTagObj)
+        task.tagsId.push(newTagObj)
+    },
     setCurrentPage(state, index) {
         state.currentPage = index
     },
@@ -106,7 +133,22 @@ const mutations = {
 }
 
 const actions = {
-    //
+    fetchSubTasksTags({getters, commit}, {force = false}) {
+        return new Promise((resolve, reject) => {
+            const storedSubTasksStatuses = getters['getSubTasksTags']
+            if(!storedSubTasksStatuses?.length || force === true) {
+                tags.getList(20)
+                .then((res) => {
+                    commit('setSubTasksTags', res.data)
+                    resolve()
+                })
+                .catch(()=> {
+                    reject()
+                })
+            }
+            else resolve()
+        })
+    },
     fetchCount({getters, commit}, {force = false}) {
         return new Promise((resolve, reject) => {
             const formattedFilters = formatFilters(getters['getFilters'])
@@ -219,6 +261,7 @@ const actions = {
                     for(let i = 0; i<res.data.length; i++) {
                         if (typeof res.data[i].assignedTo === "string") {
                             res.data[i].assignedTo = JSON.parse(res.data[i].assignedTo)
+
                             res.data[i].assignedTo?.map((userId) => {
                                 dispatch('images/fetchProfilePic', {
                                     userId,
@@ -226,6 +269,11 @@ const actions = {
                                     height: 50
                                 }, {root: true})
                             })
+                        }
+
+                        res.data[i].tagsIds = JSON.parse(res.data[i].tagsIds)
+                        if (res.data[i].tagsIds?.[0].id === null) {
+                            res.data[i].tagsIds = []
                         }
                     }
                     resolve()

@@ -26,6 +26,7 @@
 
                     <button
                         id="register"
+                        @click="contactThroughMail('Registration')"
                     >Register</button> 
                 </div>
 
@@ -86,15 +87,37 @@
                         <p>Instead of manually getting follow ups from employees now you can use our work diary to keep track over progress made on any tasks over specified period of time</p>
                     </section>
                 </div>
+
+                <div style="display: flex; flex-direction: column; flex-wrap: wrap; flex-basis: 250px; margin-top: 64px">
+                    
+                    <div style="display: flex; gap: 8px; flex-direction: row; align-items: center;">
+                        <h2>Contact Us</h2> 
+                        <p>We're pretty fast at replying...</p>
+                    </div>
+
+                    <p style="cursor: pointer;" @click.prevent="contactThroughMail('')">admin@corporatetasks.com</p>
+                    <p style="cursor: pointer;" @click.prevent="contactThoughWa">+91 884 9210 989</p>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
-<script>
-export default {
-    name: 'TheLandingPage'
+<script setup>
+function contactThroughMail(regarding) {
+    const email = 'admin@corporatetasks.com';
+    const subject = `Regarding: ${regarding}`;
+    const body = `How you intend to use corporatetasks.com?\n\n\nHow many employees do your organization have?\n\n\nAre switching from any other existing product (if yes please provide reasons) or we're your first choice?\n\n\n`;
+
+    const mailtoLink = 'mailto:' + email + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    window.location.href = mailtoLink;
 }
+
+function contactThoughWa() {
+    var phoneNumber = '918849210989';
+    var whatsappUrl = 'https://wa.me/' + phoneNumber;
+    window.open(whatsappUrl, '_blank');
+  }
 </script>
 
 <style scoped>
