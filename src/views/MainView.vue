@@ -64,12 +64,12 @@
           </router-link>
         </div>
 
-        <div class="link-list">
+        <!-- <div class="link-list">
           <router-link :to="{name: 'settings'}" tabindex="-1" class="pt16 pb16 link">
             <font-awesome-icon :icon="['fas', 'gear']" class="pa-icon"></font-awesome-icon>
             <span v-if="showLabels">Settings</span>
           </router-link>
-        </div>
+        </div> -->
 
         <div class="link-list">
           <router-link v-if="rightCheck('admin_panel') == true" :to="{name: 'admin_panel'}" tabindex="-1" class="pt16 pb16 link">

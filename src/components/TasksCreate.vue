@@ -175,7 +175,7 @@
 
                         </div>
 
-                        <div class="flex mt16">
+                        <!-- <div class="flex mt16">
                             <input v-model="repeat" type="checkbox" :id='"recurring"+uk' class="recurring">
                             <label :for="'recurring'+uk">recurring</label>
                             <select v-if="repeat" v-model="taskRepeat" :id='"task-repeat"+uk' class="task-repeat p0 ml8">
@@ -184,7 +184,7 @@
                                 <option value="day">every day</option>
                             </select>
                             <input v-if="repeat" v-model="taskRepeatOn" type="date" :id='"task-repeat-on"+uk' class="task-repeat p0 pl8 ml8">
-                        </div>
+                        </div> -->
 
                         <div class="flex mt16">
                             <input v-model="save" type="checkbox" :id="'save-task-template'+uk" class="save-task-template">
