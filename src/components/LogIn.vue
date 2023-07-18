@@ -20,9 +20,13 @@
 <script>
 import swal from 'sweetalert'
 import axios from '../api/axiosInstance.js'
+import { useMeta } from 'vue-meta'
 
     export default {
         name: 'LogIn',
+        setup() {
+            useMeta({title: 'Log In'})
+        },
         data() {
             return {
                 email: '',

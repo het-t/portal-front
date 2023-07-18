@@ -3,9 +3,13 @@
 </template>
 
 <script>
+import { useMeta } from 'vue-meta'
 import TheSetting from '../components/TheSetting.vue'
 export default {
     components: { TheSetting },
+    setup() {
+        useMeta({title: 'Setting'})
+    },
     data() {
         return {
             allow: false

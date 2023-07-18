@@ -27,6 +27,7 @@
     "vue-datepicker-next": "^1.0.2",
     "vue-debounce": "^4.0.0",
     "vue-file-agent": "^1.7.3",
+    "vue-meta": "^3.0.0-alpha.10",
     "vue-multiselect": "^3.0.0-alpha.2",
     "vue-router": "^4.0.3",
     "vue3-circle-progress": "^1.0.7",
@@ -40,6 +41,7 @@
     "@vue/cli-plugin-vuex": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
     "eslint": "^7.32.0",
-    "eslint-plugin-vue": "^8.0.3"
+    "eslint-plugin-vue": "^8.0.3",
+    "sitemap-webpack-plugin": "^1.1.1"
   }
 }

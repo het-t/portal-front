@@ -123,10 +123,14 @@ import VueMultiselect from 'vue-multiselect'
 import DatePicker from './DatePicker.vue'
 import TablePagination from './TablePagination.vue'
 import WorkDiaryMainSubTasks from './WorkDiaryMainSubTasks.vue'
+import { useMeta } from 'vue-meta'
 
     export default {
         components: { TableMain, DatePicker, TablePagination, VueMultiselect, WorkDiaryMainSubTasks },
         name: 'WorkDiaryMain',
+        setup() {
+            useMeta({title: 'Work Diary'})
+        },
         data() {
             return {
                 user: '',

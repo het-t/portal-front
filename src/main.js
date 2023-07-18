@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store/index.js'
 import VueCookies from 'vue-cookies'
+import {createMetaManager} from 'vue-meta'
 
 import Toaster from "@meforma/vue-toaster";
 
@@ -96,6 +97,10 @@ app
 .provide('toast', app.config.globalProperties.$toast)
 
 app.use(VueCookies)
+    .use(createMetaManager(
+        false,
+        {meta: {tag: 'meta', nameless: true}}
+    ))
     .directive('debounce', vue3Debounce({ lock: true }))
     .use(store)
     .use(router)

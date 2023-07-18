@@ -5,8 +5,12 @@
 </template>
 
 <script>
+import { useMeta } from 'vue-meta'
     export default {
         name: "MyTasksView",
+        setup() {
+            useMeta({title: 'My Tasks'})
+        },
         data() {
             return {
                 allow: false

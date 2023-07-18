@@ -5,8 +5,12 @@
 </template>
 
 <script>
+import { useMeta } from 'vue-meta'
     export default {
         name: "ClientView",
+        setup() {
+            useMeta({title: 'Clients'})
+        },
         data() {
             return {
                 allow: false

@@ -5,8 +5,12 @@
 </template>
 
 <script>
+import { useMeta } from 'vue-meta'
     export default {
         name: "RoleView",
+        setup() {
+            useMeta({title: 'Roles'})
+        },
         data() {
             return {
                 allow: true,

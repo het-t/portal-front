@@ -2,7 +2,7 @@
 node_modules
 
 dist
-dist.zip
+*.zip
 
 index.html
 # local env files

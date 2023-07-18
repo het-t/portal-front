@@ -118,11 +118,15 @@
 </template>
 
 <script>
+import { useMeta } from 'vue-meta'
     import TablePagination from './TablePagination.vue'
     import TableSort from './TableSort.vue'
 
     export default {
         name: "UserActivity",
+        setup() {
+            useMeta({title: 'Activity'})
+        },
         data() {
             return {
                 activityData: [],

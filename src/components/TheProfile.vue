@@ -47,6 +47,7 @@ import swal from 'sweetalert'
 import axios from '../api/axiosInstance.js';
 
 import TheSetting from './TheSetting.vue';
+import { useMeta } from 'vue-meta';
     export default {
         components: { Cropper, TheSetting },
         name: 'TheProfile',
@@ -55,6 +56,9 @@ import TheSetting from './TheSetting.vue';
                 image: '',
                 showCropper: false
             }
+        },
+        setup() {
+            useMeta({title: 'Profile'})
         },
         mounted() {
             this.$store.dispatch('images/fetchProfilePic', {

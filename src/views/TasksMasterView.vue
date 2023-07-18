@@ -3,3 +3,12 @@
         <router-view></router-view>
     </div>
 </template>
+
+<script>
+import { useMeta } from 'vue-meta'
+export default {
+    setup() {
+        useMeta({title: 'Task Templates'})
+    }
+}
+</script>
