@@ -285,7 +285,7 @@ function addSubTask() {
         emits("popUpVisibilityChanged", {
             visibility: true
         })
-        this.removeSubTask(0)
+        removeSubTask(0)
     }
     else {
         emits("popUpVisibilityChanged", {
