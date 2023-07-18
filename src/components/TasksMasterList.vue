@@ -151,7 +151,7 @@ const toast = inject('toast')
 
 function editTaskMaster(rowIndex, taskMasterId, editingStatus) {
     if (editingStatus === 0) {
-        if (rightCheck('edit_task_master')){
+        if (rightCheck('edit_tasks_master')){
             store.dispatch('tasksMaster/fetchSubTasks', {taskMasterId})
             .then(() => {
                 state.componentId[taskMasterId] = !state.componentId[taskMasterId]
