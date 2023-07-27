@@ -1,126 +1,129 @@
 <template>
-    <div class="fg pr16 sub-tasks-scroll">
-        <div>   
-            <div class="row mt8 mb16">
-                <label :for="'task-sub-task'+props.uk" class="labels c1">sub task</label>
-                <div style="width:80%; display:flex; align-items: center;">
-                    <input @keyup.enter="addSubTask()" v-model="state.newSubTask" style="width: 100%" type="text" :id="'task-sub-task'+props.uk">
-                    <font-awesome-icon tabindex="0" class="icon pointer add-st ml8" @keyup.enter="addSubTask()" @click.prevent="addSubTask()" icon="fa-solid fa-plus"></font-awesome-icon>
+    <div class="card sub-tasks-scroll">
+        <div class="pr24 pl24 pt24 pb24">
+            <div>   
+                <div style="display: flex; flex-direction: row;">
+                    <label :for="'task-sub-task' + props.uk" class="labels c1">sub task</label>
+                    <div style="width:80%; display:flex; align-items: center;">
+                        <input @keyup.enter="addSubTask" v-model="state.newSubTask" style="width: 100%" type="text" :id="'task-sub-task' + props.uk">
+                        <font-awesome-icon tabindex="0" class="icon pointer add-st ml8" @keyup.enter="addSubTask" @click.prevent="addSubTask" icon="fa-solid fa-plus"></font-awesome-icon>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div v-if="state.subTasks" class="grid-wrapper">
-            <div v-for="(task, index) in state.subTasks" :key="index" class="mb8">
-                <div class="grid" v-if="task.description != '_#_*&^'">
+            <div v-if="state.subTasks" class="grid-wrapper mt16">
+                <div v-for="(task, index) in state.subTasks" :key="index" class="mb8">
+                    <div class="grid" v-if="task.description != '_#_*&^'">
 
-                    <font-awesome-icon tabindex="0" icon="fa-solid fa-minus"
-                        @keyup.enter="removeSubTask(index)"
-                        @click.prevent="removeSubTask(index)" 
-                        class="pointer icon rmst"
-                    ></font-awesome-icon>
+                        <font-awesome-icon tabindex="0" icon="fa-solid fa-minus"
+                            @keyup.enter="removeSubTask(index)"
+                            @click.prevent="removeSubTask(index)" 
+                            class="pointer icon rmst"
+                        ></font-awesome-icon>
 
-                    <div class="pointer"
-                        tabindex="0"
-                        @keyup.enter="toggleDisplaySubTask(index)"
-                        @click.prevent="toggleDisplaySubTask(index)"
-                    >
-                        <p contentEditable="true"
-                            class="st-description"
-                            :class="task.statusId?.id === 3 || task.statusId?.id === 5 ? 'done-st' : ''"
-                            @input="updateSubTaskTitle(task, $event)"
-                        >{{ task.description }}</p>
-                        
-                        <span v-if="task.statusId?.id != undefined" class="ml8 st_status" :class="task.statusId?.name">{{ task.statusId.name }}</span>
-                    </div>
-                    
-                    <div style="overflow: hidden; display: flex; justify-content: flex-end;">
-                        <div 
-                            v-for="(user, index) in task.assignedTo" :key="user.id" 
-                            :style="getStyle(task.assignedTo.length - index - 1)"
-                            style="height: 36px; width: 36px; clip-path: circle(); position: relative; background-color: white;"
+                        <div class="pointer"
+                            tabindex="0"
+                            @keyup.enter="toggleDisplaySubTask(index)"
+                            @click.prevent="toggleDisplaySubTask(index)"
                         >
-                            <font-awesome-icon 
-                                v-if="$store.getters['images/getProfilePic'](`${user.id}_50x50`) == undefined || 
-                                $store.getters['images/getProfilePic'](`${user.id}_50x50`) == ''"
-                                :key="user.id"
-                                class="profile-pic" style="border-radius: 100%; width: 36px; height: 36px;"
-                                :icon="['fas', 'user']"
-                            ></font-awesome-icon>
-
-                            <img v-else :src="$store.getters['images/getProfilePic'](`${user.id}_50x50`)"
-                                loading="lazy" style="width: 36px; height: 36px; border-radius: 100%;"
+                            <p contentEditable="true"
+                                class="st-description"
+                                :class="task.statusId?.id === 3 || task.statusId?.id === 5 ? 'done-st' : ''"
+                                @input="updateSubTaskTitle(task, $event)"
+                            >{{ task.description }}</p>
+                        
+                            <span v-if="task.statusId?.id != undefined" class="ml8 st_status" :class="task.statusId?.name">{{ task.statusId.name }}</span>
+                        </div>
+                    
+                        <div style="overflow: hidden; display: flex; justify-content: flex-end;">
+                            <div 
+                                v-for="(user, index) in task.assignedTo" :key="user.id" 
+                                :style="getStyle(task.assignedTo.length - index - 1)"
+                                style="height: 36px; width: 36px; clip-path: circle(); position: relative; background-color: white;"
                             >
+                                <font-awesome-icon 
+                                    v-if="$store.getters['images/getProfilePic'](`${user.id}_50x50`) == undefined ||
+                                        $store.getters['images/getProfilePic'](`${user.id}_50x50`) == ''"
+                                    :key="user.id"
+                                    class="profile-pic" style="border-radius: 100%; width: 36px; height: 36px;"
+                                    :icon="['fas', 'user']"
+                                ></font-awesome-icon>
+
+                                <img v-else :src="$store.getters['images/getProfilePic'](`${user.id}_50x50`)"
+                                    loading="lazy" style="width: 36px; height: 36px; border-radius: 100%;"
+                                >
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div v-if="task.description != '_#_*&^' && state.show == index"
-                    class="hide ml24"
-                    :class="state.show == index ? 'show' : 'hide'" 
-                >
-                    <div class="ml16">
-                        <vue-multiselect 
-                            multiple 
-                            v-model="task.assignedTo" 
-                            :options="getUsers" 
-                            :custom-label="labelForAssignedTo" 
-                            track-by="id" 
-                            placeholder="Assigend To" 
-                            class="sub-task-extra options-list multiselect__tag_bg"
-                        >
-                            <template #noResult>
-                                Oops! No user found. Consider creating new user
-                            </template>
+                    <div v-if="task.description != '_#_*&^' && state.show == index"
+                        class="hide ml24"
+                        :class="state.show == index ? 'show' : 'hide'" 
+                        spellcheck="false"
+                    >
+                        <div class="ml16">
+                            <vue-multiselect 
+                                multiple 
+                                v-model="task.assignedTo" 
+                                :options="getUsers" 
+                                :custom-label="labelForAssignedTo" 
+                                track-by="id" 
+                                placeholder="Assigend To" 
+                                class="sub-task-extra options-list multiselect__tag_bg"
+                            >
+                                <template #noResult>
+                                    Oops! No user found. Consider creating new user
+                                </template>
 
-                            <template v-slot:option="props">
-                                <span class="p0 m0" style="height: 0 !important; width: 0 !important;" :class="props.option.isActive == 0 ? 'not-active' : ''">
-                                    {{props.option.firstName}} {{props.option.lastName}} ({{props.option.id}})
-                                </span>
-                            </template>
-                        </vue-multiselect>
-                    </div>
+                                <template v-slot:option="props">
+                                    <span class="p0 m0" style="height: 0 !important; width: 0 !important;" :class="props.option.isActive == 0 ? 'not-active' : ''">
+                                        {{ props.option.firstName }} {{ props.option.lastName }} ({{ props.option.id }})
+                                    </span>
+                                </template>
+                            </vue-multiselect>
+                        </div>
 
-                    <div class="ml16">
-                        <vue-multiselect
-                            v-model="task.statusId"
-                            :options="subTasksStatuses"
-                            :custom-label="({name}) => name"
-                            :multiple="false"
-                            :allowEmpty="false"
-                            track-by="id"
-                            placeholder="Status"
-                            class="sub-task-extra options-list multiselect__tag_bg"
-                        >
-                            <template #noResult>
-                                Oops! No client found. Consider creating new client
-                            </template>
-                        </vue-multiselect>
-                    </div>
+                        <div class="ml16">
+                            <vue-multiselect
+                                v-model="task.statusId"
+                                :options="subTasksStatuses"
+                                :custom-label="({ name }) => name"
+                                :multiple="false"
+                                :allowEmpty="false"
+                                track-by="id"
+                                placeholder="Status"
+                                class="sub-task-extra options-list multiselect__tag_bg"
+                            >
+                                <template #noResult>
+                                    Oops! No client found. Consider creating new client
+                                </template>
+                            </vue-multiselect>
+                        </div>
 
-                    <div class="ml16">
-                        <vue-multiselect
-                            v-model="task.tagsIds"
-                            @tag="createNewTag($event, task)"
-                            :options="subTasksTagsInStore"
-                            :custom-label="({name}) => name"
-                            :taggable="true"
-                            tag-placeholder="Add this as new tag"
-                            :multiple="true"
-                            :allow-empty="true"
-                            track-by="id"
-                            placeholder="Tags"
-                            class="sub-task-extra options-list multiselect__tag_bg"
-                        >
-                        </vue-multiselect>
-                    </div>
+                        <div class="ml16">
+                            <vue-multiselect
+                                v-model="task.tags"
+                                @tag="createNewTag($event, task)"
+                                :options="subTasksTagsInStore"
+                                :custom-label="({ name }) => name"
+                                :taggable="true"
+                                tag-placeholder="Add this as new tag"
+                                :multiple="true"
+                                :allow-empty="true"
+                                track-by="id"
+                                placeholder="Tags"
+                                class="sub-task-extra options-list multiselect__tag_bg"
+                            >
+                            </vue-multiselect>
+                        </div>
                     
-                    <div class="ml16">
-                        <input v-model="task.cost" type="number" :id="'sub-task-cost'+props.uk" placeholder="Cost" class="sub-task-extra">
-                    </div>
+                        <div class="ml16">
+                            <input v-model="task.cost" type="number" :id="'sub-task-cost' + props.uk" placeholder="Cost" class="sub-task-extra">
+                        </div>
 
-                    <div class="ml16">
-                        <input v-model="task.comments" class="sub-task-extra" type="text" placeholder="Comments">
+                        <div class="ml16">
+                            <input v-model="task.comments" class="sub-task-extra" type="text" placeholder="Comments">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -151,24 +154,23 @@ const props = defineProps({
         type: Number
     },
     taskMaster: {
-        type: Object
+        type: Number
     },
     uk: {
         type: Number
     },
-    flag: {
+    save: {
         type: Boolean
     }
 })
 
-const emits = defineEmits(['dataToSave', 'popUpVisibilityChanged'])
+const emits = defineEmits(['save', 'popUpVisibilityChanged'])
 
 watch(
-    () => props.flag,
+    () => props.save,
     (newFlag, oldFlag) => {
         if(oldFlag === false && newFlag === true) {
-
-            emits('dataToSave', {
+            emits('save', {
                 subTasks: state.subTasks,
                 removedSubTasks: state.removedSubTaskId
             })
@@ -178,12 +180,12 @@ watch(
 
 watch(
     () => props.taskMaster,
-    (taskMaster) => {
-        if(props.editTaskId == undefined) {
-            if(taskMaster?.id) {
-                store.dispatch('tasksMaster/fetchSubTasks', {taskMasterId: taskMaster.id})
+    (taskMasterId) => {
+        if(!props.editTaskId) {
+            if(taskMasterId) {
+                store.dispatch('tasksMaster/fetchSubTasks', {taskMasterId})
                 .then(() => {
-                    state.subTasks = store.getters['tasksMaster/getSubTasks'](taskMaster.id)?.map((subTaskMaster) => {
+                    state.subTasks = store.getters['tasksMaster/getSubTasks'](taskMasterId)?.map((subTaskMaster) => {
                         subTaskMaster.saved = 0
                         return subTaskMaster
                     })
@@ -195,16 +197,16 @@ watch(
             }
         }
         else {
-            if(taskMaster?.id) {
+            if(taskMasterId) {
                 if (state.i > 0) {                    
                     state.removedSubTaskId.push(...state.subTasks.filter((subTask) => {
                         if(subTask.saved !== 0) return true
                         return false
                     }).map((subTask) => subTask.id))
 
-                    store.dispatch('tasksMaster/fetchSubTasks', {taskMasterId: taskMaster.id})
+                    store.dispatch('tasksMaster/fetchSubTasks', {taskMasterId})
                     .then(() => {
-                        state.subTasks = store.getters['tasksMaster/getSubTasks'](taskMaster.id)?.map((subTaskMaster) => {
+                        state.subTasks = store.getters['tasksMaster/getSubTasks'](taskMasterId)?.map((subTaskMaster) => {
                             subTaskMaster.saved = 0
                             return subTaskMaster
                         })
@@ -212,7 +214,7 @@ watch(
                     .catch(err => console.log(err))
                 }
             }
-            else if (!taskMaster?.id && state.i !== 0) {
+            else if (!taskMasterId && state.i !== 0) {
                 state.removedSubTaskId.push(...state.subTasks.filter((subTask) => {
                     if(subTask.saved !== 0) return true
                     return false
@@ -310,35 +312,48 @@ const subTasksTagsInStore = computed(() => store.getters['tasks/getSubTasksTags'
 
 const subTasksStatuses = computed(() => store.getters['tasks/getSubTasksStatuses'])
 
-onMounted(() => {
-    const subTasksData = getSubTasks.value
+await componentPromiseGenerator()
 
-    if (subTasksData !== undefined && subTasksData !== '') {  
-        state.unqId = subTasksData.length    
-
-        for(let i = 0; i<subTasksData.length; i++) {
-            if (subTasksData[i].statusId?.id === undefined) {
-                subTasksData[i].statusId = subTasksStatuses.value.find((status) => 
-                status.id === subTasksData[i].statusId
-            )
-            }
-
-            if (typeof subTasksData[i].assignedTo?.[0] === "number") {
-                subTasksData[i].assignedTo = subTasksData[i].assignedTo.map(userId => {
-                    return getUsers.value.find(user => user.id == userId)
-                })
-            }
-            else if (subTasksData[i].assignedTo === null ) subTasksData[i].assignedTo = []
-        }
-        state.subTasks = subTasksData
-    }
-
-    if (state.subTasks.length === 1 && state.subTasks[0].description === '_#_*&^') {
-        emits("popUpVisibilityChanged", {
-            visibility: true,
-            subTask: state.subTasks[0]
+function componentPromiseGenerator() {
+    if (props.editTaskId) {
+        return store.dispatch('tasks/fetchSubTasks', {taskId: props.editTaskId})
+        .then(() => {
+            state.subTasks = getSubTasks.value
         })
     }
+    return Promise.resolve()
+}
+
+onMounted(() => {
+    console.log(getSubTasks.value)
+    // const subTasksData = ''
+
+    // if (subTasksData !== undefined && subTasksData !== '') {  
+    //     state.unqId = subTasksData.length    
+
+    //     for(let i = 0; i<subTasksData.length; i++) {
+    //         if (subTasksData[i].statusId?.id === undefined) {
+    //             subTasksData[i].statusId = subTasksStatuses.value.find((status) => 
+    //             status.id === subTasksData[i].statusId
+    //         )
+    //         }
+
+    //         if (typeof subTasksData[i].assignedTo?.[0] === "number") {
+    //             subTasksData[i].assignedTo = subTasksData[i].assignedTo.map(userId => {
+    //                 return getUsers.value.find(user => user.id == userId)
+    //             })
+    //         }
+    //         else if (subTasksData[i].assignedTo === null ) subTasksData[i].assignedTo = []
+    //     }
+    //     state.subTasks = subTasksData
+    // }
+
+    // if (state.subTasks.length === 1 && state.subTasks[0].description === '_#_*&^') {
+    //     emits("popUpVisibilityChanged", {
+    //         visibility: true,
+    //         subTask: state.subTasks[0]
+    //     })
+    // }
 })
 </script>
 
@@ -369,10 +384,12 @@ svg.profile-pic {
     text-align: center;
     white-space: nowrap;
     text-transform: capitalize;
+    font-size: 11px;
 }
 
 .done-st {
     text-decoration: line-through;
+    color: #9a9a9a;
 }
 .add-st {
     width: 13px;
@@ -401,7 +418,7 @@ option, select {
     display: block !important;
 }
 .sub-task-extra {
-    width: 80% !important;
+    /* width: 80% !important; */
     border: none !important;
     border-bottom: solid 1px #e7eaec !important;
 }
@@ -425,8 +442,5 @@ option, select {
 }
 .grid:hover .dots-img {
     visibility: visible !important;
-}
-.sub-tasks-scroll {
-
 }
 </style>

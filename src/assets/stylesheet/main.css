@@ -152,6 +152,7 @@ a, button {
     color: #676a6c;
     overflow-x: auto;
 }
+
 #app table, #app th, #app td {
     border-collapse: collapse;
     text-align: left;
@@ -221,12 +222,7 @@ a, button {
 .table-actions {
     display: inline;
 }
-.card-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: solid 1px #e7eaec;
-}
+
 
 .sec-nav {
     height:100%;
@@ -397,9 +393,9 @@ input:disabled {
     .flex-wd-options {
         flex-direction: column;
     }
-    .date-picker {
+    /* .date-picker {
         width: 80%;
-    }
+    } */
     .table-pagination {
         width: 100%;
     }
@@ -409,7 +405,7 @@ input:disabled {
     form input~#remember-me, .role-name {
         width: 100% !important;
     }
-    .mx-date-time-range {
+    /* .mx-date-time-range {
         height: fit-content !important;
         width: fit-content !important;
     }
@@ -417,10 +413,10 @@ input:disabled {
         background-color: transparent !important;
         height: fit-content;
         width: fit-content;
-    }
-    .mx-calendar-range div {
+    } */
+    /* .mx-calendar-range div {
         background-color: #fff;
-    }
+    } */
 }
 @media screen and (max-width : 426px) {
     .row {
@@ -532,6 +528,9 @@ input:disabled {
 .pt24 {
     padding-top: 24px;
 }
+.pb24 {
+    padding-bottom: 24px;
+}
 
 .pl0 {
     padding-left: 0;
@@ -551,6 +550,9 @@ input:disabled {
 }
 .pb32 {
     padding-bottom: 32px;
+}
+.p24 {
+    padding: 24px;
 }
 
 #app h5 {

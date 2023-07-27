@@ -126,7 +126,7 @@
     import DotsMenu from './DotsMenu.vue'
     import SkeletonForm from '../skeletons/SkeletonForm.vue';
 
-    import { defineAsyncComponent } from '@vue/runtime-core';
+    import { defineAsyncComponent } from 'vue';
     import TableSort from './TableSort.vue';
     import useDeleteSwal from "@/helpers/swalDelete";
 

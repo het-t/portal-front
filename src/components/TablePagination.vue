@@ -1,5 +1,5 @@
 <template>
-    <div class="flex table-pagination">
+    <div v-if="props.handleCounts === true" class="flex table-pagination">
         <div class="recordsPerPage">
             <label for="recordsPerPage">entries</label>
             <select 
@@ -61,6 +61,22 @@ const props = defineProps({
     storeGetterToGetNoOfRecords:  {
         type: String,
         default: 'getCount'
+    },
+    updateOnFiltersChange: {
+        type: Boolean,
+        default: true
+    },
+    updateOnSortingChange: {
+        type: Boolean,
+        default: true
+    },
+    handleCounts: {
+        type: Boolean,
+        default: true
+    },
+    makeApiReq: {
+        type: Boolean,
+        default: true
     }
 })
 
@@ -71,45 +87,58 @@ const debouncedApiCall = debounce(() => {
     
 const filters = computed(() => store.getters[props.storeName + '/getFilters'])
 
-watch(
-    filters.value, 
-    () => {
-        debouncedApiCall()
-    },     
-    {deep: true}
-)
+if (props.updateOnFiltersChange === true) {
+    watch(
+        filters.value, 
+        () => {
+            debouncedApiCall()
+        },     
+        {deep: true}
+    )
+}
 
 const sorting = computed(() => store.getters[props.storeName + '/getSort'])
 
-watch(
-    sorting,
-    () => {
-        debouncedApiCall()
-    },
-    {deep: true}
-)
+if (props.updateOnSortingChange === true) {
+    watch(
+        sorting,
+        () => {
+            debouncedApiCall()
+        },
+        {deep: true}
+    )
+}
+
 const recordsPerPage = computed(() => store.getters[props.storeName + '/getRecordsPerPage'])
-watch(
-    recordsPerPage,
-    () => {
-        getData(false)
-    }
-)
+
+if (props.handleCounts === true) {
+    watch(
+        recordsPerPage,
+        () => {
+            getData(false)
+        }
+    )
+}
+
 function pageSizeChange() {
     store.commit(props.storeName + '/setRecordsPerPage', localRecordsPerPage.value)
     getData(false)
 }
 
-const noOfRecords = computed(() => store.getters[props.storeName + '/' + props.storeGetterToGetNoOfRecords])
-const totalPages = computed(() => Math.ceil(noOfRecords.value / recordsPerPage.value))
-
 const currentPage = computed(() => store.getters[props.storeName + '/getCurrentPage'])
-watch(
-    currentPage,
-    () => {
-        getData(false)
-    }
-)
+
+if (props.handleCounts === true) {    
+    watch(
+        currentPage,
+        () => {
+            getData(false)
+        }
+    )
+}
+
+const noOfRecords = computed(() => store.getters[props.storeName + '/' + props.storeGetterToGetNoOfRecords])
+
+const totalPages = computed(() => Math.ceil(noOfRecords.value / recordsPerPage.value))
 
 function showPage() {
     if (!isNaN(totalPages.value)) {
@@ -130,17 +159,19 @@ function pageChange(n) {
 function getData(force) {
     const dataGetter = computed(() => store.getters[props.storeName + '/' + props.storeGetterToGetData])
 
-    store.dispatch(props.storeName + '/' + props.storeActionToFetchData, {
-        recordsPerPage: recordsPerPage.value,
-        force
-    })
-    .then(() => {
-        emits('tableData', dataGetter.value({
-            from: (currentPage.value-1)*recordsPerPage.value,
-            to: (currentPage.value-1)*recordsPerPage.value + recordsPerPage.value,
-            all: false
-        }))
-    })
+    if (props.makeApiReq === true) {
+        store.dispatch(props.storeName + '/' + props.storeActionToFetchData, {
+            recordsPerPage: recordsPerPage.value,
+            force
+        })
+        .then(() => {
+            emits('tableData', dataGetter.value({
+                from: (currentPage.value-1)*recordsPerPage.value,
+                to: (currentPage.value-1)*recordsPerPage.value + recordsPerPage.value,
+                all: false
+            }))
+        })
+    }
 }
 
 function fetchCount() {
@@ -150,8 +181,13 @@ function fetchCount() {
 }
 
 onMounted(() => {
-    fetchCount()
-    .then(() => {
+    let p;
+    
+    if (props.handleCounts === true) p = fetchCount()
+    else p = Promise.resolve()
+
+
+    p.then(() => {
         getData(false)
     })
 })

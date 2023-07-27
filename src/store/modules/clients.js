@@ -122,16 +122,16 @@ const actions = {
             let {sortBy, sortOrder} = getters['getSort']
             const currentPage = getters['getCurrentPage']
             const recordsPerPage = getters['getRecordsPerPage']
-
+    
             let from, to, formattedFilters
-
+    
             if (all) {
                 from = null
                 to = null
                 sortBy = null
                 sortOrder = null
             }
-
+    
             if (all) {
                 from = null
                 to = null
@@ -144,7 +144,7 @@ const actions = {
                 from = (currentPage-1)*recordsPerPage
                 to = from + recordsPerPage
             }
-
+            
             if (!getters['getList']({from, to, sortBy, sortOrder, filters: Object.values(formattedFilters)})?.length || force === true) {
                 clients.getList({
                     from,

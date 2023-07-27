@@ -16,7 +16,7 @@ const getters = {
     },
     matchingChats(state, getters, rootState, rootGetters) {
         return [
-            ...rootGetters['users/allUsers']?.filter(user => {
+            Object.values(rootGetters['users/allUsers'])?.filter(user => {
                 return (
                     user.isActive === 1 
                     && 

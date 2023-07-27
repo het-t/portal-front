@@ -39,7 +39,6 @@
         </div>
 
         <table-main>
-
             <template #thead>
                 <tr class="table-heading">
                     <th>

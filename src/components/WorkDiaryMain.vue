@@ -120,7 +120,7 @@
 <script>
 import TableMain from './TableMain.vue'
 import VueMultiselect from 'vue-multiselect'
-import DatePicker from './DatePicker.vue'
+import DatePicker from './HelperDatePicker.vue'
 import TablePagination from './TablePagination.vue'
 import WorkDiaryMainSubTasks from './WorkDiaryMainSubTasks.vue'
 import { useMeta } from 'vue-meta'

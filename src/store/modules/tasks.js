@@ -5,6 +5,7 @@ const state = {
     count: {}, //no. of total tasks
     tasks: {},      //page data of tasks table
     tasksData: {},   //data of all tasks opened to edit
+    tasksLogs: {},
     subTasksData: {},    //data of all sub tasks opened to edit
     sortBy: 'id',       
     sortOrder: 0,       //0-desc, 1-asc
@@ -41,6 +42,9 @@ const getters = {
     //
     getData: (state) => (taskId) => {
         return state.tasksData[taskId]
+    },
+    getLogs: (state) => (taskId) => {
+        return state.tasksLogs[taskId]
     },
     //
     getList: (state) => ({from = null, to = null, sortBy = null, sortOrder = null, filters = Object.values(formatFilters(state.filters))}) => {
@@ -82,6 +86,9 @@ const mutations = {
     //
     setData(state, {taskId, taskData}) {
         state.tasksData[taskId] = taskData
+    },
+    setLogs(state, {taskId, taskLogs}) {
+        state.tasksLogs[taskId] = taskLogs
     },
     //
     setCount(state, {count}) {
@@ -153,7 +160,7 @@ const actions = {
         return new Promise((resolve, reject) => {
             const formattedFilters = formatFilters(getters['getFilters'])
 
-            if (!getters['getCount']|| force === true) {
+            if (!getters['getCount'] || force === true) {
                 tasks.count({
                     filters: formattedFilters
                 })
@@ -198,7 +205,7 @@ const actions = {
                 tasks.getList({
                     from,
                     recordsPerPage,
-                    filters: formattedFilters   ,
+                    filters: formattedFilters,
                     sortBy,
                     sortOrder    
                 })
@@ -247,35 +254,66 @@ const actions = {
             else resolve()
         })
     },
+    fetchLogs({getters, commit}, {taskId, force = false}) {
+        return new Promise((resolve, reject) => {
+            if(!getters['getLogs'](taskId)?.length || force === true) {
+                tasks.getLogs({taskId})
+                .then((res) => {
+                    commit('setLogs', {
+                        taskId,
+                        taskLogs: res.data
+                    })
+                    resolve()
+                })
+                .catch(() => {
+                    reject()
+                }) 
+            }
+            else resolve()
+        })
+    },
     //
-    fetchSubTasks({getters, commit, dispatch}, {taskId, force = false}) {
+    fetchSubTasks({rootGetters, getters, commit, dispatch}, {taskId, force = false}) {
         return new Promise((resolve, reject) => {
             if (!getters['getSubTasks']?.(taskId)?.length || force === true) {
+                const users = rootGetters['users/getList']({})
+
                 tasks.getSubTasks({taskId})
                 .then((res) => {
-                    commit('setSubTasks', {
-                        taskId, 
-                        data: res.data
-                    })
+                    let subTasks = res.data
 
-                    for(let i = 0; i<res.data.length; i++) {
-                        if (typeof res.data[i].assignedTo === "string") {
-                            res.data[i].assignedTo = JSON.parse(res.data[i].assignedTo)
+                    subTasks = subTasks.map((subTask) => {
+                        subTask.assignedTo = JSON.parse(subTask.assignedTo)
+                        subTask.tags = JSON.parse(subTask.tags)
 
-                            res.data[i].assignedTo?.map((userId) => {
+                        if (subTask.assignedTo === null) subTask.assignedTo = []
+                        else {
+                            for (let i in subTask.assignedTo) {
                                 dispatch('images/fetchProfilePic', {
-                                    userId,
+                                    userId: subTask.assignedTo[i],
                                     width: 50,
                                     height: 50
                                 }, {root: true})
-                            })
+
+                                subTask.assignedTo[i] = users.find((user) => {
+                                    return user.id === subTask.assignedTo[i]
+                                })
+                            }
                         }
 
-                        res.data[i].tagsIds = JSON.parse(res.data[i].tagsIds)
-                        if (res.data[i].tagsIds?.[0].id === null) {
-                            res.data[i].tagsIds = []
-                        }
-                    }
+                        if (subTask.tags[0].id === null) subTask.tags = []
+
+                        subTask.statusId = getters['getSubTasksStatuses'].find((status) => {
+                            return status.id === subTask.statusId
+                        })
+
+                        return subTask
+                    })
+
+                    commit('setSubTasks', {
+                        taskId, 
+                        data: subTasks
+                    })
                     resolve()
                 })
                 .catch(() => {

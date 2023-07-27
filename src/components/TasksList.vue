@@ -107,24 +107,6 @@
                         </div>
                     </th>
 
-                    <!-- <th>
-                        <div class="flex">
-                            <table-sort :key="n" sortBy="tag" sortType="string" storeName="tasks"></table-sort>
-                            <div class="floating-container">
-                                <vue-multiselect 
-                                    id="task-tag"   
-                                    class="header p0" 
-                                    v-model="filters.tags"
-                                    :options="getTags"
-                                    track-by="id"
-                                >
-
-                                </vue-multiselect>
-                                <span class="floating-label">tag</span>
-                            </div>
-                        </div>
-                    </th> -->
-
                     <div style="border: none !important;"></div>
                 </tr>
             </template>
@@ -154,10 +136,6 @@
                         <td class="dots">
                             <div class="task-status" :class="task.status">{{ task.status }}</div>
                         </td>
-<!-- 
-                        <td>
-                            {{ task.tag }}
-                        </td> -->
                         
                         <div class="dots">
                             <dots-img 
@@ -194,7 +172,7 @@
 </template>
 
 <script>
-import TasksCreate from './TasksCreate.vue';
+import TasksCreate from './TaskDetails.vue';
 import TasksProgress from './TasksProgress.vue';
 import TableMain from './TableMain.vue';
 import DotsImg from './DotsImg.vue';
@@ -206,7 +184,6 @@ import TableSort from './TableSort.vue';
 import NoAccess from './NoAccess.vue';
 import rightCheck from '@/helpers/RightCheck';
 import swal from 'sweetalert';
-// import VueMultiselect from 'vue-multiselect';
 
 export default {
     name: "TasksList",
@@ -232,9 +209,6 @@ export default {
                 to: from + recordsPerPage
             })
         },
-        // getTags() {
-        //     return this.$store.getters['tasks/getTags']
-        // },
         filters() {
             return this.$store.getters['tasks/getFilters']
         }
@@ -292,18 +266,11 @@ export default {
 
             if (editingStatus === 0) {
                 if (rightCheck('edit_task')){
-
-                    this.componentId[taskId] = 'SkeletonForm'
-
-                    Promise.all([
-                        this.$store.dispatch('tasks/fetchData', {taskId}),
-                        this.$store.dispatch('tasks/fetchSubTasks', {taskId})
-                    ])
-                    .then(() => {
-                        this.componentId[taskId] = 'TasksCreate'
-                    })
-                    .catch(err => {
-                        console.log(err)
+                    this.$router.push({
+                        name: 'edit_task',
+                        params: {
+                            taskId
+                        }
                     })
                 }
                 else this.componentId[taskId] = 'NoAccess'
@@ -335,7 +302,6 @@ export default {
         SkeletonForm, 
         TableSort,
         NoAccess,
-        // VueMultiselect
     }
 }
 </script>

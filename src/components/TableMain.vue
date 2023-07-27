@@ -1,12 +1,11 @@
 <template>
         <div class="card">
-
             <div class="mr16 ml16 mt16">
                 <div class="table-main-head ml16 mb16">
                     <slot name="tableHeader"></slot>
                 </div>
                 
-                <table style="min-height: 400px; width: 100%; overflow-x: auto;">
+                <table style="width: 100%;" :style="allowXOverflow === true ? 'overflow-x: auto;' : 'overflow-x: none;'">
                     <thead>
                         <slot name="thead"></slot>
                     </thead>
@@ -23,9 +22,15 @@
 </template>
 
 <script>
-    export default {
-        name: 'TableMain',
+export default {
+    name: 'TableMain',
+    props: {
+        allowXOverflow: {
+            type: Boolean,
+            default: true
+        }
     }
+}
 </script>
 
 <style>

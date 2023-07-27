@@ -33,7 +33,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .date-picker {
     color: #676A6C !important;
 }

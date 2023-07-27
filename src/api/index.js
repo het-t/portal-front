@@ -43,7 +43,14 @@ const tasks = {
     count: (args) => makeGetReq(endpoints.tasks + '/count', args),
     getList: (args) => makeGetReq(endpoints.tasks, args),
     getData: (args) => makeGetReq(endpoints.tasks + '/' + args.taskId),
+    getLogs: (args) => makeGetReq(endpoints.tasks + '/' + args.taskId + '/logs'),
     getSubTasks: (args) => makeGetReq(endpoints.tasks + '/' + args.taskId + '/sub-tasks'),
+
+    getPayments: (args) => makeGetReq(endpoints.tasks + '/' + args.taskId + '/payments', args),
+    createPayment: (args) => makePostReq(endpoints.tasks + '/' + args.taskId +'/payments', args),
+    editPayment: (args) => makePutReq(endpoints.tasks + '/' + args.taskId +'/payments/' + args.paymentId, args),
+    deletePayment: (args) => makeDeleteReq(endpoints.tasks + '/' + args.taskId + '/payments/' + args.paymentId),
+
     create: (args) => makePostReq(endpoints.tasks, args),
     changeStatus: (args) => makePatchReq(endpoints.tasks + '/' + args.taskId, args),
     edit: (args) => makePutReq(endpoints.tasks + '/' + args.taskId, args),

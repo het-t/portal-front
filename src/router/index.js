@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import store from '@/store/index.js'
 import { users } from '@/api/index.js'
+import tasksRoutes from './tasks.js'
 
 let settingBreadcrumb = {
   title: 'settings',
@@ -77,26 +78,7 @@ let roleCreateBreadcrumb = {
     }]
 }
 
-let taskListBreadcrumb = {
-  title: 'tasks',
-  action: true,
-  actionUrl: '/u/tasks/create-task',
-  path: [{
-    text: 'list',
-    route: '/u/tasks/list'
-  }]
-}
 
-let taskCreateBreadcrumb = {
-  title: 'tasks',
-  path: [{
-    text: 'list',
-    route: '/u/tasks/list'
-  }, {
-    text: 'create',
-    route: '/u/tasks/create-task'
-  }]
-}
 
 let activityBreadcrumb = {
   title: 'activity',
@@ -163,6 +145,7 @@ let routesNew = [
     children: [
       {
         path: '',
+        name: 'landing_page',
         component: () => import('@/components/TheLandingPage.vue')
       },
       {
@@ -303,30 +286,7 @@ let routesNew = [
         ]
       },
       ////////////////////////
-      {
-        path: 'tasks',
-        component: () => import('@/views/TasksView.vue'),
-        children: [
-          {
-            path: '',
-            alias: 'list',
-            name: 'tasks_list',
-            component: () => import('@/components/TasksList.vue'),
-            meta: {
-              breadcrumb: taskListBreadcrumb
-            }
-          },
-          {
-            path: 'create-task',
-            name: 'create_task',
-            component: () => import('@/components/TasksCreate.vue'),
-            meta: {
-              breadcrumb: taskCreateBreadcrumb,
-              protected: true
-            }
-          },
-        ]
-      },
+      tasksRoutes,
       /////////////////////
       {
         path: 'task-templates',
