@@ -106,7 +106,7 @@ import { useRoute, useRouter } from "vue-router";
 import { tasks } from "../api";
 
 const tabsState = reactive({
-    payments: true,
+    payments: false,
     logs: false,
     subTasks: false,
     stats: false
