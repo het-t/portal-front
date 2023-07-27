@@ -1,0 +1,4 @@
+tr th:not(:nth-last-child(1), :nth-last-child(2)) , 
+.tr td:not(:nth-last-child(1), :nth-last-child(2)){
+    border-right: solid 1px #eeeeee;
+}

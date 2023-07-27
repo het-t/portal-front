@@ -1,55 +1,124 @@
+import { activities } from "@/api"
+import formatFilters from "@/helpers/storeFiltersFormater"
+
 const state = {
-    activityCount: '', //no. of activity
-    activity: {},      //table data of visited pages
+    count: '', //no. of activity
+    list: [],      //table data of visited pages
     sortBy: 'id',
     sortOrder: 0,        //0-desc, 1-asc
-    currentPage: ''
+    currentPage: 1,
+    recordsPerPage: 50,
+    filters: {
+        email: '',
+        activity: '',
+        refTable: '',
+        datetime: '',
+        detail: ''
+    }
 }
 
 const getters = {
-    activityCountGet(state) {
-        return state.activityCount
+    //
+    getCount(state) {
+        return state.count
     },
-    activityListGet: () => () => {
-        // state.activity[`${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}_${filters[3]}_${filters[4]}`]
-        return undefined
+    //
+    getList: (state) => () => {
+        return state.list
     },
-    sortGet(state) {
+    //
+    getSort(state) {
         return {
             sortBy: state.sortBy,
             sortOrder: state.sortOrder
         }
+    },
+    //
+    getCurrentPage(state) {
+        return state.currentPage
+    },
+    //
+    getRecordsPerPage(state) {
+        return state.recordsPerPage
+    },
+    //
+    getFilters(state) {
+        return state.filters
     }
 }
 
 const mutations = {
     RESET_STATE(state) {
-        state.activityCount = ''
+        state.count = ''
         state.activity = {}
     },
-    activityCountSet(state, activityCount) {
-        state.activityCount = activityCount
+    //
+    setCount(state, count) {
+        state.count = count
     },
-    activityList() {
-    //     Object.defineProperty(state.activity, 
-    //         `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}_${filters[3]}_${filters[4]}`, {
-    //             value: data,
-    //             writable: true,
-    //             enumerable: true,
-    //     })
+    setList(state, {data}) {
+        state.list = data
     },
-    sortSet(state, {sortBy, sortOrder}) {
+    //
+    setSort(state, {sortBy, sortOrder}) {
         state.sortBy = sortBy
         state.sortOrder = sortOrder
     },
-    currentPageSet(state, {index}) {
+    //
+    setCurrentPage(state, index) {
         state.currentPage = index
+    },
+    //
+    setRecordsPerPage(state, recordsPerPage) {
+        state.recordsPerPage = recordsPerPage
     }
 }
 
+const actions = {
+    fetchCount({getters, commit}) {
+        return new Promise((resolve, reject) => {
+            activities.count({
+                filters: formatFilters(getters['getFilters'])
+            })
+            .then((res) => {
+                commit('setCount', res.data.count)
+                resolve()
+            })
+            .catch(err => {
+                reject(err)
+            })
+        })
+    },
+    fetchList({getters, commit}) {
+        return new Promise((resolve, reject) => {
+            const {sortBy, sortOrder} = getters['getSort']
+            const currentPage = getters['getCurrentPage']
+            const recordsPerPage = getters['getRecordsPerPage']
+            
+            activities.getList({
+                from: (currentPage - 1) * recordsPerPage,
+                recordsPerPage,
+                sortBy,
+                sortOrder,
+                filters: formatFilters(getters['getFilters'])
+            })
+            .then((res) => {
+                commit('setList', {
+                    data: res.data
+                })
+                resolve()
+            })
+            .catch(err => {
+                console.log(err)
+                reject()
+            })
+        })
+    }
+}
 export default {
     namespaced: true,
     state,
     getters,
+    actions,
     mutations
 }

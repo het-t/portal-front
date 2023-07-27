@@ -11,24 +11,9 @@
     name: 'LogOut',
     methods: {
       logout() {
-
+        this.$cookies.remove('_token')
         this.$router.push({name: 'login'})
-
-        // axios.post("/u/api/logout/" , {
-        //   withCredentials: true
-        // })
-        // .then((results)=>{
-        //   console.log(results)
-        //   if (results.data == 'ok') {
-        //     this.$cookies.remove('_token');
-        //     console.log("logout")
-        //     this.$router.push({name: 'login'})
-        //   }
-        //   else {
-        //     this.$router.push({name: 'logout'})
-        //   }
-        // })
-
+        this.$store.reset()
       },
     }
   }
@@ -38,6 +23,7 @@
 button {
   padding: 0 4px;
   border: none;
-  border: solid 1px #f3f3f4;
+  border: solid 1px #fff;
+  background-color: #fff;
 }
 </style>

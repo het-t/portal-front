@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import { useMeta } from 'vue-meta'
     export default {
         name: "UserView",
         data() {
@@ -12,8 +13,13 @@
                 allow: false
             }
         },
+        setup() {
+            useMeta({title: 'Users'})
+        },
         created() {
-            this.$store.dispatch('roles/rolesAll')
+            this.$store.dispatch('roles/fetchList', {
+                all: true
+            })
             .then(() => {
                 this.allow = true
             })

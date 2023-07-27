@@ -3,10 +3,15 @@
     <div class="login-main">
         <form>
             <p id="banner">Login</p>
-            <input ref="focus" v-model="email" placeholder="Username" id="email" type="text" name="email"><br>
-            <input v-model="pwd" placeholder="Password" id="pwd" type="password" name="password"><br>
+            <input ref="focus" v-model="email" placeholder="Username" id="email" type="text" name="email" class="mb8">
+            <input v-model="pwd" placeholder="Password" id="pwd" type="password" name="password" class="mb8">
 
-            <button class="green button" @click.prevent="login(), clear()">login</button>
+            <div class="rememberme-container mb16">
+                <input v-model="remember" type="checkbox" id="rememberme">
+                <label for="rememberme">remember me</label>
+            </div>
+
+            <button :disabled="disabled" class="green button" @click.prevent="login(), clear()">login</button>
         </form>
     </div>
 </div>
@@ -15,20 +20,28 @@
 <script>
 import swal from 'sweetalert'
 import axios from '../api/axiosInstance.js'
+import { useMeta } from 'vue-meta'
 
     export default {
         name: 'LogIn',
+        setup() {
+            useMeta({title: 'Log In'})
+        },
         data() {
             return {
                 email: '',
-                pwd: ''
+                pwd: '',
+                remember: true,
+                disabled: false
             }
         },
         methods: {
             login() {
-                axios.post('api/login', {
+                this.disabled = true
+                axios.post('login', {
                     email: this.email,
-                    password: this.pwd
+                    password: this.pwd,
+                    remember: this.remember
                 }, {
                     withCredentials: true,
                 })
@@ -45,6 +58,11 @@ import axios from '../api/axiosInstance.js'
                         text: `Ooops ${err}`
                     })
                 )
+                .finally(() => {
+                    setTimeout(() => {
+                        this.disabled = false
+                    }, 1000)
+                })
             },
             clear() {
                 this.email = ''
@@ -53,15 +71,39 @@ import axios from '../api/axiosInstance.js'
         },
         mounted() {
             this.$refs['focus'].focus()
+
+            axios.get('/', {
+                withCredentials: true
+            })
+            .then((results) => {
+                if (results?.data == '1') {
+                    this.$router.push({name: 'my_tasks_list'})
+                }       
+            })
+            .catch(() => {
+                this.$router.push({name: 'login'})
+            })
         }
     }
 
 </script>
 
 <style scoped>
-
-input {
+label {
+    color: #676a6c;
+}
+.rememberme-container {
     width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+input[type="text"], input[type="password"] {
+    width: 100%;
+}
+input[type="checkbox"] {
+    width: auto;
 }
 .login {
     height: 100vh;

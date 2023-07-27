@@ -5,8 +5,12 @@
 </template>
 
 <script>
+import { useMeta } from 'vue-meta'
     export default {
         name: "ClientView",
+        setup() {
+            useMeta({title: 'Clients'})
+        },
         data() {
             return {
                 allow: false
@@ -16,7 +20,7 @@
             Promise.all([
 
                 //get client types if not available in store
-                this.$store.dispatch('clients/getTypes')
+                this.$store.dispatch('clients/fetchTypes'),
 
             ])
             .then(() => {

@@ -1,6 +1,5 @@
 <template>
     <div class="card">
-
         <div class="table-tabs">
             <button @click="openTab($event, 'general')" :ref="('defaultTab'+uk)" class="button nutral tab">general</button>
             <button @click="openTab($event, 'credentials')" class="button nutral tab">credentials</button>
@@ -23,9 +22,9 @@
                         <div :id="('i3'+uk)" class="row mt8">
                             <label :for="('user-gender'+uk)" class="labels c1">gender</label>
                             <select v-model="userGender" :id="('user-gender'+uk)">
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
-                                <option value="others">Others</option>
+                                <option value=1>Male</option>
+                                <option value=2>Female</option>
+                                <option value=3>Others</option>
                             </select>
                         </div>
 
@@ -41,10 +40,10 @@
                             <input :ref="('credentials'+uk+'focus')" v-model="userEmail" type="text" :id="('user-email'+uk)">
                         </div>
 
-                        <div :id="('i6'+uk)" class="row mt8">
+                        <div v-if="orgId == ''" :id="('i6'+uk)" class="row mt8">
                             <label :for="('user-role'+uk)" class="labels c1">role</label>
                             <select v-model="userRole" :id="('user-role'+uk)">
-                                <option v-for="(role) in dbRoles" :key="role.id" :value="role.name">
+                                <option v-for="(role) in dbRoles" :key="role.id" :value="role.id">
                                     {{role.name}}
                                 </option>
                             </select>
@@ -52,13 +51,12 @@
 
                         <div :id="('i7'+uk)" class="row mt8">
                             <label :for="('user-pwd'+uk)" class="labels c1">password</label>
-                            <input v-model="userPassword" type="password" :id="('user-pwd'+uk)">
+                            <input :disabled="editUserId == undefined ? false : true" v-model="userPassword" type="password" :id="('user-pwd'+uk)">
                         </div>
                     </div>
 
                     <button :disabled="disabled === true" @click.prevent="proceed()" class="green mt16 button">save</button>
                     <button :disabled="disabled === true" @click.prevent="canceled()" class="neutral ml8 mt16 button">cancel</button>
-
                 </div>
             </form>
         </div>
@@ -68,9 +66,8 @@
 </template>
 
 <script>
-import {users} from '@/api/index.js'
+import { users, admin } from '@/api/index.js'
 import useCreateSwal from '@/helpers/swalCreate'
-import useEditSwal from '../helpers/swalEdit'
 
     export default {
         name: 'CreateUser',
@@ -86,22 +83,23 @@ import useEditSwal from '../helpers/swalEdit'
                 userPassword: '',
                 dbRoles: [],
                 userId: '',
-                disabled: false
+                disabled: false,
+                orgId: ''
             }
         },
         mounted() {
-            const rolesList = this.$store.getters['roles/allRoles']
-
-            if (rolesList != undefined && rolesList != '') {
-                this.dbRoles = rolesList
-            }
-
             if (this.editUserId != undefined) {
-                const userData = this.$store.getters['users/usersDataGet'](this.editUserId)
+                const userData = this.$store.getters['users/getData'](this.editUserId)
 
-                if (userData != undefined && userData != '') {
-                    this.populateDataProperties(userData)
-                }
+                this.populateDataProperties(userData)
+            }
+            if (this.orgId == '') {
+                this.dbRoles = this.$store.getters['roles/getList']({
+                    filters: ['null', 'null']
+                })
+            }
+            else {
+                this.orgId = this.$route.params?.orgId != undefined ? this.$route.params.orgId : ''
             }
 
             this.$refs['defaultTab'+this.uk].click()
@@ -118,8 +116,11 @@ import useEditSwal from '../helpers/swalEdit'
                 this.$refs[newTab+this.uk+'focus'].focus()
             },
             canceled() {
-                if (this.editUserId != undefined) this.$emit("editingCompleted", {force: true})
-                else this.$router.push('/u/users/list')
+                if (this.editUserId != undefined) this.$emit("editingCompleted")
+                else {
+                    if (this.orgId != '') this.$router.push('/u/admin/orgs')
+                    else this.$router.push('/u/users/list')
+                }
             },
             proceed() {
                 this.disabled = true
@@ -131,25 +132,49 @@ import useEditSwal from '../helpers/swalEdit'
                     birthdate: this.userBirthdate,
                     email: this.userEmail,
                     role: this.userRole,
-                    password: this.userPassword
+                    password: this.userPassword,
+                    orgId: this.orgId
                 }
-                if (!args.userId) {
+
+                if (this.orgId != '') {
                     useCreateSwal({
-                        text: args.firstName + ' ' + args.lastName,
-                        url: '/u/users/list',
-                        promise: users.create(args),
-                        mutationFnName: 'users/refetch',
+                        text: args.firstName + '' + args.lastName,
+                        url: `/u/admin/orgs/${args.orgId}`,
+                        promise: admin.users.create(args),
                         context: this
                     })
                 }
                 else {
-                    useEditSwal({
-                        text: args.firstName + ' ' + args.lastName,
-                        mutationFnName: 'users/refetch',
-                        mutationArgs: {userId: args.userId},
-                        promise: users.edit(args),
-                        context: this
-                    })
+                    if (!args.userId) {
+                        users.create(args)
+                        .then(() => {
+                            this.$toast.success(`Saved`)
+                            return this.$store.dispatch('users/fetchList', {force: true})
+                        })
+                        .then(() => {
+                            this.$router.push({name: 'users_list'})
+                        })
+                        .catch(() => {
+                            this.$toast.error(`Oops! We can't perform this action right now`)
+                        })
+                        .finally(() => {
+                            this.disabled = false
+                        })
+                    }
+                    else {
+                        users.edit(args)
+                        .then(() => {
+                            this.$emit('editingCompleted')
+                            this.$toast.success(`Saved #${args.userId}`)
+                        })
+                        .catch(err => {
+                            this.$toast.error(`Oops! We can't perform this action right now`)
+                            console.log(err)
+                        })
+                        .finally(() => {
+                            this.disabled = false
+                        })
+                    }
                 }
             },
             populateDataProperties(o) {
@@ -195,14 +220,14 @@ import useEditSwal from '../helpers/swalEdit'
 
 
 
-    input, select {
-        width: 100%;
-    }
-    input[type="checkbox"] {
-        width:auto !important;
-        display: inline;
-    }
-    .labels {
-        align-self: center;
-    }
+input, select {
+    width: 100%;
+}
+input[type="checkbox"] {
+    width:auto !important;
+    display: inline;
+}
+.labels {
+    align-self: center;
+}
 </style>

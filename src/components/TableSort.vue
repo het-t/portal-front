@@ -24,16 +24,11 @@
             rotateImg() {
                 this.sortOrder === 1 ? this.sortOrder = 0 : this.sortOrder = 1
                 this.$emit('clicked')
-                // this.$store.commit(`${this.storeName}/RESET_STATE`, {isMaster: false})
-                this.$store.commit(`${this.storeName}/sortSet`, {
+                this.$store.commit(`${this.storeName}/setSort`, {
                     sortBy: this.sortBy, 
                     sortOrder: this.sortOrder
                 })
-                // this.$emit("sorted", this.sortData().reverse())
             },
-        },
-        updated() {
-            console.log("updated")
         }
     }
 </script>

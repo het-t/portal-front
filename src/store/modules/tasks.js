@@ -1,146 +1,249 @@
-import { tasks, tasksMaster } from "@/api"
+import { tags, tasks } from "@/api"
+import formatFilters from "@/helpers/storeFiltersFormater"
 
 const state = {
-    tasksCount: '', //no. of total tasks
+    count: {}, //no. of total tasks
     tasks: {},      //page data of tasks table
     tasksData: {},   //data of all tasks opened to edit
+    tasksLogs: {},
     subTasksData: {},    //data of all sub tasks opened to edit
-    tasksMaster: [],    //list of all tasks master
     sortBy: 'id',       
     sortOrder: 0,       //0-desc, 1-asc
-    currentPage: '',
-    paginationKey: 0
+    currentPage: 1,
+    recordsPerPage: 50,
+    filters: {
+        name: '',
+        description: '',
+        client: '',
+        progress: '',
+        status: '',
+        tags: []
+    },
+    tags: [],
+    subTasksStatuses: [
+        {id: 1, name: 'To Do'},
+        {id: 2, name: 'In Progress'},
+        {id: 3, name: 'Done'},
+        {id: 4, name: 'Pending For Approval'},
+        {id: 5, name: 'Cancel'},
+        {id: 6, name: 'Paused'},
+        {id: 7, name: 'Reassigned'},
+        {id: 8, name: 'Approved'}
+    ]
 }
 
 const getters = {
-    taskData: (state) => (taskId) => {
+    getSubTasksStatuses(state) {
+        return state.subTasksStatuses
+    },
+    getSubTasksTags(state) {
+        return state.tags
+    }, 
+    //
+    getData: (state) => (taskId) => {
         return state.tasksData[taskId]
     },
-    tasksListGet: (state) => (index, sortBy, sortOrder, filters) => {
-        //filters=> 0-name, 1-rights
-        return state.tasks[`${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}_${filters[3]}_${filters[4]}`]
+    getLogs: (state) => (taskId) => {
+        return state.tasksLogs[taskId]
     },
-    tasksCountGet (state) {
-        return state.tasksCount
+    //
+    getList: (state) => ({from = null, to = null, sortBy = null, sortOrder = null, filters = Object.values(formatFilters(state.filters))}) => {
+        if (from !== null && to !== null) {
+            sortBy = state.sortBy
+            sortOrder = state.sortOrder
+        }
+        return state.tasks[`${from}_${to}_${sortBy}_${sortOrder}_${filters.join('_')}`]
     },
-    tasksMasterListGet(state) {
-        return state.tasksMaster
+    //
+    getCount(state) {
+        return state.count[Object.values(formatFilters(state.filters)).join('_')]
     },
-    subTasksData: (state) => (taskId) => {
+    //
+    getSubTasks: (state) => (taskId) => {
         return state.subTasksData[taskId]
     },
-    sortGet(state) {
+    //
+    getSort(state) {
         return {
             sortBy: state.sortBy,
             sortOrder: state.sortOrder
         }
     },
-    getKey(state) {
-        return state.paginationKey
+    getCurrentPage(state) {
+        return state.currentPage
+    },
+    //
+    getRecordsPerPage(state) {
+        return state.recordsPerPage
+    },
+    //
+    getFilters(state) {
+        return state.filters
     }
 }
 
 const mutations = {
-    RESET_STATE(state, {isMaster}) {
-        state.tasksCount = ''
-        state.tasks = {}
-        state.tasksData = {}
-        state.subTasksData = {}
-        if (isMaster) state.tasksMaster = []
+    //
+    setData(state, {taskId, taskData}) {
+        state.tasksData[taskId] = taskData
     },
-    deleteTask(state, {taskId, filters}) {
-        const path = state.currentPage+'_'+state.sortBy+'_'+state.sortOrder+'_'+filters[0]+'_'+filters[1]+'_'+filters[2]+'_'+filters[3]+'_'+filters[4]
-        state.tasks[path].splice(state.tasks[path].findIndex(task => task.id == taskId), 1)
+    setLogs(state, {taskId, taskLogs}) {
+        state.tasksLogs[taskId] = taskLogs
     },
-    tasksDataSet(state, {taskId, taskData}) {
-        Object.defineProperty(state.tasksData, taskId, {
-            value: taskData,
-            writable: true,
-            enumerable: true,
-        }) 
+    //
+    setCount(state, {count}) {
+        state.count[Object.values(formatFilters(state.filters)).join('_')] = count
     },
-    tasksCountSet(state, tasksCount) {
-        state.tasksCount = tasksCount
+    //
+    setList(state, {from = null, to = null, sortBy = null, sortOrder = null, filters = ['null', 'null', 'null', 'null', 'null'], data}) {
+        state.tasks[`${from}_${to}_${sortBy}_${sortOrder}_${filters.join('_')}`] = data
     },
-    tasksList(state, {index, sortBy, sortOrder, filters, data}) {
-        //filters: 0-name, 1-rights
-        Object.defineProperty(state.tasks, 
-            `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}_${filters[3]}_${filters[4]}`, {
-            value: data,
-            writable: true,
-            enumerable: true,
-        })
+    // /
+    setSubTasks(state, {taskId, data}) {
+        state.subTasksData[taskId] = data   
     },
-    tasksMasterListSet(state, tasksMasterList) {
-        state.tasksMaster = tasksMasterList
-    },
-    subTasksDataSet(state, {taskId, data}) {
-        Object.defineProperty(state.subTasksData, taskId, {
-            value: data,
-            writable: true,
-            enumerable: true,
-        })    
-    },
-    sortSet(state, {sortBy, sortOrder}) {
+    //
+    setSort(state, {sortBy, sortOrder}) {
         state.sortBy = sortBy
         state.sortOrder = sortOrder
     },
-    currentPageSet(state, {index}) {
+    setSubTasksTags(state, tags) {
+        state.tags = tags
+    },
+    setNewTag(state, {newTag, task}) {
+        const newTagObj = {
+            id: state.tags.length*(-1), 
+            name: newTag
+        }
+
+        state.tags.push(newTagObj)
+        task.tagsId.push(newTagObj)
+    },
+    setCurrentPage(state, index) {
         state.currentPage = index
     },
-    refetch(state, {taskId, saved}) {
+    setRecordsPerPage(state, recordsPerPage) {
+        state.recordsPerPage = recordsPerPage
+    },
+    flush(state, {taskId}) {
         state.tasks = {}
-        
+
         if (taskId) {
-            state.tasksData[taskId] = undefined
-            state.subTasksData[taskId] = undefined
+            delete state.subTasksData[taskId]
+            delete state.tasksData[taskId]
         }
         else {
-            state.tasksCount = undefined
             state.tasksData = {}
             state.subTasksData = {}
         }
-
-        if (saved == true) state.tasksMaster = []
-
-        if(state.paginationKey == 0) state.paginationKey = 1
-        else if (state.paginationKey == 1) state.paginationKey = 0
     }
 }
 
 const actions = {
-    tasksList({getters, commit}, {index, from, filters}) {
-        const {sortBy, sortOrder} = getters['sortGet']
-        const res = getters['tasksListGet'](index, sortBy, sortOrder, filters)
-        if (res?.length) {
-            tasks.get({
-                from,
-                recordsPerPage: 10,
-                sortBy,
-                sortOrder,
-                filters       
-            })
-            .then(results => {
-                commit('tasksList', {
-                    index,
-                    sortBy,
-                    sortOrder,
-                    filters,
-                    data: results.data.tasksList
-                })
-            })
-        } 
-    },
-    tasksDataSet({getters, commit}, {taskId, force}) {
-        const res = getters['taskData']?.(taskId)
-        console.log("taskData", res)
+    fetchSubTasksTags({getters, commit}, {force = false}) {
         return new Promise((resolve, reject) => {
-            if (res == undefined || res == '' || force == true) {
+            const storedSubTasksStatuses = getters['getSubTasksTags']
+            if(!storedSubTasksStatuses?.length || force === true) {
+                tags.getList(20)
+                .then((res) => {
+                    commit('setSubTasksTags', res.data)
+                    resolve()
+                })
+                .catch(()=> {
+                    reject()
+                })
+            }
+            else resolve()
+        })
+    },
+    fetchCount({getters, commit}, {force = false}) {
+        return new Promise((resolve, reject) => {
+            const formattedFilters = formatFilters(getters['getFilters'])
+
+            if (!getters['getCount'] || force === true) {
+                tasks.count({
+                    filters: formattedFilters
+                })
+                .then((res) => {
+                    commit('setCount', {
+                        filters: formattedFilters,
+                        count: res.data.count
+                    })
+                    resolve()
+                })
+                .catch(err => {
+                    reject(err)
+                })
+            }
+            else resolve()
+        })
+    },
+    //
+    fetchList({getters, commit}, {force = false, all = false}) {
+        return new Promise((resolve, reject) => {
+            let {sortBy, sortOrder} = getters['getSort']
+            const currentPage = getters['getCurrentPage']
+            const recordsPerPage = getters['getRecordsPerPage']
+
+            let from, to, formattedFilters
+
+            if (all) {
+                from = null,
+                to = null,
+                sortBy = null,
+                sortOrder = null,
+                formattedFilters = formatFilters(state.filters)
+            }
+            else {
+                formattedFilters = formatFilters(getters['getFilters'])
+                from = (currentPage-1)*recordsPerPage
+                to = from + recordsPerPage
+            }
+
+            if(!getters['getList']({from, to, sortBy, sortOrder, filters: Object.values(formattedFilters)})?.length || force === true) {
+                
+                tasks.getList({
+                    from,
+                    recordsPerPage,
+                    filters: formattedFilters,
+                    sortBy,
+                    sortOrder    
+                })
+                .then(res => {
+                    if (all) {
+                        commit('setList', {
+                            data: res.data,
+                            filters: Object.values(formattedFilters)
+                        })
+                    }
+                    else {
+                        commit('setList', {
+                            data: res.data,
+                            from,
+                            to,
+                            sortBy,
+                            sortOrder,
+                            filters: Object.values(formattedFilters),
+                        })
+                    }
+                    resolve()
+                })
+                .catch(err => {
+                    reject(err)
+                })
+            }
+            else resolve()
+        }) 
+    },
+    //
+    fetchData({getters, commit}, {taskId, force = false}) {
+        return new Promise((resolve, reject) => {
+            if (!getters['getData']?.(taskId) || force === true) {
                 tasks.getData({taskId})
                 .then((res) => {
-                    commit('tasksDataSet',{
-                        taskId: taskId,
-                        taskData: res?.data
+                    commit('setData',{
+                        taskId,
+                        taskData: res.data
                     })
                     resolve()
                 })
@@ -151,30 +254,65 @@ const actions = {
             else resolve()
         })
     },
-    tasksMasterListSet({getters, commit}) {
+    fetchLogs({getters, commit}, {taskId, force = false}) {
         return new Promise((resolve, reject) => {
-            if ((getters['tasksMasterListGet'])?.length == 0) {
-                tasksMaster.get()
+            if(!getters['getLogs'](taskId)?.length || force === true) {
+                tasks.getLogs({taskId})
                 .then((res) => {
-                    commit('tasksMasterListSet', res?.data?.tasksMasterList)
+                    commit('setLogs', {
+                        taskId,
+                        taskLogs: res.data
+                    })
                     resolve()
                 })
                 .catch(() => {
                     reject()
-                })
+                }) 
             }
             else resolve()
         })
     },
-    subTasksDataSet({getters, commit}, {taskId}) {
-        const res = getters['subTasksData']?.(taskId)
+    //
+    fetchSubTasks({rootGetters, getters, commit, dispatch}, {taskId, force = false}) {
         return new Promise((resolve, reject) => {
-            if (res == undefined || res == '') {
+            if (!getters['getSubTasks']?.(taskId)?.length || force === true) {
+                const users = rootGetters['users/getList']({})
+
                 tasks.getSubTasks({taskId})
                 .then((res) => {
-                    commit('subTasksDataSet', {
+                    let subTasks = res.data
+
+                    subTasks = subTasks.map((subTask) => {
+                        subTask.assignedTo = JSON.parse(subTask.assignedTo)
+                        subTask.tags = JSON.parse(subTask.tags)
+
+                        if (subTask.assignedTo === null) subTask.assignedTo = []
+                        else {
+                            for (let i in subTask.assignedTo) {
+                                dispatch('images/fetchProfilePic', {
+                                    userId: subTask.assignedTo[i],
+                                    width: 50,
+                                    height: 50
+                                }, {root: true})
+
+                                subTask.assignedTo[i] = users.find((user) => {
+                                    return user.id === subTask.assignedTo[i]
+                                })
+                            }
+                        }
+
+                        if (subTask.tags[0].id === null) subTask.tags = []
+
+                        subTask.statusId = getters['getSubTasksStatuses'].find((status) => {
+                            return status.id === subTask.statusId
+                        })
+
+                        return subTask
+                    })
+
+                    commit('setSubTasks', {
                         taskId, 
-                        data: res.data.subTasksList
+                        data: subTasks
                     })
                     resolve()
                 })

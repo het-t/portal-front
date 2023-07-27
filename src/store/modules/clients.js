@@ -1,91 +1,112 @@
 import { clients } from "@/api/index.js"
+import formatFilters from "@/helpers/storeFiltersFormater"
 
 const state = {
-    clientTypes: [],    //list of client's types
+    types: [],    //list of client's types
     clients: {},        //list of all data of visited pages of clients table
-    clientsCount: '',
-    allClients: [],     //list of all clients
+    count: {},
     sortBy: 'id',
     sortOrder: 0,    //0-desc, 1-asc
-    currentPage: '',
-    paginationKey: 0
+    currentPage: 1,
+    recordsPerPage: 50,
+    filters: {
+        name: '',
+        type: '',
+        ca: '',
+        contact: '',
+        tag: 1
+    }
 }
 
 const getters = {
-    getAllTypesList(state) {
-        return state.clientTypes
+    //
+    getTagFilter(state) {
+        return state.filters.tag
     },
-    clientsListGet: (state) => (index, sortBy, sortOrder, filters) => {
-        return state.clients[`${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}_${filters[3]}`]
+    //
+    getTypes(state) {
+        return state.types
     },
-    clientsCountGet(state) {
-        return state.clientsCount
+    //
+    getList: (state) => ({from = null, to = null, sortBy = null, sortOrder = null, filters = Object.values(formatFilters(state.filters))}) => {
+        if (from !== null && to !== null) {
+            sortBy = state.sortBy
+            sortOrder = state.sortOrder
+        }
+        return state.clients[`${from}_${to}_${sortBy}_${sortOrder}_${filters.join('_')}`]
     },
-    allClients(state) {
-        return state.allClients
+    //
+    getCount(state) {
+        return state.count[Object.values(formatFilters(state.filters)).join('_')]
     },
-    sortGet(state) {
+    //
+    getSort(state) {
         return {
             sortBy: state.sortBy,
             sortOrder: state.sortOrder
         }
     },
-    getKey(state) {
-        return state.paginationKey
+    //
+    getCurrentPage(state) {
+        return state.currentPage
+    },
+    //
+    getFilters(state) {
+        return state.filters
+    },
+    //
+    getRecordsPerPage(state) {
+        return state.recordsPerPage
     }
 }
 
 const mutations = {
-    RESET_STATE(state) {
-        state.clients = {}
-        state.clientsCount = ''
-        state.allClients = []
+    //
+    setTagFilter(state, status) {
+        state.filters.tag = status
     },
     deleteClient(state, {clientId, filters}) {
-        const path = state.currentPage+'_'+state.sortBy+'_'+state.sortOrder+'_'+filters[0]+'_'+filters[1]+'_'+filters[2]+'_'+filters[3]
+        const path = state.currentPage+'_'+state.sortBy+'_'+state.sortOrder+'_'+filters[0]+'_'+filters[1]+'_'+filters[2]+'_'+filters[3]+'_'+filters[4]
         state.clients[path].splice(state.clients[path].findIndex(client => client.id == clientId), 1)
     },
-    setAllTypesList(state, typesList) {
-        state.clientTypes = typesList
+    //
+    setTypes(state, types) {
+        state.types = types
     },
-    clientsCountSet(state, clientsCount) {
-        state.clientsCount = clientsCount
+    //
+    setCount(state, {count}) {
+        state.count[Object.values(formatFilters(state.filters)).join('_')] = count
     },
-    clientsList(state, {index, sortBy, sortOrder, filters, data}) {
-        Object.defineProperty(state.clients, 
-            `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}_${filters[2]}_${filters[3]}`, {
-            value: data,
-            writable: true,
-            enumerable: true,
-        })
+    //
+    setList(state, {from = null, to = null, sortBy = null, sortOrder = null, filters = ['null', 'null', 'null', 'null', 'null'], data}) {
+        state.clients[`${from}_${to}_${sortBy}_${sortOrder}_${filters.join('_')}`] = data
     },
-    clientsAll(state, clientsList) {
-        state.allClients = clientsList
-    },
-    sortSet(state, {sortBy, sortOrder}) {
+    //
+    setSort(state, {sortBy, sortOrder}) {
         state.sortBy = sortBy
         state.sortOrder = sortOrder
     },
-    currentPageSet(state, {index}) {
+    //
+    setCurrentPage(state, index) {
         state.currentPage = index
     },
-    refetch(state) {
-        state.clientsCount = undefined
+    setRecordsPerPage(state, n) {
+        state.recordsPerPage = n
+    },
+    //
+    flush(state) {
         state.clients = {}
-        state.allClients = {}
-
-        if (state.paginationKey == 0) state.paginationKey = 1
-        else if (state.paginationKey == 1) state.paginationKey = 0
     }
 }
 
 const actions = {
-    getTypes({commit, getters}) {
+    //
+    fetchTypes({commit, getters}) {
         return new Promise((resolve, reject) => {
-            if (getters['getAllTypesList'] == '') {
+            if (!getters['getTypes']?.length) {
                 clients.getTypes()
                 .then(res => {
-                    commit('setAllTypesList', res?.data?.clientsMasterTypes)
+                    commit('setTypes', res.data)
                     resolve()
                 })
                 .catch(err => {
@@ -95,16 +116,83 @@ const actions = {
             else resolve()
         })
     },
-    clientsAll({commit, getters}) {
+    //
+    fetchList({commit, getters}, {force = false, all = false}) {
         return new Promise((resolve, reject) => {
-            if (getters['allClients']?.length == 0) {
-                clients.get({
-                    from: null,
-                    recordsPerPage: null,
-                    filters: ['', '', '', '']
+            let {sortBy, sortOrder} = getters['getSort']
+            const currentPage = getters['getCurrentPage']
+            const recordsPerPage = getters['getRecordsPerPage']
+    
+            let from, to, formattedFilters
+    
+            if (all) {
+                from = null
+                to = null
+                sortBy = null
+                sortOrder = null
+            }
+    
+            if (all) {
+                from = null
+                to = null
+                sortBy = null
+                sortOrder = null
+                formattedFilters = formatFilters(state.filters)
+            }
+            else {
+                formattedFilters = formatFilters(getters['getFilters'])
+                from = (currentPage-1)*recordsPerPage
+                to = from + recordsPerPage
+            }
+            
+            if (!getters['getList']({from, to, sortBy, sortOrder, filters: Object.values(formattedFilters)})?.length || force === true) {
+                clients.getList({
+                    from,
+                    recordsPerPage,
+                    sortBy,
+                    sortOrder,
+                    filters: formattedFilters
                 })
                 .then((res) => {
-                    commit('clientsAll', res?.data?.clientsList)
+                    if (all) {
+                        commit('setList', {
+                            data: res.data,
+                            filters: Object.values(formattedFilters)
+                        })
+                    }
+                    else {
+                        commit('setList', {
+                            data: res.data,
+                            from,
+                            to: from + recordsPerPage,
+                            sortBy,
+                            sortOrder,
+                            filters: Object.values(formattedFilters)
+                        })
+                    }
+                    resolve()
+                })
+                .catch(err => {
+                    reject(err)
+                })
+            }
+            else resolve()
+        })
+    },
+    //
+    fetchCount({commit, getters}) {
+        return new Promise((resolve, reject) => {
+            const formattedFilters = formatFilters(getters['getFilters'])
+
+            if (!getters['getCount']) {
+                clients.count({
+                    filters: formattedFilters
+                })
+                .then((res) => {
+                    commit('setCount', {
+                        filters: formattedFilters,
+                        count: res.data.count
+                    })
                     resolve()
                 })
                 .catch(err => {

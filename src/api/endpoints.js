@@ -1,33 +1,71 @@
 const endpoints = {
-    createClient: '/u/api/clients/create-client',
-    getClients: '/u/api/clients/',
-    getAllUsers: '/u/api/users/',
-    createUser: '/u/api/users/create-user',
-    editUser: '/u/api/users/edit-user',
-    createTask: '/u/api/tasks/create-task',
-    createSubTask: '/u/api/tasks/create-sub-task',
-    getSubTasks: '/u/api/tasks/get-sub-tasks',
-    getTasks: '/u/api/tasks/',
-    getTaskData: '/u/api/tasks/get-task-data',
-    getRoles: '/u/api/roles',
-    deleteUser: '/u/api/users/delete-user',
-    getUserData: '/u/api/users/edit',
-    editRole: '/u/api/roles/edit-role',
-    deleteRole: '/u/api/roles/delete-role',
-    createRole: '/u/api/roles/create-role',
-    getAllRights: '/u/api/roles/get-rights',
-    getUserRights: '/u/api/rights',
-    getTasksMaster: '/u/api/tasks/get-tasks-master',
-    getSubTasksMaster: '/u/api/tasks/get-sub-tasks-master',
-    getClientsMasterTypes: '/u/api/clients/types',
-    getMyTasks: '/u/api/myTasks/',
-    editClient: '/u/api/clients/edit-client',
-    editTask: '/u/api/tasks/edit-task',
-    editTaskMaster: '/u/api/tasks/edit-task-master',
-    deleteClient: '/u/api/clients/delete-client',
-    deleteTask: '/u/api/tasks/delete-task',
-    changeStatusMyTask: '/u/api/myTasks/change-status',
-    changeTaskStatus: '/u/api/tasks/change-status'
+    createClient: '/clients/create-client',
+    getClients: '/clients/',
+    getAllUsers: '/users/',
+    createUser: '/users/create-user',
+    editUser: '/users/edit-user',
+    createTask: '/tasks/create-task',
+    createSubTask: '/tasks/create-sub-task',
+    getSubTasks: '/tasks/get-sub-tasks',
+    getTasks: '/tasks/',
+    getTaskData: '/tasks/get-task-data',
+    getRoles: '/roles',
+    deleteUser: '/users/delete-user',
+    getUserData: '/users/edit',
+    editRole: '/roles/edit-role',
+    deleteRole: '/roles/delete-role',
+    createRole: '/roles/create-role',
+    getAllRights: '/roles/get-rights',
+    getUserRights: '/rights',
+    getTasksMaster: '/tasks/get-tasks-master',
+    getSubTasksMaster: '/tasks/get-sub-tasks-master',
+    getClientsMasterTypes: '/clients/types',
+    getMyTasks: '/myTasks/',
+    editClient: '/clients/edit-client',
+    editTask: '/tasks/edit-task',
+    editTaskMaster: '/tasks/edit-task-master',
+    deleteClient: '/clients/delete-client',
+    deleteTask: '/tasks/delete-task',
+    changeStatusMyTask: '/myTasks/change-status',
+    changeTaskStatus: '/tasks/change-status',
+    changeClientTag: '/clients/tag',
+    
+    roles: '/roles',
+    clients: '/clients',
+    users: '/users',
+    tasks: '/tasks',
+    taskMasters: '/tasksMaster',
+    rights: '/rights',
+    activities: '/activities',
+    myTasks: '/myTasks',
+    workDiary: '/workDiary',
+    tags: '/tags',
+    
+    admin: {
+        createAdmin: '/orgs/admins/create-admin',
+        createOrg: '/orgs/create-org'
+    },
+
+    settings: {
+        get: '/settings/',
+        waNotifications: {
+            create: '/settings/notifications/wa/create',
+            getOtp: '/settings/notifications/wa/otp',
+            verifyOtp: '/settings/notifications/wa/otp',
+            getHistory: '/settings/notifications/wa/history',
+            consent: '/settings/notifications/wa/consent',
+            getQr: '/settings/notifications/wa/qr'
+        }
+    },
+
+    profile: {
+        getSettings: '/settings/'
+    },
+
+    chatInternal: {
+        groups: '/chat/groups/',
+        message: '/chat/'
+    }
 }
 
 export default endpoints

@@ -21,18 +21,30 @@
 </script>
 
 <style>
+.dots-menu .fa-stack {
+    height: 13px;
+    width: 13px;
+}
+.dots-menu .svg-inline--fa.fa-stack-2x {
+    height: 13px !important;
+    width: 13px !important; 
+}
+.dots-menu .svg-inline--fa.fa-stack-1x {
+    height: 13px !important;
+    width: 13px !important; 
+}
 .dots-menu ul {
     list-style: none;
-    padding: 0;
+    padding: 12px 4px;
     margin: 0;
-}
-.dots-menu .menu-icons {
-    padding: 8px 8px; 
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 .dots-menu {
     position: absolute;
-    width: fit-content;
-    z-index: 9; 
+    right: 60px;
+    z-index: 99; 
     border: solid 1px #e7eaec;
     box-shadow: 1px black; 
     box-shadow: 1px 1px 1px 1px #d2d2d2;
@@ -40,15 +52,23 @@
     filter: none;
     text-transform: capitalize;
 }
-.dots-menu .menu-icons {
-    color: rgb(56, 56, 56);
-    width: 18px;
-    height: 18px;
-    border-bottom: solid 2px #e7eaec;
+.dots-menu {
+    color: grey;
 }
 .dots-menu li {
-    width: 34px;
-    height: 34px;
+    margin: 0 12px;
     cursor: pointer;
+    display: flex;
+    height: 36px;
+    gap: 8px;
+    align-items: center;
 }
+.dots-menu .fa-2x {
+    font-size: 13px;
+}
+.dots-menu svg {
+    width: 13px;
+    height: 13px;
+}
+
 </style>

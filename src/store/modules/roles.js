@@ -1,69 +1,74 @@
 import { roles } from "@/api"
+import formatFilters from "@/helpers/storeFiltersFormater"
 
 const state = {
-    rolesCount: '', //no. of roles
+    count: {}, //no. of roles
     roles: {},      //table data of visited pages
-    allRoles: [],   //all roles
-    rolesData: {},   //list of data of roles selected to edit
+    data: {},   //list of data of roles selected to edit
     sortBy: 'id',
     sortOrder: 0,    //0-desc, 1-asc
-    currentPage: '',
-    paginationKey: 0
+    recordsPerPage: 50,
+    currentPage: 1,
+    filters: {
+        name: '',
+        rights: '',
+    },
 }
 
 const getters = {
-    allRoles(state) {
-        return state.allRoles
+    //
+    getFilters(state) {
+        return state.filters
     },
-    rolesCountGet(state) {
-        return state.rolesCount
+    //
+    getRecordsPerPage(state) {
+        return state.recordsPerPage
     },
-    rolesListGet: (state) => (index, sortBy, sortOrder, filters) => {
-        return state.roles[`${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}`]
+    //
+    getCount(state) {
+        return state.count[Object.values(formatFilters(state.filters)).join('_')]
     },
-    rolesDataGet: (state) => (index) => {
-        return state.rolesData[index]
+    //
+    getList: (state) => ({from = null, to = null, sortBy = null, sortOrder = null, filters = Object.values(formatFilters(state.filters))}) => {
+        if (from !== null && to !== null) {
+            sortBy = state.sortBy
+            sortOrder = state.sortOrder
+        }
+        return state.roles[`${from}_${to}_${sortBy}_${sortOrder}_${filters.join('_')}`]
     },
-    sortGet(state) {
+    //
+    getData: (state) => (index) => {
+        return state.data[index]
+    },
+    //
+    getSort(state) {
         return {
             sortBy: state.sortBy,
             sortOrder: state.sortOrder
         }
     },
-    getKey(state) {
-        return state.paginationKey
+    getCurrentPage(state) {
+        return state.currentPage
     }
 }
 
 const mutations = {
-    RESET_STATE(state) {
-        state.rolesCount = ''
-        state.roles = {}
-        state.allRoles = []
-        state.rolesData = {}
+    setRecordsPerPage(state, value) {
+        state.recordsPerPage = value
     },
-    rolesCountSet(state, rolesCount) {
-        state.rolesCount = rolesCount
+    //
+    setCount(state, {count}) {
+        state.count[Object.values(formatFilters(state.filters)).join('_')] = count
     },
-    rolesList(state, {index, sortBy, sortOrder, filters, data}) {
-        Object.defineProperty(state.roles, 
-            `${index}_${sortBy}_${sortOrder}_${filters[0]}_${filters[1]}`, {
-            value: data,
-            writable: true,
-            enumerable: true,
-        })
+    //
+    setList(state, {from = null, to = null, sortBy = null, sortOrder = null, filters = ['null', 'null'], data}) {
+        state.roles[`${from}_${to}_${sortBy}_${sortOrder}_${filters.join('_')}`] = data
     },
-    rolesAll(state, rolesList) {
-        state.allRoles = rolesList
+    //
+    setData(state, {index, data}) {
+        state.data[index] = data
     },
-    rolesDataSet(state, {index, data}) {
-        Object.defineProperty(state.rolesData, index, {
-            value: data,
-            writable: true,
-            enumerable: true,
-        })
-    },
-    sortSet(state, {sortBy, sortOrder}) {
+    setSort(state, {sortBy, sortOrder}) {
         state.sortBy = sortBy
         state.sortOrder = sortOrder
     },
@@ -71,33 +76,88 @@ const mutations = {
         const path = state.currentPage+'_'+state.sortBy+'_'+state.sortOrder+'_'+filters[0]+'_'+filters[1]
         state.roles[path].splice(state.roles[path].findIndex(role => role.id == roleId), 1)
     },
-    currentPageSet(state, {index}) {
+    setCurrentPage(state, index) {
         state.currentPage = index
     },
-    refetch(state, {roleId}) {
+    flush(state, {roleId}) {
         state.roles = {}
-        state.rolesCount = undefined
-        state.allRoles = {}
-
-        if (roleId) state.rolesData[roleId] = undefined
-        else state.rolesData = {}
-
-        if (state.paginationKey == 0) state.paginationKey = 1
-        else if (state.paginationKey == 1) state.paginationKey = 0
+        delete state.data[roleId]
     }
 }
 
 const actions = {
-    rolesAll({getters, commit}) {
+    //
+    fetchCount({getters, commit}, {filters, force = false}) { 
+
         return new Promise((resolve, reject) => {
-            if (getters['allRoles']?.length == 0) {
-                roles.get({
-                    from: null,
-                    recordsPerPage: null,
-                    filters: ['', '']
+            const formattedFilters = formatFilters(filters)
+
+            if (!getters['getCount'] || force === true) {
+                roles.count({
+                    filters: formattedFilters
                 })
                 .then((res) => {
-                    commit('rolesAll', res?.data?.rolesList)
+                    commit('setCount', {
+                        filters: formattedFilters,
+                        count: res.data.count
+                    })
+                    resolve()
+                })
+                .catch(err => {
+                    reject(err)
+                })
+            }
+            else resolve()
+        }) 
+    }, 
+    //
+    fetchList({getters, commit}, {force = false, all = false}) {
+        return new Promise((resolve, reject) => {
+            let {sortBy, sortOrder} = getters['getSort']
+            const currentPage = getters['getCurrentPage']
+            const recordsPerPage = getters['getRecordsPerPage']
+
+            let from, to, formattedFilters
+            
+            if (all) {
+                from = null
+                to = null
+                sortBy = null
+                sortOrder = null
+                formattedFilters = formatFilters(state.filters)
+            }
+            else {
+                formattedFilters = formatFilters(getters['getFilters'])
+                from = (currentPage-1)*recordsPerPage
+                to = from + recordsPerPage
+            }
+
+            if (!getters['getList']({from, to, sortBy, sortOrder, filters: Object.values(formattedFilters)}) || force === true) {
+
+                roles.getList({
+                    from,
+                    recordsPerPage,
+                    filters: formattedFilters,
+                    sortBy,
+                    sortOrder
+                })
+                .then((res) => {
+                    if (all) {
+                        commit('setList', {
+                            data: res.data,
+                            filters: Object.values(formattedFilters)
+                        })
+                    }
+                    else {
+                        commit('setList', {
+                            data: res.data,
+                            from,
+                            to: from + recordsPerPage,
+                            sortBy,
+                            sortOrder,
+                            filters: Object.values(formattedFilters)
+                        })
+                    }
                     resolve()
                 })
                 .catch(err => {
@@ -107,16 +167,17 @@ const actions = {
             else resolve()
         })
     },
-    rolesDataSet({getters, commit}, {roleId, force}) {
-        const res = getters['rolesDataGet']?.(roleId)
-        
+    fetchData({getters, commit}, {roleId, force}) {
         return new Promise((resolve, reject) => {
-            if ((force == true) || (res == undefined) || res == '') {
+            if (!getters['getData'](roleId) || force === true) {
                 roles.getData({
                     roleId
                 })
                 .then((res) => {
-                    commit('rolesDataSet', {index: roleId, data: res.data.roleData})
+                    commit('setData', {
+                        index: roleId, 
+                        data: res.data
+                    })
                     resolve()
                 })
                 .catch(err => {

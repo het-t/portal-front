@@ -5,12 +5,15 @@
     font-size: 13px !important;
     font-family: 'Open Sans', sans-serif;
 }
+.multiselect__input {
+    border: none !important;
+    padding: 0 !important;
+}
 .multiselect__single {
     padding: 0 !important;
     margin: 0 !important;
     background-color: #f3f3f4 !important;
     font-family: 'Open Sans', sans-serif;
-    /* font-size: 13px; */
 }
 .multiselect__tags {
     color: #676a6c;
@@ -18,7 +21,6 @@
 }
 .sub-task-extra .multiselect__tags {
     border: none;
-    border-bottom: solid 1px #e7eaec !important;
 }
 .multiselect__content-wrapper {
     border: solid 1px grey;
@@ -31,4 +33,19 @@
 }
 .multiselect__single {
     background-color: inherit !important;
+}
+.multiselect__element:has(span.not-active) {
+    display: none !important;
+}
+
+.multiselect__tag_bg .multiselect__tag {
+    background-color: #f3f3f4;
+    color: inherit;
+}
+.multiselect__tag-icon::after {
+    color: #676A6C !important;
+}
+.multiselect__tag-icon:focus:after,
+.multiselect__tag-icon:hover:after  {
+    color: #2e2f30 !important;
 }

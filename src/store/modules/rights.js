@@ -1,24 +1,26 @@
-import { getAllRights } from "@/api"
+import { rights } from "@/api"
 
-const state = {
-    allRightsList: [],  //list of all rights
-    userRights: []      //list of user's rights
+let state = {
+    list: [],  //list of all rights
+    userRights: [],      //list of user's rights
 }
 
 const getters = {
-    getAllRightsList(state) {
-        return state.allRightsList
+    getList(state) {
+        return state.list
     },
     getUserRights(state) {
         return state.userRights
     },
-    //define getters to return boolean 
-    //for all the rights like createuser, create task template etc...
+    getComponenetsVisibility(state) {
+        if (state.userRights?.length) return true
+        return false
+    }
 }
 
 const mutations = {
-    setAllRightsList(state, rightsList) {
-        state.allRightsList = rightsList
+    setList(state, list) {
+        state.list = list
     },
     setUserRights(state, userRights) {
         state.userRights = userRights
@@ -26,12 +28,12 @@ const mutations = {
 }
 
 const actions = {
-    setAllRightsList({getters, commit}) {
+    fetchList({getters, commit}) {
         return new Promise((resolve, reject) => {
-            if (getters['getAllRightsList'].length == 0) {
-                getAllRights()
+            if (!getters['getList']?.length) {
+                rights.getList()
                 .then(res => {
-                    commit('setAllRightsList', res.data.rightsMasterList)
+                    commit('setList', res.data)
                     resolve()
                 })
                 .catch(err => {

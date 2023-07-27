@@ -7,8 +7,8 @@
                 <button @click="openTab($event, 'contact')" class="button neutral tab">contact</button>
             </div>
 
-            <form class="mt16 pb32 pr16 pl16">
-                <div class="fg-wrapper pl16">
+            <form class="mt16 ml16 pb32 pr16 pl16">
+                <div class="fg-wrapper">
                     <div class="hide fg" :ref="('client'+uk)">
                         <div class="row mt8">
                             <label for="client-cli-llpin" class="labels c1">CIN/LLPIN</label>
@@ -53,7 +53,7 @@
                     </div>
                 </div>
 
-                <div class="fg-wrapper pl16">
+                <div class="fg-wrapper">
                     <div class="hide fg" :ref="('contact'+uk)">
                         <div class="row mt8">
                             <label for="contact-name" class="labels c1">name</label>
@@ -71,7 +71,7 @@
                         </div>
                     </div>
                 </div>
-                <button :disabled="disabled === true" @click.prevent="proceed()" class="green mt16 ml16 button">save</button>
+                <button :disabled="disabled === true" @click.prevent="proceed()" class="green mt16 button">save</button>
                 <button :disabled="disabled === true" @click.prevent="canceled()" class="neutral ml8 mt16 button">cancel</button>
 
             </form>
@@ -80,8 +80,6 @@
 
 <script>
 import {clients} from '@/api/index.js'
-import useEditSwal from '../helpers/swalEdit.js'
-import useCreateSwal from '@/helpers/swalCreate'
 
 export default {
     name: 'ClientCreate',
@@ -98,7 +96,7 @@ export default {
             conName: '',
             conEmail: '',
             conPhone: '',
-            
+
             editing: false,
             editClientId: '',
 
@@ -107,28 +105,28 @@ export default {
     },
     computed: {
         clientTypes() {
-            return this.$store.getters['clients/getAllTypesList']
+            return this.$store.getters['clients/getTypes']
         }
     },
     methods: {
         openTab(e, newTab) {
-                var tabs = e.target.parentElement.getElementsByClassName('tab')
-                let curTab = [...tabs].find(tab => tab?.classList?.contains('tab-open') == true)
-                curTab?.classList?.remove('tab-open')
-                e?.target?.classList?.add('tab-open')
-                this.$refs['client'+this.uk]?.classList?.add('hide')
-                this.$refs['ca'+this.uk]?.classList?.add('hide')
-                this.$refs['contact'+this.uk]?.classList?.add('hide')
-                this.$refs[newTab+this.uk]?.classList?.remove('hide')
-                this.$refs[newTab+this.uk+'focus'].focus()
-            },
+            var tabs = e.target.parentElement.getElementsByClassName('tab')
+            let curTab = [...tabs].find(tab => tab?.classList?.contains('tab-open') == true)
+            curTab?.classList?.remove('tab-open')
+            e?.target?.classList?.add('tab-open')
+            this.$refs['client'+this.uk]?.classList?.add('hide')
+            this.$refs['ca'+this.uk]?.classList?.add('hide')
+            this.$refs['contact'+this.uk]?.classList?.add('hide')
+            this.$refs[newTab+this.uk]?.classList?.remove('hide')
+            this.$refs[newTab+this.uk+'focus'].focus()
+        },
         canceled() {
-            // to toggle the hidden-tr visibility
-            if (this.editing == true) this.$emit("editingCompleted")
-            this.$router.push('/u/clients/list') //prop->path to redirect
+            if (this.editing == true) this.$emit("editingCompleted", 2)
+            this.$router.push({name: 'clients-list'})
         },
         proceed() {
             this.disabled = true
+
             const args = {
                 clientId: this.editClientId,
                 clientName: this.clientName,
@@ -140,26 +138,46 @@ export default {
                 caPan: this.caPan,
                 conName: this.conName,
                 conEmail: this.conEmail,
-                conPhone: this.conPhone
+                conPhone: this.conPhone,
+                status: this.$store.getters['clients/getClientStatus']
             }
 
             if (args.clientId != undefined && args.clientId != '') {  
-                useEditSwal({
-                    text: args.clientName,
-                    mutationFnName: 'clients/refetch',
-                    promise: clients.edit(args),
-                    context: this,
+                this.disabled = true
+
+                clients.edit(args)
+                .then(() => {
+                    this.$emit('editingCompleted', 1)
+                    this.$toast.success(`Saved #${args.clientId}`)
+                })
+                .catch(err => {
+                    this.$toast.error(`Oops! We can't perform this action right now`)
+                    console.log(err)
+                })
+                .finally(() => {
+                    this.disabled = false
                 })
                     
             }
             else {
-                useCreateSwal({
-                    text: args.clientName,
-                    url: '/u/clients/list',
-                    promise: clients.create(args),
-                    mutationFnName: 'clients/RESET_STATE',
-                    mutationArgs: {},
-                    context: this
+                this.disabled = true
+
+                args.status = this.$store.getters['clients/getTagFilter']
+                clients.create(args)
+                .then(() => {
+                    this.$toast.success(`Saved`)
+                    return this.$store.dispatch('clients/fetchList', {
+                        force: true
+                    })
+                })
+                .then(() => {
+                    this.$router.push({name: 'clients_list'})
+                })
+                .catch(() => {
+                    this.$toast.error(`Oops! We can't perform this action right now`)
+                })
+                .finally(() => {
+                    this.disabled = false
                 })
             }
         }
@@ -197,7 +215,6 @@ export default {
             this.conName = conName
             this.conEmail = conEmail
             this.conPhone = conPhone
-            
         }
     }
 }
@@ -219,15 +236,13 @@ export default {
     color:  #e7eaec;
     background-color: #2F4050;
 }
-
-
-    .head-tr {
-        display: block !important;
-    }
-    input, select {
-        width: 100%;
-    }
-    option {
-        text-transform: capitalize;
-    }
+.head-tr {
+    display: block !important;
+}
+input, select {
+    width: 100%;
+}
+option {
+    text-transform: capitalize;
+}
 </style>

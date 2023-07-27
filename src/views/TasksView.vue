@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import { useMeta } from 'vue-meta'
     export default {
         name: 'TasksView',
         data() {
@@ -12,24 +13,30 @@
                 allow: false,
             }
         },
+        setup() {
+            useMeta({title: 'Tasks'})
+        },
         created() {
 
             Promise.all([
+                //get all users if not in store 
+                this.$store.dispatch('users/fetchList', {
+                    all: true,
+                }),
+
                 //get all clients if not in store
-                this.$store.dispatch('clients/clientsAll'),
+                this.$store.dispatch('clients/fetchList', {
+                    all: true
+                }),
                 
                 //get all tasksMaster if not in store
-                this.$store.dispatch('tasks/tasksMasterListSet'),
-                
-                //get all users if not in store 
-                this.$store.dispatch('users/usersAll')
+                this.$store.dispatch('tasksMaster/fetchList', {all: true}),
+
+                this.$store.dispatch('tasks/fetchSubTasksTags', {force: true})
 
             ])
             .then(() => {
                 this.allow = true
-                this.$store.subscribe((mutations) => {
-                    console.log(mutations)
-                })
             })
         }
     }
