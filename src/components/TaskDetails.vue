@@ -170,20 +170,6 @@
                     <input v-model="taskState.saveAsTemplate" type="checkbox" id='save-task-template' class="save-task-template">
                     <label for='save-task-template'>save task template for future use </label>
                 </div>
-
-                <div v-if="showActionBtns === true">
-                    <button
-                        :disabled="state.disableButtons === true"
-                        @click.prevent="changeFlag"
-                        class="green mt16 button"
-                    >save</button>
-
-                    <button
-                        :disabled="state.disableButtons === true"
-                        @click.prevent="canceled"
-                        class="neutral ml8 mt16 button"
-                    >cancel</button>
-                </div>
             </form>
         </div>
     </div>
@@ -194,16 +180,11 @@
     import { useStore } from 'vuex'
     import rightCheck from '@/helpers/RightCheck'
     import VueMultiselect from 'vue-multiselect'
-    import { useRouter } from 'vue-router'
 
     const props = defineProps({
         editTaskId: {
             type: Number,
             default: null
-        },
-        showActionBtns: {
-            type: Boolean,
-            default: true
         },
         save: {
             type: Boolean,
@@ -329,155 +310,6 @@
         if (props.editTaskId) return store.dispatch('tasks/fetchData', {taskId: props.editTaskId})
         else return Promise.resolve()
     }
-
-    // function proceed({subTasks, removedSubTasks}) {
-    //     state.disableButtons = true
-
-    //     let args = {
-    //         saved: new Number(taskState.saveAsTemplate),
-    //         taskId: props.editTaskId,
-    //         template: taskState.template,
-    //         title: taskState.title,
-    //         description: taskState.description,
-    //         cost: taskState.cost,
-    //         clientId: taskState.client,
-    //         coordinators: JSON.stringify(taskState.coordinators),
-    //         subTasks: JSON.stringify(subTasks),
-    //         removedSubTasks: JSON.stringify(removedSubTasks),
-    //     }
-
-    //     let p
-
-    //     if (args.subTasks?.length === 0 && popState.visible === false) {
-    //         popState.visible = true
-
-    //         const content = ref('UserExtrac')
-    //         p = swal({
-    //             content,
-    //             buttons: true
-    //         })
-    //         .then((value) => {
-    //             if (value === null) throw null
-    //             else {
-    //                 return {
-    //                     assignedTo: popState.assignTo,
-    //                     cost: popState.cost,
-    //                     comments: popState.comments,
-    //                     status: popState.status,
-    //                     tags: popState.tags
-    //                 }
-    //             }
-    //         })
-    //         .then((value) => {
-    //             const subTasks = [{
-    //                 description: '_#_*&^',
-    //                 assignedTo: value.assignedTo,
-    //                 status: value.status || {id: 1, name: 'To Do'},
-    //                 comments: value.comments,
-    //                 cost: value.cost,
-    //                 tags: value.tags
-    //             }]
-    //             args.subTasks = JSON.stringify(subTasks)
-    //         })
-    //     }
-    //     else if (args.subTasks?.length === 0 && popState.visible === true) {
-
-    //         const subTask = [{
-    //             description: '_#_*&^',
-    //             assignedTo: popState.assignTo,
-    //             status: popState.status || {id: 1, name: 'To Do'},
-    //             comments: popState.comments,
-    //             cost: value.cost,
-    //             tags: value.tags
-    //         }]
-    //         args.subTasks = JSON.stringify(subTask)
-
-    //         p = Promise.resolve()
-    //     }
-    //     else if (args.subTasks?.length === 1 && args.subTasks[0]?.description == '_#_*&^') {
-
-    //         subTasks[0].tags = popState.tags
-    //         subTasks[0].assignedTo = popState.assignTo
-    //         subTasks[0].comments = popState.comments
-    //         subTasks[0].status = popState.status
-    //         subTasks[0].cost = popState.cost
-
-    //         args.subTasks = JSON.stringify(subTasks)
-
-    //         p = Promise.resolve()
-    //     }
-    //     else {
-    //         p = Promise.resolve()
-    //     }
-
-    //     p.then(() => {
-    //         const router = useRouter()
-
-    //         if (state.editing === true) {
-    //             tasks.edit(args)
-    //             .then(() => {
-    //                 router.push({name: 'tasks_list'})
-    //                 toast.success(`Saved #${args.taskId}`)
-    //             })
-    //             .catch(err => {
-    //                 toast.error(`Oops! We can't perform this action right now`)
-    //                 console.log(err)
-    //             })
-    //             .finally(() => {
-    //                 state.disableButtons = false
-    //             })
-    //         }
-    //         else {
-    //             tasks.create(args)
-    //             .then(() => {
-    //                 toast.success(`Saved`)
-    //                 return store.dispatch('tasks/fetchList', {
-    //                     force: true
-    //                 })
-    //             })
-    //             .then(() => {
-    //                 router.push({name: 'tasks_list'})
-    //             })
-    //             .catch(() => {
-    //                 toast.error(`Oops! We can't perform this action right now`)
-    //             })
-    //             .finally(() => {
-    //                 state.disableButtons = false
-    //             })
-    //         }
-    //     })
-    //     .catch(err => {
-    //         if (err === null) canceled()
-    //     })
-    //     store.commit('myTasks/refetch')
-    // }
-
-    function canceled() {
-        const router = useRouter()
-        router.push('/u/tasks/list')
-    }
-
-    function changeFlag() {
-        state.notifySaveEvent = true
-    }
-
-    // function popUpVisibilityChanged({visibility, subTask}) {
-    //     popState.visible = visibility
-    //     if (visibility === true && subTask !== undefined) {
-    //         popState.assignTo = subTask.assignedTo,
-    //         popState.comments = subTask.comments
-    //         popState.cost = subTask.cost
-    //         popState.status = subTask.status
-    //         popState.tags = subTask.tags
-    //     }
-    //     else {
-    //         popState.assignTo = [],
-    //         popState.comments = ''
-    //         popState.cost = ''
-    //         popState.status = ''
-    //         popState.tags = []
-    //     }
-    // }
 </script>
 
 <style scoped>

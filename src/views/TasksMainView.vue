@@ -66,33 +66,41 @@
         </Suspense>
 
         <Suspense>
-            <TasksCreateSubTasks 
-                v-show="tabsState.subTasks === true"
-                :editTaskId=parseInt(route.params.taskId)
-                :taskMaster=taskTemplateIdFromTaskDetails
-                :save=state.save
-                @popUpVisibilityChanged="popUpVisibilityChanged($event)"
-                @save="subTasksData = $event, ++dataCounter"
-                style="flex: 0 0 calc(50% - 5px);"
-            ></TasksCreateSubTasks>
+            <keep-alive>
+                <TasksCreateSubTasks 
+                    v-if="tabsState.subTasks === true"
+                    :editTaskId=parseInt(route.params.taskId)
+                    :taskMaster=taskTemplateIdFromTaskDetails
+                    :save=state.save
+                    @popUpVisibilityChanged="popUpVisibilityChanged($event)"
+                    @save="subTasksData = $event, ++dataCounter"
+                    style="flex: 0 0 calc(50% - 5px);"
+                ></TasksCreateSubTasks>
+            </keep-alive>
         </Suspense>
 
         <Suspense>
-            <TaskLogs
-                v-show="tabsState.logs === true"
-                :taskId=parseInt(route.params.taskId)
-                style="flex: 0 0 calc(50% - 7px); max-height: 660px;"
-            ></TaskLogs>
+            <keep-alive>
+                <TaskLogs
+                    v-if="tabsState.logs === true"
+                    :taskId=parseInt(route.params.taskId)
+                    style="flex: 0 0 calc(50% - 7px); max-height: 660px;"
+                ></TaskLogs>
+            </keep-alive>
         </Suspense>
         
-        <TaskPayment 
-            v-show="tabsState.payments === true"
-            :taskId=parseInt(route.params.taskId)
-            :save="state.save"
-            @save="paymentsData = $event, ++dataCounter"
-            style="flex: 0 0 calc(50% - 7px); overflow-y: auto; overflow-x: hidden;"
-        >
-        </TaskPayment>
+        <Suspense>
+            <keep-alive>
+                <TaskPayment 
+                    v-if="tabsState.payments === true"
+                    :taskId=parseInt(route.params.taskId)
+                    :save="state.save"
+                    @save="paymentsData = $event, ++dataCounter"
+                    style="flex: 0 0 calc(50% - 7px); overflow-y: auto; overflow-x: hidden;"
+                >
+                </TaskPayment>
+            </keep-alive>
+        </Suspense>
     </div>
 </template>
 
@@ -140,7 +148,7 @@ watch(
     () => dataCounter.value,
     (dataCounter) => {
         console.log(dataCounter)
-        if (dataCounter === 5) {
+        if (dataCounter === 3) {
             const {
                 taskTemplateId,
                 title,
