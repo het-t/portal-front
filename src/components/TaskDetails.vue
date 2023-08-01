@@ -180,7 +180,7 @@
     import { useStore } from 'vuex'
     import rightCheck from '@/helpers/RightCheck'
     import VueMultiselect from 'vue-multiselect'
-
+    
     const props = defineProps({
         editTaskId: {
             type: Number,

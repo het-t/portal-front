@@ -133,8 +133,9 @@
                             {{task?.total}}
                         </td>
                     
-                        <td class="dots">
-                            <div class="task-status" :class="task.status">{{ task.status }}</div>
+                        <td class="task-status" :class="task.status.replace(' ', '')">
+                            <div class="indicator"></div>
+                            {{ task.status }}
                         </td>
                         
                         <div class="dots">
@@ -325,8 +326,5 @@ export default {
     }
     .edit-task-tr {
         cursor: pointer;
-    }
-    .task-status {
-        margin: auto;
     }
 </style>

@@ -2,10 +2,15 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import store from '@/store/index.js'
 import { users } from '@/api/index.js'
 import tasksRoutes from './tasks.js'
-
-let settingBreadcrumb = {
-  title: 'settings',
-}
+import activityRoutes from './activity.js'
+import rolesRoutes from './roles.js'
+import clientsRoutes from './clients.js'
+import myTasks from './myTasks.js'
+import usersRoutes from './users.js'
+import tasksTemplateRoutes from './tasksTemplate.js'
+import settingsRoutes from './settings.js'
+import workDiaryRoutes from './workDiary.js'
+import tagsRoutes from './tags.js'
 
 let AdminPanelOrgListBreadcrumb = {
   title: 'Organizations',
@@ -36,105 +41,8 @@ let AdminPanelCreateOrgBreadcrumb = {
   }]
 }
 
-let createUserBreadcrumb = {
-  title: 'users',
-  path: [{
-    text: 'list',
-    route: '/u/users/list'
-  }, {
-    text: 'create',
-    route: '/u/users/create-user'
-  }]
-}
-
-let userListBreadcrumb = {
-  title: 'users',
-  action: true,
-  actionUrl: '/u/users/create-user',
-  path: [{
-    text: 'list',
-    route: '/u/users/list'
-  }]
-}
-
-let roleListBreadcrumb = {
-  title: 'roles',
-  action: true,
-  actionUrl: '/u/roles/create-role',
-  path: [{
-    text: 'list',
-    route: '/u/roles/list'
-  }]
-}
-
-let roleCreateBreadcrumb = {
-    title: 'roles',
-    path: [{
-      text: 'list',
-      route: '/u/roles/list'
-    }, {
-      text: 'create',
-      route: '/u/roles/create-role'
-    }]
-}
-
-
-
-let activityBreadcrumb = {
-  title: 'activity',
-  path: [{
-    text: 'list',
-    route: '/u/activity/'
-  }]
-}
-
-let clientListBreadcrumb = {
-  title: 'clients',
-  action: true,
-  actionUrl: '/u/clients/create-client',
-  path: [{
-    text: 'list',
-    route: '/u/clients/list'  
-  }]
-}
-
-let clientCreateBreadcrumb = {
-  title: 'clients',
-  path: [{
-    text: 'list',
-    route: '/u/clients/list'
-  }, {
-    text: 'create',
-    route: '/u/clients/create-client'
-  }]
-}
-
-let myTasksBreadcrumb = {
-  title: 'my tasks',
-  path: [{
-    text: 'list',
-    route: '/u/my-tasks/list'
-  }]
-}
-
-let workDiaryMainBreadcrumb = {
-  title: 'work diary',
-  path: [{
-    text: 'list',
-    route: '/u/work-diary'
-  }]
-}
-
 let chatInternal = {
   title: 'chat'
-}
-
-let tasksMasterBreadcrumb = {
-  title: 'task templates',
-  path: [{
-    text: 'list',
-    route: '/u/task-templates'
-  }]
 }
 
 let routesNew = [
@@ -160,6 +68,16 @@ let routesNew = [
     name: 'u',
     component: () => import('@/views/MainView.vue'),
     children: [
+      rolesRoutes,
+      usersRoutes,
+      clientsRoutes,
+      myTasks,
+      tasksRoutes,
+      tasksTemplateRoutes,
+      workDiaryRoutes,
+      tagsRoutes,
+      activityRoutes,
+      settingsRoutes,
       {
         path: 'profile',
         name: 'profile',
@@ -213,153 +131,6 @@ let routesNew = [
         }]
       },
       {
-        path: 'settings',
-        name: 'settings',
-        component: () => import('@/views/SettingView.vue'),
-        meta: {
-          breadcrumb: settingBreadcrumb,
-        }
-      },
-      {
-        path: 'users',
-        component: () => import('@/views/UsersView.vue'),
-        children: [
-          {
-            path: '',
-            alias: 'list',
-            name: 'users_list',
-            component: () => import('@/components/UserList.vue'),
-            meta: {
-              breadcrumb: userListBreadcrumb
-            },
-          },
-          {
-            path: 'create-user',
-            name: 'create_user',
-            component: () => import('@/components/UserCreate.vue'),
-            meta: {
-              protected: true,
-              breadcrumb: createUserBreadcrumb
-            }
-          }
-        ] 
-      },
-      //////////////////////////
-      {
-        path: 'my-tasks',
-        component: () => import('@/views/MyTasksView.vue'),
-        children: [
-          {
-            path: '',
-            alias: 'list',
-            name: 'my_tasks_list',
-            component: () => import('@/components/MyTasksList.vue'),
-            meta: {
-              breadcrumb: myTasksBreadcrumb
-            }
-          }
-        ],
-      },
-      /////////////////////////
-      {
-        path: 'roles',
-        component: () => import('@/views/RoleView.vue'),
-        children: [
-          {
-            path: '',
-            alias: 'list',
-            name: 'roles_list',
-            component: () => import('@/components/RoleList.vue'),
-            meta: {
-              breadcrumb: roleListBreadcrumb
-            }
-          },
-          {
-            path: 'create-role',
-            name: 'create_role',
-            component: () => import('@/components/RoleCreate.vue'),
-            meta: {
-              protected: true,
-              breadcrumb: roleCreateBreadcrumb
-            }
-          },
-        ]
-      },
-      ////////////////////////
-      tasksRoutes,
-      /////////////////////
-      {
-        path: 'task-templates',
-        component: () => import('@/views/TasksMasterView.vue'),
-        children: [
-          {
-            path: '',
-            alias: 'list',
-            name: 'edit_tasks_master',
-            component: () => import('@/components/TasksMasterList.vue'), 
-            meta: {
-              protected: true,
-              breadcrumb: tasksMasterBreadcrumb
-            }
-          }
-        ]
-      },
-      /////////////////////
-      {
-        path: 'activity',
-        children: [
-          {
-            path: '',
-            alias: 'list',
-            name: 'activity',
-            component: () => import('@/components/UserActivity.vue'),
-            meta: {
-              protected: true,
-              breadcrumb: activityBreadcrumb
-            }
-          }
-        ]
-      },
-      ////////////////////
-      {
-        path: 'clients',
-        component: () => import('@/views/ClientView.vue'),
-        children: [
-          {
-            path: '',
-            alias: 'list',
-            name: 'clients_list',
-            component: () => import('@/components/ClientsList.vue'),
-            meta: {
-              breadcrumb: clientListBreadcrumb
-            }
-          },
-          {
-            path: 'create-client',
-            name: 'create_client',
-            component: () => import('@/components/ClientCreate.vue'),
-            meta: {
-              protected: true,
-              breadcrumb: clientCreateBreadcrumb
-            }
-          },
-        ]
-      },
-      ////////////////////////
-      {
-        path: 'work-diary',
-        children: [{
-          path: '',
-          alias: 'list',
-          name: 'work_diary',
-          component: () => import('@/components/WorkDiaryMain.vue'),
-          meta: {
-            protected: true,
-            breadcrumb: workDiaryMainBreadcrumb
-          }
-        }]
-      },
-      {
         path: 'chat',
         name: 'chat_internal',
         component: () => import('@/views/ChatInternal.vue'),
@@ -367,7 +138,6 @@ let routesNew = [
           breadcrumb: chatInternal
         }
       },
-      ///////////////////////
       {
         path: '/:pathMatch(.*)', 
         name: 'not-found', 

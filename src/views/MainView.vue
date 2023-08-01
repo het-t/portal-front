@@ -72,6 +72,13 @@
         </div> -->
 
         <div class="link-list">
+          <router-link :to="{name: 'tags_list'}" tabindex="-1" class="pt16 pb16 link">
+            <font-awesome-icon :icon="['fas', 'hashtag']" class="pa-icon"></font-awesome-icon>
+            <span v-if="showLabels">tags</span>
+          </router-link>
+        </div>
+
+        <div class="link-list">
           <router-link v-if="rightCheck('admin_panel') == true" :to="{name: 'admin_panel'}" tabindex="-1" class="pt16 pb16 link">
             <font-awesome-icon :icon="['fas', 'gear']" class="pa-icon"></font-awesome-icon>
             <span v-if="showLabels">admin</span>

@@ -44,7 +44,8 @@ import { faListCheck,
         faSave,
         faGear,
         faArrowUpRightFromSquare,
-        faClipboardList
+        faClipboardList,
+        faHashtag
     } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -54,6 +55,7 @@ import {
 } from '@fortawesome/free-regular-svg-icons'
 
 library.add(
+    faHashtag,
     faCheck,
     faHandHoldingDollar,
     faGear,
