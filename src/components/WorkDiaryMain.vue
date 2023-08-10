@@ -42,6 +42,7 @@
                             </div>
                         </div>
                     </th>
+
                     <th>
                         <div class="flex">
                             <div class="floating-container">
@@ -50,6 +51,7 @@
                             </div>
                         </div>
                     </th>
+
                     <th>
                         <div class="flex">
                             <div class="floating-container">
@@ -58,14 +60,8 @@
                             </div>
                         </div>
                     </th>
-                    <th>
-                        <div class="flex">
-                            <div class="floating-container">
-                                <input v-model="filters.coordinator" :focus="floatingLabelsFocus.includes('co')" type="text" class="header p0" required>
-                                <span @click="floatingLabelsFocus.push('co')" class="floating-label">Coordinator</span>
-                            </div>
-                        </div>
-                    </th>
+                    
+                    
                     <th>
                         <div class="flex">
                             <div class="floating-container">
@@ -89,7 +85,6 @@
                             <td>{{ task?.title }}</td>
                             <td>{{ task?.client }}</td>
                             <td>{{ task?.description }}</td>
-                            <td>{{ task?.coordinator }}</td>
                             <td class="pl12 pt0">
                                 <div class="task-status" :class="task.status">
                                     {{ task.status }}

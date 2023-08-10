@@ -45,7 +45,15 @@ import { faListCheck,
         faGear,
         faArrowUpRightFromSquare,
         faClipboardList,
-        faHashtag
+        faHashtag,
+        faIndustry,
+        faUserTie,
+        faEnvelope,
+        faPhone,
+        faIndianRupee,
+        faXmark,
+        faGreaterThan,
+        faLessThan
     } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -55,6 +63,11 @@ import {
 } from '@fortawesome/free-regular-svg-icons'
 
 library.add(
+    faXmark,
+    faUserTie,
+    faEnvelope,
+    faPhone,
+    faIndustry,
     faHashtag,
     faCheck,
     faHandHoldingDollar,
@@ -87,7 +100,10 @@ library.add(
     faThumbsUp,
     faThumbsDown,
     faPaperPlane,
-    faClipboardList
+    faClipboardList,
+    faIndianRupee,
+    faGreaterThan,
+    faLessThan
 )
 
 let app = createApp(App)

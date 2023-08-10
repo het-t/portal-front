@@ -5,20 +5,14 @@ const state = {
     list: {},
     sortBy: 'recieved_at',
     sortOrder: 0,
-    filters: {
-        taskId: '',
-        details: '',
-        receivedAt: '',
-        amount: ''
-    }
 }
 
 const getters = {
     getFilters(state) {
         return state.filters
     },
-    getList: (state) => () => {
-        return state.list[`${Object.values(formatFilters(state.filters)).join('_')}_${state.sortBy}_${state.sortOrder}`]
+    getList: (state) => (taskId) => {
+        return state.list[taskId]
     },
     getSort(state) {
         return {
@@ -32,11 +26,30 @@ const mutations = {
     setPayments(state, list) {
         state.list = list
     },
+    addPayment(state, {taskId, data}) {
+        state.list[taskId].push(data)
+    },
+    editPayment(state, {taskId, data}) {
+        const index = state.list[taskId].findIndex((payment) => {
+            return payment.id === data.id
+        })
+        if (index !== -1) {
+            state.list[taskId][index] = data
+        }
+    },
+    removePayment(state, {taskId, paymentId}) {
+        const i = state.list[taskId].findIndex((payment) => {
+            return payment.id === paymentId
+        })
+        if (i >= 0) {
+            state.list[taskId].splice(i, 1)
+        }
+    },
     setCurrentTaskId(state, taskId) {
         state.filters.taskId = taskId
     },
-    setList(state, {filters = ['null', 'null', 'null', 'null'], list}) {
-        state.list[`${Object.values(filters).join('_')}_${state.sortBy}_${state.sortOrder}`] = list
+    setList(state, {taskId, list}) {
+        state.list[taskId] = list
     },
     setSort(state, {sortBy, sortOrder}) {
         state.sortBy = sortBy
@@ -47,14 +60,13 @@ const mutations = {
     }
 }
 const actions = {
-    fetchList({getters, commit}, {force = false}) {
+    fetchList({getters, commit}, {taskId, force = false}) {
 
         return new Promise((resolve, reject) => {
             const formattedFilters = formatFilters(getters['getFilters'])
-            const taskId = formattedFilters.taskId
             const {sortBy, sortOrder} = getters['getSort']
 
-            if (!getters['getList']({filters: Object.values(formattedFilters)})?.length || force === true) {
+            if (!getters['getList'](taskId)?.length || force === true) {
                 tasks.getPayments({
                     taskId,
                     filters: formattedFilters,
@@ -67,7 +79,7 @@ const actions = {
                 })
                 .then((res) => {
                     commit('setList', {
-                        filters: formattedFilters,
+                        taskId,
                         list: res.data
                     })
                     resolve()

@@ -4,7 +4,6 @@
             <tr>
                 <th>description</th>
                 <th>activity</th>
-                <th>status</th>
                 <th>time</th>
             </tr>
         </template>
@@ -26,8 +25,9 @@
                         {{ subTask.msg }}
                     </template>
                 </td>
-                <td>{{ subTask.status }}</td>
-                <td>{{ new Date(subTask.timestamp).toLocaleString() }}</td>
+                <td>
+                    {{new Date(new Date(subTask.timestamp).toISOString().replaceAll('T', ' ').replaceAll('Z', ' ')).toLocaleString()}}    
+                </td>
             </tr>
         </template>
     </table-main>

@@ -1,10 +1,6 @@
 <template>
   <div id="main">
     <div id="pa" :class="showLabels" ref="menu">
-<!-- 
-      <div class="logo-container">
-        <img style="height:50px; width: 100%;" src="../assets/logo/logo-500-wbg-bc-opt.png" alt="">
-      </div> -->
 
       <div id="nav">
         <div class="link-list">
@@ -50,12 +46,12 @@
           </router-link>
         </div>
 
-        <div class="link-list">
+        <!-- <div class="link-list">
           <router-link :to="{name: 'my_tasks_list'}" tabindex="-1" class="pt16 pb16 link">
             <font-awesome-icon :icon="['fas', 'sun']" class="pa-icon"></font-awesome-icon>
             <span v-if="showLabels">my&nbsp;tasks</span>
           </router-link>
-        </div>
+        </div> -->
 
         <div class="link-list">
           <router-link :to="{name: 'activity'}" tabindex="-1" class="pt16 pb16 link">
@@ -71,12 +67,12 @@
           </router-link>
         </div> -->
 
-        <div class="link-list">
+        <!-- <div class="link-list">
           <router-link :to="{name: 'tags_list'}" tabindex="-1" class="pt16 pb16 link">
             <font-awesome-icon :icon="['fas', 'hashtag']" class="pa-icon"></font-awesome-icon>
             <span v-if="showLabels">tags</span>
           </router-link>
-        </div>
+        </div> -->
 
         <div class="link-list">
           <router-link v-if="rightCheck('admin_panel') == true" :to="{name: 'admin_panel'}" tabindex="-1" class="pt16 pb16 link">
@@ -163,6 +159,8 @@ import rightCheck from '@/helpers/RightCheck'
       })
       .catch(() => {
           this.$cookies.remove('_token')
+          this.$cookies.remove('_wa_service_key')
+
           this.$store.reset()
           this.$router.push({name: 'login'})
         }) 
@@ -184,6 +182,8 @@ import rightCheck from '@/helpers/RightCheck'
           })
           .catch(() => {
             this.$cookies.remove('_token')
+            this.$cookies.remove('_wa_service_key')
+
             this.$store.reset()
             this.$router.push({name: 'login'})
           }) 

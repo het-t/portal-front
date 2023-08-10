@@ -1,128 +1,258 @@
-<template>
-    <tr class="tr">
-        <td style="padding: 0 8px 0 8px;">
-            <input v-model="state.details" style="width: 100%;" type="text" name="" id="" placeholder="Details">
-        </td>
-
-        <td>
-            <input v-model="state.amount" type="number" name="" id="" placeholder="Amount">
-        </td>
-
-        <td>
-            <date-picker
-                v-model:value="state.receivedAt"
-                type="datetime"
-                :show-second="false"
-            ></date-picker>
-        </td>
-    </tr>
-
-    <div style="display: flex; gap: 8px;" class="mb8 ml8">
-        <button class="green button" @click.prevent="savePayment">Save</button>
-        <button class="neutral button" @click="cancel">Cancel</button>
-    </div>
-
-</template>
-
 <script setup>
+import VueMultiselect from 'vue-multiselect';
+import { computed, inject, nextTick, onMounted, reactive, ref } from "vue";
+import { tasks } from '../api';
 import DatePicker from 'vue-datepicker-next';
-import { defineProps, defineEmits, onMounted, reactive, inject } from 'vue';
-import { tasks } from '@/api';
 import 'vue-datepicker-next/index.css';
-
-const emits = defineEmits(['changeVisibility', 'newPayment', 'refetchList'])
-
-const state = reactive({
-    details: '',
-    amount: '',
-    receivedAt: new Date()
-})
+import store from '@/store';
 
 const props = defineProps({
-    taskId: Number,
-    id: {
-        type: Number,
-        default: null
+    taskId: {
+        type: Number
     },
-    details: String,
-    receivedAt: Date,
-    amount: Number
+    type: {
+        type: String
+    },
+    paymentId: {
+        type: Number
+    },
+    title: {
+        type: String
+    },
+    comments: {
+        type: String
+    },
+    receivedAt: {
+        type: String
+    },
+    amount: {
+        type: String
+    },
+    subTaskId: {
+        type: Number
+    }
 })
+
+const paymentAmountRef = ref(null)
+const paymentTitleRef = ref(null)
+const paymentCommentRef = ref(null)
+
+const emit = defineEmits([
+    'canceled',
+    'done'
+])
 
 const toast = inject('toast')
 
-function savePayment() {
-    if (isNaN(props.taskId) === false) {
-        const paymentData = {
-            details: state.details,
-            amount: state.amount,
-            receivedAt: state.receivedAt
+const state = reactive({
+    type: '',
+    title: '',
+    amount: '',
+    receivedAt: '',
+    showTypes: false,
+    subTaskId: ''
+})
+
+const getSubTasksIds = computed(() => {
+    return store.getters['tasks/getSubTasks'](props.taskId)
+    ?.map((st) => st.id)
+})
+
+onMounted(() => {
+    nextTick(() => {
+        paymentAmountRef.value.focus()
+        state.paymentId = props.paymentId
+        state.type = props.type
+        state.title = props.title
+        state.amount = props.amount
+        state.receivedAt = (props.receivedAt !== null ? new Date(props.receivedAt) : null)
+    })
+})
+
+function editPayment() {
+    let amount = paymentAmountRef.value.innerText
+    const title = paymentTitleRef.value.innerText?.toLowerCase()
+    const comments = paymentCommentRef.value.innerText?.toLowerCase()
+    const receivedAt = new Date(state.receivedAt)?.toISOString()?.slice(0, 19)?.replace('T', ' ')
+    let type= state.type?.toLowerCase()
+    console.log(state.amount, props.type, type, amount)
+
+    tasks.editPayment({
+        taskId: props.taskId,
+        subTaskId: state.subTaskId,
+        paymentId: props.paymentId,
+        type,
+        title,
+        comments,
+        receivedAt,
+        amount
+    })
+    .then(() => {
+        if (type === props.type) {
+            emit('done', {
+                type,
+                amount: amount-state.amount
+            })
         }
-
-        if (paymentData?.receivedAt?.toString() === "Invalid Date" || paymentData?.receivedAt === null) paymentData.receivedAt = null 
-        else paymentData.receivedAt = new Date(paymentData.receivedAt).toISOString().slice(0, 19).replace('T', ' ')
-
-        if (props.id !== null && isNaN(props.id) === false) {
-            paymentData.paymentId = props.id
-            paymentData.taskId = props.taskId
-
-            tasks.editPayment(paymentData)
-            .then(() => {
-                emits('changeVisibility', false)
-                toast.success('Saved')
+        else {
+            emit('done', {
+                type: props.type,
+                amount: props.amount * (-1)
             })
-            .catch(() => {
-                toast.error('Error')
-            })
-            .finally(() => {
-                emits('refetchList')
+            emit('done', {
+                type,
+                amount
             })
         }
-        else if (props.id === null) {
-            const payments = []
-            payments[0] = paymentData
-
-            tasks.createPayment({
-                taskId: props.taskId,
-                payments
-            })
-            .then(() => {
-                emits('changeVisibility', false)
-                toast.success('Saved')
-            })
-            .catch(() => {
-                toast.error('Error')
-            })
-            .finally(() => {
-                emits('refetchList')
-            })        
-        }
-    }
-    else {
-        emits('newPayment', {
-            id: (new Date()) * (-1),
-            details: state.details,
-            amount: state.amount,
-            receivedAt: state.receivedAt
+        store.commit('tasksPayments/editPayment', {
+            taskId: props.taskId,
+            data: {
+                id: props.paymentId,
+                amount,
+                type,
+                receivedAt,
+                title,
+                comments
+            }
         })
-        emits('changeVisibility', false)
-    }
+
+        toast.success('Success')
+    })
+    .catch(err => {
+        toast.error(`Oops! We can't perform this action right now`)
+        console.log(err)
+    })
+}
+
+function addPayment() {
+    let amount = paymentAmountRef.value.innerText
+    const title = paymentTitleRef.value.innerText?.toLowerCase()
+    const comments = paymentCommentRef.value.innerText?.toLowerCase()
+    const receivedAt = new Date(state.receivedAt)?.toISOString()?.slice(0, 19)?.replace('T', ' ')
+    let type= state.type?.toLowerCase()
+
+    tasks.addPayment({
+        taskId: props.taskId,
+        subTaskId: state.subTaskId,
+        type,
+        amount,
+        title,
+        comments,
+        receivedAt
+    })
+    .then((res) => {
+        emit('done', {
+            type,
+            amount
+        })
+        toast.success('Success')
+        store.commit('tasksPayments/addPayment', {
+            taskId: props.taskId,
+            data: {
+                id: res.data.createdPaymentId,
+                type,
+                amount,
+                title,
+                comments,
+                receivedAt
+            }
+        })
+    })
+    .catch(err => {
+        toast.error(`Oops! We can't perform this action right now`)
+        console.log(err)
+    })
 }
 
 function cancel() {
-    emits("changeVisibility", false)
+    state.title = ''
+    state.amount = ''
+    state.receivedAt = ''
+    state.type = ''
+
+    emit('canceled')
 }
-
-onMounted(() => {
-    state.amount = props.amount
-    state.details = props.details
-    state.receivedAt = new Date(props.receivedAt)
-})
-
 </script>
 
+<template>
+    <div style="display: flex; flex-direction: column; gap: 15px;">
+        <div class="payment-list-ele">
+            <div class="status" :class="state?.type?.toLowerCase()"></div>
+                            
+            <div contenteditable="true" class="amount" ref="paymentAmountRef">
+                {{ state.amount }}
+            </div>
+        </div>
+
+        <div contenteditable="true" class="title" style="margin-left: 13px;" ref="paymentTitleRef">
+            {{ state.title }}
+        </div>
+
+        <div style="margin-left: 13px;">
+            <div contenteditable="true" class="comment" ref="paymentCommentRef">
+                {{ state.comment }}
+            </div>
+        </div>
+
+        <div style="margin-left: 13px;">
+            <vue-multiselect
+                v-model="state.type"
+                placeholder="Type"
+                :options="['Cost', 'Pending', 'Received']"
+                style="width: 150px !important;"
+                :allowEmpty="false"
+            ></vue-multiselect>
+        </div>
+
+        <div style="margin-left: 13px;" v-if="state.type?.toLowerCase() === 'cost'">
+            <vue-multiselect 
+                v-model="state.subTaskId"
+                placeholder="Sub-Task"
+                :options="getSubTasksIds"
+                :custom-label="(subTaskId) => `#${subTaskId}`"
+                style="width: 150px !important;"
+                :allowEmpty="false"
+            />
+        </div>
+
+        <div style="margin-left: 13px;">
+            <date-picker 
+                v-model:value="state.receivedAt"
+                type="datetime"
+                :show-second="false"
+            />
+        </div>
+
+        <div style="margin-left: 13px;">
+            <button 
+                @click.stop="isNaN(props.paymentId) ? addPayment() : editPayment()"
+                class="button green"
+            >
+                save
+            </button>
+
+            <button 
+                @click="cancel"
+                class="button neutral"
+                style="margin-left: 6px;"
+            >
+                cancel
+            </button>
+        </div>
+    </div>
+</template>
+
 <style scoped>
-tr td:not(:nth-last-child(1)) {
-    border-right: solid 1px #eeeeee;
+div[contenteditable="true"].amount:empty:after {
+    content: "amount";
+}
+div[contenteditable="true"].title:empty:after {
+    content: "title";
+}
+div[contenteditable="true"].comment:empty:after {
+    content: "comment";
+}
+button {
+    padding: 6px !important;
 }
 </style>

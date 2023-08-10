@@ -2,7 +2,7 @@ const breadcrumb = {
     list: {
         title: 'tasks',
         action: true,
-        actionUrl: '/u/tasks/create-task',
+        actionUrl: '/u/tasks/create',
         path: [{
             text: 'list',
             route: '/u/tasks/list'
@@ -15,7 +15,7 @@ const breadcrumb = {
             route: '/u/tasks/list'
         }, {
             text: 'create',
-            route: '/u/tasks/create-task'
+            route: '/u/tasks/create'
         }]
     }
 }
@@ -24,7 +24,7 @@ const routes = {
     component: () => import('@/views/TasksView.vue'),
     children: [
         {
-            path: ':taskId',
+            path: 'edit/:taskId',
             name: 'edit_task',
             component: () => import('@/views/TasksMainView.vue'),
             beforeEnter: (to) => {
@@ -44,6 +44,14 @@ const routes = {
             },
         },
         {
+            path: 'create',
+            name: 'create_task',
+            component: () => import('@/components/TaskCreate.vue'),
+            meta: {
+                breadcrumb: breadcrumb.create
+            }
+        },
+        {
             path: '',
             alias: 'list',
             name: 'tasks_list',
@@ -51,16 +59,7 @@ const routes = {
             meta: {
                 breadcrumb: breadcrumb.list
             }
-        },
-        {
-            path: 'create-task',
-            name: 'create_task',
-            component: () => import('@/views/TasksMainView.vue'),
-            meta: {
-                breadcrumb: breadcrumb.create,
-                protected: true
-            }
-        },
+        }
     ]
 }
 

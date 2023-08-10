@@ -29,6 +29,7 @@ import chatInternal from './modules/chatInternal.js'
 import tasksMaster from './modules/tasksMaster.js'
 import workDiary from './modules/workDiary.js'
 import tasksPayments from './modules/tasksPayments.js'
+import tasksComments from './modules/tasksComments.js'
 
 export default createStore(Store, {
   state,
@@ -47,5 +48,6 @@ export default createStore(Store, {
     activity,
     images,
     chatInternal,
+    tasksComments
   }
 })

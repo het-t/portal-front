@@ -78,7 +78,7 @@
                         </div>
                     </th>
                     
-                    <th>
+                    <!-- <th>
                         <div class="flex">
                             <table-sort @clicked="i=!i; j=!j; k=!k; m=!m;" :key="l" sortBy="progress" sortType="number" storeName="tasks"></table-sort>
                             <div class="floating-container">
@@ -86,13 +86,13 @@
                                 <span @click="$refs['progH'].focus()" class="floating-label">progress</span>
                             </div>
                         </div>
-                    </th>
-                    
+                    </th> -->
+<!--                     
                     <th v-if="rightCheck('see_pricing')" title="cost of all sub-tasks + fees">
                         <div class="flex">
                             total
                         </div>
-                    </th>
+                    </th> -->
                     <th>
                         <div class="flex">
                             <table-sort @clicked="i=!i; j=!j; k=!k; l=!l;" :key="m" sortBy="status" sortType="number" storeName="tasks"></table-sort>
@@ -122,15 +122,13 @@
                         <td>
                             {{task.title}}
                         </td>
+                        
                         <td>
                             {{task.description}}
                         </td>
-                        <td>{{task.client}}</td>
+
                         <td>
-                            <tasks-progress :total="task.totalSubTasks" :completed="task.doneSubTasks"/>
-                        </td>
-                        <td v-if="rightCheck('see_pricing')">
-                            {{task?.total}}
+                            {{task.client}}
                         </td>
                     
                         <td class="task-status" :class="task.status.replace(' ', '')">
@@ -138,12 +136,12 @@
                             {{ task.status }}
                         </td>
                         
-                        <div class="dots">
+                        <td class="dots">
                             <dots-img 
                                 @openMenu="menu($event, {task: task.title, taskId: task.id, visibility: true})" 
                                 @hideMenu="menu($event, {visibility: false}, '')" 
                             />
-                        </div>
+                        </td>
                     </tr>
 
                     <tr class="tr tr-hidden hide mb16" :ref="'row'+index">
@@ -173,8 +171,7 @@
 </template>
 
 <script>
-import TasksCreate from './TaskDetails.vue';
-import TasksProgress from './TasksProgress.vue';
+// import TasksProgress from './TasksProgress.vue';
 import TableMain from './TableMain.vue';
 import DotsImg from './DotsImg.vue';
 import DotsMenu from './DotsMenu.vue'
@@ -295,8 +292,7 @@ export default {
     }, 
     components: { 
         DotsMenu, 
-        TasksProgress, 
-        TasksCreate, 
+        // TasksProgress, 
         TableMain, 
         DotsImg, 
         TablePagination, 

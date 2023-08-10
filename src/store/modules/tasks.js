@@ -98,9 +98,20 @@ const mutations = {
     setList(state, {from = null, to = null, sortBy = null, sortOrder = null, filters = ['null', 'null', 'null', 'null', 'null'], data}) {
         state.tasks[`${from}_${to}_${sortBy}_${sortOrder}_${filters.join('_')}`] = data
     },
-    // /
+    addTag(state, {data}) {
+        state.subTasksStatuses.push(data)
+    },
+    //
     setSubTasks(state, {taskId, data}) {
         state.subTasksData[taskId] = data   
+    },
+    addNewSubTask(state, {taskId, data}) {
+        state.subTasksData[taskId]?.push(data)
+    },
+    editSubTaskDescription(state, {taskId, subTaskId, description}) {
+        state.subTasksData[taskId].find((subTask) => { 
+            if (subTask.id === subTaskId) subTask.description = description
+        })  
     },
     //
     setSort(state, {sortBy, sortOrder}) {
@@ -273,38 +284,40 @@ const actions = {
         })
     },
     //
-    fetchSubTasks({rootGetters, getters, commit, dispatch}, {taskId, force = false}) {
+    fetchSubTasks({getters, commit}, {taskId, force = false}) {
         return new Promise((resolve, reject) => {
             if (!getters['getSubTasks']?.(taskId)?.length || force === true) {
-                const users = rootGetters['users/getList']({})
 
                 tasks.getSubTasks({taskId})
                 .then((res) => {
                     let subTasks = res.data
 
                     subTasks = subTasks.map((subTask) => {
-                        subTask.assignedTo = JSON.parse(subTask.assignedTo)
-                        subTask.tags = JSON.parse(subTask.tags)
+                        subTask.delegation = JSON.parse(subTask.delegation)
 
-                        if (subTask.assignedTo === null) subTask.assignedTo = []
+                        if (
+                            subTask.delegation[0].parentId === null 
+                            && 
+                            subTask.delegation[0].childId === null
+                        ) {
+                            subTask.delegation = []
+                            subTask.status = {id: 1, name: 'to do'}
+                        }
                         else {
-                            for (let i in subTask.assignedTo) {
-                                dispatch('images/fetchProfilePic', {
-                                    userId: subTask.assignedTo[i],
-                                    width: 50,
-                                    height: 50
-                                }, {root: true})
+                            const statusId = subTask.delegation.find((delegation) => {
+                                return delegation.parentId === subTask.userId
+                            }).statusId
 
-                                subTask.assignedTo[i] = users.find((user) => {
-                                    return user.id === subTask.assignedTo[i]
-                                })
-                            }
+                            subTask.status = getters['getSubTasksStatuses'].find((status) => {
+                                return status.id === statusId
+                            })
                         }
 
-                        if (subTask.tags[0].id === null) subTask.tags = []
-
-                        subTask.statusId = getters['getSubTasksStatuses'].find((status) => {
-                            return status.id === subTask.statusId
+                        if (subTask.tags == null) subTask.tags = []
+                        else subTask.tags = JSON.parse(subTask.tags).map((tagId) => {
+                            return getters['getSubTasksTags'].find((tag) => {
+                                return tag.id === tagId
+                            })
                         })
 
                         return subTask
@@ -316,7 +329,8 @@ const actions = {
                     })
                     resolve()
                 })
-                .catch(() => {
+                .catch((err) => {
+                    console.log(err)
                     reject()
                 })
             } 

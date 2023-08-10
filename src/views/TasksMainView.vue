@@ -1,116 +1,54 @@
 <template>
-    <div class="tasks-main-view-top-bar">
-        <div class="tabs-parent">
-            <div class='tab active-tab'>
-                Details
-            </div>
+    <div class="task-main-view">
+        <div>
+            <task-details-new
+                :edit-task-id="parseInt(route.params.taskId)"
+            ></task-details-new>
 
-            <div 
-                @click="tabsState.subTasks = !tabsState.subTasks"
-                :class="tabsState.subTasks === true ? 'active-tab' : ''"
-                class='tab'
-            >
-                Sub-Tasks
-            </div>
-
-            <div 
-                @click="tabsState.payments = !tabsState.payments"
-                :class="tabsState.payments === true ? 'active-tab' : ''"
-                class='tab'
-            >
-                Payments
-            </div>
-
-            <div 
-                v-if="state.editing === true"
-                @click="tabsState.stats = !tabsState.stats"
-                :class="tabsState.stats === true ? 'active-tab' : ''"
-                class="tab"
-            >
-                Statistics
-            </div>
-
-            <div 
-                v-if="state.editing === true"
-                @click="tabsState.logs = !tabsState.logs"
-                :class="tabsState.logs === true ? 'active-tab' : ''"
-                class='tab'
-            >
-                Logs
-            </div>
-        </div>
-
-        <div class="actions">
-            <button
-                @click.prevent="state.save = true"
-                class="button green"
-            >Save</button>
-
-            <button 
-                class="button neutral"
-                @click="getToListScreen"
-            >Cancel</button>
-        </div>
-    </div>
-
-    <div class="tasks-main-view-grid mt16">
-        <Suspense>
-            <TaskDetails
-                @taskTemplate="taskTemplateIdFromTaskDetails = $event"
-                @save="taskDetailsData = $event, ++dataCounter"
-                :editTaskId=parseInt(route.params.taskId)
-                :showActionBtns=state.editing
-                :save=state.save
-                style="flex: 0 0 calc(50% - 5px);"
-            ></TaskDetails>
-        </Suspense>
-
-        <Suspense>
-            <keep-alive>
-                <TasksCreateSubTasks 
-                    v-if="tabsState.subTasks === true"
-                    :editTaskId=parseInt(route.params.taskId)
-                    :taskMaster=taskTemplateIdFromTaskDetails
-                    :save=state.save
-                    @popUpVisibilityChanged="popUpVisibilityChanged($event)"
-                    @save="subTasksData = $event, ++dataCounter"
-                    style="flex: 0 0 calc(50% - 5px);"
-                ></TasksCreateSubTasks>
-            </keep-alive>
-        </Suspense>
-
-        <Suspense>
-            <keep-alive>
-                <TaskLogs
-                    v-if="tabsState.logs === true"
-                    :taskId=parseInt(route.params.taskId)
-                    style="flex: 0 0 calc(50% - 7px); max-height: 660px;"
-                ></TaskLogs>
-            </keep-alive>
-        </Suspense>
+            <suspense>
+                <task-team
+                    :edit-task-id="parseInt(route.params.taskId)"
+                ></task-team>
+            </suspense>
         
-        <Suspense>
-            <keep-alive>
-                <TaskPayment 
-                    v-if="tabsState.payments === true"
-                    :taskId=parseInt(route.params.taskId)
-                    :save="state.save"
-                    @save="paymentsData = $event, ++dataCounter"
-                    style="flex: 0 0 calc(50% - 7px); overflow-y: auto; overflow-x: hidden;"
-                >
-                </TaskPayment>
-            </keep-alive>
-        </Suspense>
+            <suspense>
+                <sub-tasks-list-new
+                    :edit-task-id="parseInt(route.params.taskId)"
+                ></sub-tasks-list-new>
+            </suspense>
+
+            <div class="logs-payments-section">
+                <task-logs-new 
+                    :task-id="parseInt(route.params.taskId)"
+                    style="height: 300px; background-color: white; overflow-x: hidden; overflow-y: auto; padding: 13px; border: solid 1px #e0e0e0;;"
+                />
+
+                <task-payment
+                    :task-id="parseInt(route.params.taskId)"
+                    style="background-color: white; border: solid 1px #e0e0e0;"
+                />
+            </div>
+        </div>
+
+        
+        <div style="flex-grow: 1;">
+            <task-comments
+                :task-id="parseInt(route.params.taskId)"
+                style="padding: 13px; background-color: white; border: solid 1px #e0e0e0;"
+            />
+        </div>
     </div>
 </template>
 
 <script setup>
 import { onMounted, reactive, ref, watch } from "vue";
-import TaskDetails from "@/components/TaskDetails.vue";
+import TaskDetailsNew from "@/components/TaskDetailsNew.vue";
+import SubTasksListNew from "@/components/SubTasksListNew.vue";
+import TaskTeam from "@/components/TaskTeam.vue";
 import TaskPayment from "@/components/TaskPayment.vue";
-import TaskLogs from "@/components/TaskLogs.vue";
-import TasksCreateSubTasks from "@/components/TasksCreateSubTasks.vue";
-import { useRoute, useRouter } from "vue-router";
+import TaskLogsNew from '@/components/TaskLogsNew.vue';
+import TaskComments from "@/components/TaskComments.vue";
+import { useRoute } from "vue-router";
 import { tasks } from "../api";
 
 const tabsState = reactive({
@@ -129,8 +67,6 @@ const state = reactive({
 
 const route = useRoute()
 
-const taskTemplateIdFromTaskDetails = ref(0);
-
 onMounted(() => {
     if (route?.params?.taskId) {
         state.editing = true
@@ -147,7 +83,6 @@ const dataCounter = ref(0)
 watch(
     () => dataCounter.value,
     (dataCounter) => {
-        console.log(dataCounter)
         if (dataCounter === 3) {
             const {
                 taskTemplateId,
@@ -166,12 +101,12 @@ watch(
             const payments = paymentsData.value
 
             subTasks = subTasks.map((subTask) => {
-                if (subTask.assignedTo?.length) {
-                    subTask.assignedTo = subTask?.assignedTo?.map((user) => {
+                if (subTask.delegation?.length) {
+                    subTask.delegation = subTask?.delegation?.map((user) => {
                         if (user?.id) return user.id
                     })
                 }
-                else subTask.assignedTo = []
+                else subTask.delegation = []
 
                 if (subTask.statusId?.id) subTask.statusId = subTask.statusId.id
                 else subTask.statusId = 1
@@ -209,14 +144,35 @@ watch(
     }
 )
 
-const router = useRouter()
+// const router = useRouter()
 
-function getToListScreen() {
-    router.push({name: 'tasks_list'})
-}
+// function getToListScreen() {
+//     router.push({name: 'tasks_list'})
+// }
 </script>
 
 <style scoped>
+.task-main-view {
+    width: 100%; 
+    display: flex; 
+    gap: 13px; 
+    position: relative; 
+    top: 0; 
+    right: 0;
+}
+.logs-payments-section {
+    display: flex; 
+    gap: 13px; 
+    margin-top: 13px;
+}
+@media screen and (max-width: 1150px) {
+    .task-main-view {
+        flex-direction: column;
+    }
+    .logs-payments-section {
+        flex-direction: column-reverse;
+    }
+}
 .tasks-main-view-top-bar {
     color: #676a6c;
     display: grid;

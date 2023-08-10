@@ -1,0 +1,89 @@
+.done.indicator {
+    color: rgba(46, 204, 113, 0.5);
+    background-color: rgba(46, 204, 113, 0.5);
+}
+.sub-task-ele.done {
+    border-left-color: rgba(46, 204, 113, 0.5) !important;
+}
+.inprogress.indicator {
+    color: #2ecc71;
+    background-color: #2ecc71;
+}
+.sub-task-ele.inprogress {
+    border-left-color: #2ecc71 !important;
+}
+.todo.indicator {
+    color: #f1c40f;
+    background-color: #f1c40f;
+}
+.sub-task-ele.todo {
+    border-left-color: #f1c40f !important;
+}
+.hold.indicator {
+    color: #e74c3c;
+    background-color: #e74c3c;
+}
+.sub-task-ele.hold {
+    border-left-color: #e74c3c !important;
+}
+.cancel.indicator {
+    color: rgba(231, 76, 60, 0.5);
+    background-color: rgba(231, 76, 60, 0.5);
+}
+.sub-task-ele.cancel {
+    border-left-color: rgba(231, 76, 60, 0.5) !important;
+}
+.paused.indicator {
+    color: rgb(230, 126, 34);
+    background-color: #e67e22;
+}
+.sub-task-ele.paused{
+    border-left-color: #e67e22 !important;
+}
+.pendingforapproval.indicator{
+    color: #3498db;
+    background-color: #3498db;
+}
+.sub-task-ele.pendingforapproval{
+    border-left-color: #3498db !important;
+}
+.reassigned.indicator {
+    color: #e74c3c;
+    background-color: #e74c3c;
+}
+.sub-task-ele.reassigned {
+    border-left-color: #e74c3c !important;
+}
+.approved.indicator {
+    color: #f7dc6f;
+    background-color: #f7dc6f;
+}
+.sub-task-ele.approved {
+    border-left-color: #f7dc6f !important;
+}
+
+/* Green:
+Primary: #2ecc71 (Bright Green)
+Secondary: #27ae60 (Dark Green)
+Tertiary: #1abc9c (Turquoise Green)
+
+
+Orange:
+Primary: #e67e22 (Bright Orange)
+Secondary: #d35400 (Dark Orange)
+Tertiary: #f39c12 (Yellowish Orange)
+
+Red:
+Primary: #e74c3c (Bright Red)
+Secondary: #c0392b (Dark Red)
+Tertiary: #d98880 (Soft Red)
+
+Blue:
+Primary: #3498db (Bright Blue)
+Secondary: #2980b9 (Dark Blue)
+Tertiary: #5dade2 (Light Blue)
+
+Yellow:
+Primary: #f1c40f (Bright Yellow)
+Secondary: #f39c12 (Dark Yellow)
+Tertiary: #f7dc6f (Soft Yellow)  */

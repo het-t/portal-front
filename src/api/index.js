@@ -42,18 +42,40 @@ const users = {
 const tasks = {
     count: (args) => makeGetReq(endpoints.tasks + '/count', args),
     getList: (args) => makeGetReq(endpoints.tasks, args),
+    
     getData: (args) => makeGetReq(endpoints.tasks + '/' + args.taskId),
-    getLogs: (args) => makeGetReq(endpoints.tasks + '/' + args.taskId + '/logs'),
-    getSubTasks: (args) => makeGetReq(endpoints.tasks + '/' + args.taskId + '/sub-tasks'),
+    
+    addTag: (args) => makePutReq(endpoints.tasks + '/' + args.taskId + '/sub-tasks/' + args.subTaskId + '/tags/' + args.tagId),
+    removeTag: (args) => makeDeleteReq(endpoints.tasks + '/' + args.taskId + '/sub-tasks/' + args.subTaskId + '/tags/' + args.tagId),
 
-    getPayments: (args) => makeGetReq(endpoints.tasks + '/' + args.taskId + '/payments', args),
-    createPayment: (args) => makePostReq(endpoints.tasks + '/' + args.taskId +'/payments', args),
+    getSubTasks: (args) => makeGetReq(endpoints.tasks + '/' + args.taskId + '/sub-tasks'),
+    addSubTask: (args) => makePostReq(endpoints.tasks + '/' + args.taskId + '/sub-tasks', {description: args.description}),
+    editSubTask: (args) => makePatchReq(endpoints.tasks + '/' + args.taskId + '/sub-tasks/' + args.subTaskId + '/description' , {description: args.description}),
+    deleteSubTask: (args) => makeDeleteReq(endpoints.tasks + '/' + args.taskId + '/sub-tasks/' + args.subTaskId),
+    changeSubTaskStatus: (args) => makePatchReq(endpoints.tasks + '/' + args.taskId + '/sub-tasks/' + args.subTaskId + '/status', {statusId: args.statusId}),
+    
+    getLogs: (args) => makeGetReq(endpoints.tasks + '/' + args.taskId + '/logs'),
+    
+    getComments: (args) => makeGetReq(endpoints.tasks + '/' + args.taskId + '/comments'),
+    addComment: (args) => makePostReq(endpoints.tasks + '/' + args.taskId + '/comments', {comment: args.comment}),
+    
+    getDelegation: (args) => makeGetReq(endpoints.tasks + '/' + args.taskId + '/sub-tasks/' + args.subTaskId + '/delegation/'),
+    addDelegationLink: (args) => makePostReq(endpoints.tasks + '/' + args.taskId + '/sub-tasks/' + args.subTaskId + '/delegation/', {parentUserId: args.parentUserId, childUserId: args.childUserId}),
+    editDelegationLink: (args) => makePostReq(endpoints.tasks + '/' + args.taskId + '/sub-tasks/' + args.subTaskId + '/delegation/', {userId: args.userId, newUserId: args.newUserId}),
+    removeDelegationLink: (args) => makeDeleteReq(endpoints.tasks + '/' + args.taskId + '/sub-tasks/' + args.subTaskId + '/delegation/', {userId: args.userId}),
+
+    getTeam: (args) => makeGetReq(endpoints.tasks + '/' + args.taskId + '/team'),
+    addInTeam: (args) => makePostReq(endpoints.tasks + '/' + args.taskId + '/team/' + args.userId),
+    removeFromTeam: (args) => makeDeleteReq(endpoints.tasks + '/' + args.taskId + '/team/' + args.userId),
+
+    getPayments: (args) => makeGetReq(endpoints.tasks + '/' + args.taskId + '/payments'),
+    getPaymentsGraph: (args) => makeGetReq(endpoints.tasks + '/' + args.taskId + '/payments/graph'),
+    addPayment: (args) => makePostReq(endpoints.tasks + '/' + args.taskId +'/payments', args),
     editPayment: (args) => makePutReq(endpoints.tasks + '/' + args.taskId +'/payments/' + args.paymentId, args),
     deletePayment: (args) => makeDeleteReq(endpoints.tasks + '/' + args.taskId + '/payments/' + args.paymentId),
-
+ 
     create: (args) => makePostReq(endpoints.tasks, args),
     changeStatus: (args) => makePatchReq(endpoints.tasks + '/' + args.taskId, args),
-    edit: (args) => makePutReq(endpoints.tasks + '/' + args.taskId, args),
     delete: (args) => makeDeleteReq(endpoints.tasks + '/' + args.taskId, args),
 }
 

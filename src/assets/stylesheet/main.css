@@ -2,7 +2,7 @@
 @import './floating-labels.css';
 
 *:focus {
-    outline-color: #c2c2c2 !important;
+    outline: none;
 }
 
 textarea, select, input {    
@@ -16,7 +16,7 @@ html {
     font-size: 13px;
     overflow-x: hidden;
     overflow-y: scroll;
-    background-color: #293846;
+    background-color: rgba(103, 106, 108, 0.5);
 }
 body, #app {
     background-color: #f3f3f4;
@@ -28,16 +28,28 @@ body, #app {
     display: flex;
     overflow: hidden;
 }
-
+.multiselect__option::after {
+    content: none !important;
+}
+.multiselect__option--highlight {
+    background-color: rgba(73, 74, 75, 0.2) !important;
+    color: inherit !important;
+}
+.secondary-timestamp {
+    color: rgba(103, 106, 108, 0.5); 
+    font-size: 10px; 
+    text-wrap: nowrap;
+}
 #pa {
     width: 180px;
     justify-content: center;
-    background-color: #2F4050;
+    background-color: white;
     display: sticky;
     position: relative;
     top:0;
     left:0;
     overflow: hidden;
+    box-shadow: 0 0 5px rgb(191, 191, 191);
 }
 .pbtrue {
     width: calc(100% - 180px);
@@ -48,13 +60,13 @@ body, #app {
 .pa-icon {
     width: 12px;
     height: 12px;
-    color: grey !important;
+    color: rgb(73, 74, 75) !important;
     transform: scale(1.5);
 }
 .top-nav-icons {
     width: 26px;
     height: 26px;
-    color: #2f4050;
+    color: rgb(73, 74, 75);
 }
 .top-nav-icons, 
 .top-nav button {
@@ -67,31 +79,10 @@ a, button {
 }
 .link-list {
     box-sizing: content-box;
-    padding: 3px 7px 3px 5px;
+    padding: 3px 6px;
     border-radius: 3px;
 }
-.link-list span {
-    color: #a7b1c2;
-}
-#nav .router-link-active .pa-icon, 
-#nav .router-link-exact-active .pa-icon{
-    color: white !important;
-}
-#nav .router-link-active, 
-#nav .router-link-exact-active,
-#nav .router-link-active span,
-#nav .router-link-exact-active span {
-    color: white;
-    background-color: #293846;
-}
-.link-list:hover .link, .link:hover,
-.link-list:hover span, .link:hover span, .link:hover span{
-    color: white !important;
-    background-color: #293846;
-}
-.link:hover .pa-icon {
-    color: white !important;
-}
+
 
 .dots {
     width: 13px;
@@ -143,6 +134,21 @@ a, button {
     display: block;
     text-transform: capitalize;
 }
+
+/* pa links */
+.link {
+    color: rgb(103, 106, 108);
+    font-weight: 500;
+}
+.link:hover {
+    background-color: rgba(73, 74, 75, 0.2);
+}
+.router-link-active {
+    background-color: rgba(73, 74, 75, 0.2);
+    font-weight: 700;
+}
+
+
 
 /* table card */
 .card {
@@ -240,9 +246,8 @@ a, button {
     background-color: rgba(205, 234, 255, 0.498);
     border-radius: 6px;
 }
-.link {
-    color:grey;
-}
+
+
 .sorting-img {
     width: 13px;
     height: 13px !important;
