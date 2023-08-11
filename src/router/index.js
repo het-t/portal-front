@@ -5,7 +5,7 @@ import tasksRoutes from './tasks.js'
 import activityRoutes from './activity.js'
 import rolesRoutes from './roles.js'
 import clientsRoutes from './clients.js'
-import myTasks from './myTasks.js'
+// import myTasks from './myTasks.js'
 import usersRoutes from './users.js'
 import tasksTemplateRoutes from './tasksTemplate.js'
 import settingsRoutes from './settings.js'
@@ -71,7 +71,7 @@ let routesNew = [
       rolesRoutes,
       usersRoutes,
       clientsRoutes,
-      myTasks,
+      // myTasks,
       tasksRoutes,
       tasksTemplateRoutes,
       workDiaryRoutes,

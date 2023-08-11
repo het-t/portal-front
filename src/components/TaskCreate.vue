@@ -107,18 +107,22 @@
         tasks.create({
             title: taskState.title,
             description: taskState.description,
-            client: taskState.client?.id ? taskState.client.id : null,
+            clientId: taskState.client?.id ? taskState.client.id : null,
             fees: rightCheck('see_pricing') === true ? taskState.fees : 0,
             templateId: taskState.template?.id ? taskState.template.id : null
         })
         .then((res) => {
-            toast.success('created')
+            toast.success('success')
 
             router.push({
                 name: 'edit_task',
                 params: {
                     taskId: res.data.createdTaskId
                 }
+            })
+
+            return store.dispatch('tasks/fetchList', {
+                force: true
             })
         })
         .catch(() => {
@@ -137,13 +141,7 @@
         store.dispatch('clients/fetchList', {all: true})
         store.dispatch('tasksMaster/fetchList', {all: true}),
         store.dispatch('users/fetchList', {all: true})
-
-        console.log(state.disableButtons)
     })
-
-    // function createNewTag(newTag, task) {
-    //     store.commit('tasks/setNewTag', {newTag, task})
-    // }
 </script>
 
 <style scoped>

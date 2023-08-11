@@ -304,12 +304,20 @@ const actions = {
                             subTask.status = {id: 1, name: 'to do'}
                         }
                         else {
-                            const statusId = subTask.delegation.find((delegation) => {
+                            let usersDelegationLink = subTask.delegation.find((delegation) => {
                                 return delegation.parentId === subTask.userId
-                            }).statusId
+                            })
+                            
+                            // if user is not assigned but still have access to that sub-tasks
+                            // user must be in team of task
+                            if (!usersDelegationLink) {
+                                usersDelegationLink = subTask.delegation.find((link) => {
+                                    return link.childId === null
+                                })
+                            }
 
                             subTask.status = getters['getSubTasksStatuses'].find((status) => {
-                                return status.id === statusId
+                                return status.id === usersDelegationLink.statusId
                             })
                         }
 

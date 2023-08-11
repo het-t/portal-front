@@ -42,12 +42,14 @@ function addComment() {
     })
     .then((res) => {
         toast.success('Success')
+
         store.commit('tasksComments/addComment', {
             taskId: props.taskId,
             data: {
                 id: res.data.createdCommentId,
                 comment,
-                datetime: new Date().toUTCString()
+                datetime: new Date().toUTCString(),
+                user: store.getters['getPersonalDetails']
             }
         })
     })
@@ -117,7 +119,7 @@ function addComment() {
                         {{comment.comment}}
 
                         <span class="secondary-timestamp">
-                            {{ comment.user.firstname + ' ' + comment.user.lastname }}
+                            {{ comment.user.firstName + ' ' + comment.user.lastName }}
                             {{ new Date(new Date(comment.datetime).toISOString().replaceAll('T', ' ').replaceAll('Z', ' ')).toLocaleString() }}
                         </span>
                     </div>

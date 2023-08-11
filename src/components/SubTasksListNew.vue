@@ -272,6 +272,7 @@ function createTag(tagName, subTaskId) {
             @canceled="state.subTaskCreate = false"
         />
 
+        
         <div
             v-for="(subTask, index) in getSubTasks"
             :key="index"

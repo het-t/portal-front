@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive } from "vue";
+import { computed, onMounted, reactive } from "vue";
 import { useStore } from "vuex";
 import { tasks } from "../api";
 
@@ -16,12 +16,19 @@ const props = defineProps({
 
 const store = useStore()
 
+const getUsers = computed(() => {
+    return store.getters['users/getList']({})
+})
+
 onMounted(function () {
     tasks.getLogs({
         taskId: props.taskId
     })
     .then((res) => {
-        state.logs = res.data
+        state.logs = res.data.map((log) => {
+            log.user = getUsers.value.find((user) => user.id === log.userId)
+            return log
+        })
     })
 })
 </script>
@@ -38,14 +45,14 @@ onMounted(function () {
                 <div style="display: flex; gap: 13px;">
                     <div>
                         <font-awesome-icon 
-                            v-if="store.getters['images/getProfilePic'](`${log.user.id}_50x50`) == undefined ||
-                                store.getters['images/getProfilePic'](`${log.user.id}_50x50`) == ''"
+                            v-if="store.getters['images/getProfilePic'](`${log.user?.id}_50x50`) == undefined ||
+                                store.getters['images/getProfilePic'](`${log.user?.id}_50x50`) == ''"
                             :key="index"
                             class="profile-pic" style="border-radius: 100%; width: 18px; height: 18px;"
                             :icon="['fas', 'user']"
                         ></font-awesome-icon>
-
-                        <img v-else :src="store.getters['images/getProfilePic'](`${log.user.id}_50x50`)"
+                       
+                        <img v-else :src="store.getters['images/getProfilePic'](`${log.user?.id}_50x50`)"
                             loading="lazy" style="width: 24px; height: 24px; border-radius: 100%;"
                         >
                     </div>
@@ -54,9 +61,9 @@ onMounted(function () {
                         {{ log.subTask ? log.subTask + ' - ' : '' }}
 
                         {{ log.msg }}
-                        
+
                         <span class="secondary-timestamp">
-                            {{ log.user.firstname + ' ' + log.user.lastname }}
+                            {{ log.user?.firstName + ' ' + log.user?.lastName }}
                             {{new Date(new Date(log.timestamp).toISOString().replaceAll('T', ' ').replaceAll('Z', ' ')).toLocaleString()}}
                         </span>
                     </div>

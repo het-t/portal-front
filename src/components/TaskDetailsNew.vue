@@ -30,7 +30,7 @@ function componentPromiseGenerator() {
                     {{ getTaskDataFromStore.title?.toLowerCase() }}
                 </span>
 
-                <div class="task-status" :class="getTaskDataFromStore.status.replace(' ', '')">
+                <div class="task-status" :class="getTaskDataFromStore?.status?.replace(' ', '')">
                     <div class="indicator"></div>
                     {{ getTaskDataFromStore.status?.toLowerCase() }}
                 </div>

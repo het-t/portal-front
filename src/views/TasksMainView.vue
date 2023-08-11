@@ -1,6 +1,6 @@
 <template>
     <div class="task-main-view">
-        <div>
+        <div style="min-width: 70%;">
             <task-details-new
                 :edit-task-id="parseInt(route.params.taskId)"
             ></task-details-new>
@@ -19,6 +19,7 @@
 
             <div class="logs-payments-section">
                 <task-logs-new 
+                    v-if="rightCheck('see_pricing')"
                     :task-id="parseInt(route.params.taskId)"
                     style="height: 300px; background-color: white; overflow-x: hidden; overflow-y: auto; padding: 13px; border: solid 1px #e0e0e0;;"
                 />
@@ -41,7 +42,7 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref, watch } from "vue";
+import { onMounted, reactive } from "vue";
 import TaskDetailsNew from "@/components/TaskDetailsNew.vue";
 import SubTasksListNew from "@/components/SubTasksListNew.vue";
 import TaskTeam from "@/components/TaskTeam.vue";
@@ -49,7 +50,7 @@ import TaskPayment from "@/components/TaskPayment.vue";
 import TaskLogsNew from '@/components/TaskLogsNew.vue';
 import TaskComments from "@/components/TaskComments.vue";
 import { useRoute } from "vue-router";
-import { tasks } from "../api";
+import rightCheck from "@/helpers/RightCheck";
 
 const tabsState = reactive({
     payments: false,
@@ -74,81 +75,6 @@ onMounted(() => {
     }
     else tabsState.subTasks = true
 })
-
-const taskDetailsData = ref({})
-const subTasksData = ref({})
-const paymentsData = ref({})
-const dataCounter = ref(0)
-
-watch(
-    () => dataCounter.value,
-    (dataCounter) => {
-        if (dataCounter === 3) {
-            const {
-                taskTemplateId,
-                title,
-                description,
-                cost,
-                clientId,
-                coordinatorsIds,
-                saved
-            } = taskDetailsData.value
-
-            let {
-                subTasks,
-            } = subTasksData.value
-
-            const payments = paymentsData.value
-
-            subTasks = subTasks.map((subTask) => {
-                if (subTask.delegation?.length) {
-                    subTask.delegation = subTask?.delegation?.map((user) => {
-                        if (user?.id) return user.id
-                    })
-                }
-                else subTask.delegation = []
-
-                if (subTask.statusId?.id) subTask.statusId = subTask.statusId.id
-                else subTask.statusId = 1
-                
-                return subTask
-            })
-
-            const args = {
-                taskTemplateId,
-                title,
-                description,
-                cost,
-                clientId,
-                coordinatorsIds: JSON.stringify(coordinatorsIds),
-                saved,
-                subTasks: JSON.stringify(subTasks),
-                payments: JSON.stringify(payments)
-            }
-
-            if (state.editing === false) {
-                tasks.create(args)
-                .catch((err) => {
-                    console.log(err)
-                })
-            }
-            else if (state.editing === true) {
-                args.removedSubTasks = JSON.stringify(subTasksData.value.removedSubTasks),
-                args.taskId = state.editTaskId
-
-                tasks.edit(args)
-                .catch(err => console.log(err))
-            }
-            
-        }
-    }
-)
-
-// const router = useRouter()
-
-// function getToListScreen() {
-//     router.push({name: 'tasks_list'})
-// }
 </script>
 
 <style scoped>

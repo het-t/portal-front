@@ -47,6 +47,7 @@ import { useMeta } from 'vue-meta'
                 })
                 .then((results) => {
                     if (results?.data?.login == 1) {
+                        this.$store.commit('setPersonalDetails', results.data)
                         this.$router.push({name: 'tasks_list'})
                     }
                     else {
@@ -77,7 +78,7 @@ import { useMeta } from 'vue-meta'
             })
             .then((results) => {
                 if (results?.data == '1') {
-                    this.$router.push({name: 'my_tasks_list'})
+                    this.$router.push({name: 'tasks_list'})
                 }       
             })
             .catch(() => {

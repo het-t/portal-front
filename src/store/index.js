@@ -2,18 +2,26 @@ import { Store } from 'vuex'
 import { createStore } from 'vuex-extensions'
 
 let state = {
-  userType: ''
+  userType: '',
+  firstName: '',
+  lastName: '',
+  id: ''
 }
 
 let getters = {
-  getUserType(state) {
-    return state.userType
+  getPersonalDetails(state) {
+    return state
   }
 }
 
 let mutations = {
-  setUserType(state, value) {
-    state.userType = value
+  setPersonalDetails(state, {firstName, lastName, id}) {
+    state.firstName = firstName
+    state.lastName = lastName
+    state.id = id
+  },
+  setUserType(state, type) {
+    state.userType = type
   }
 }
 

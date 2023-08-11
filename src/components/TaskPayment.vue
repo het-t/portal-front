@@ -5,6 +5,7 @@ import TaskPaymentCreate from "./TaskPaymentCreate.vue";
 import TransitionNumber from './TransitionNumber.vue';
 import { useStore } from "vuex";
 import swal from "sweetalert";
+import rightCheck from "@/helpers/RightCheck";
 
 const toast = inject('toast')
 
@@ -14,7 +15,8 @@ const state = reactive({
     pending: 0,
     totalCost: 0,
     expectedRevenue: 0,
-    createPayment: false
+    createPayment: false,
+    authorised: false
 })
 
 const store = useStore()
@@ -33,6 +35,8 @@ onMounted(function () {
     store.dispatch('tasksPayments/fetchList', {
         taskId: props.taskId
     })
+
+    state.authorised = rightCheck('see_pricing')
 
     tasks.getPaymentsGraph({
       taskId: props.taskId
@@ -141,26 +145,28 @@ function removePayment(paymentId, title, type, amount) {
                 <span class="title">Cost</span>
             </div>
 
-            <div class="payment-card pending">
-                <transition-number
-                    :update-value="state.pending"
-                />
-                <span class="title">Pending</span>
-            </div>
+            <template v-if="state.authorised === true">
+                <div class="payment-card pending">
+                    <transition-number
+                        :update-value="state.pending"
+                    />
+                    <span class="title">Pending</span>
+                </div>
 
-            <div class="payment-card received">
-                <transition-number
-                    :update-value="state.received"
-                />
-                <span class="title">Received</span>
-            </div>
+                <div class="payment-card received">
+                    <transition-number
+                        :update-value="state.received"
+                    />
+                    <span class="title">Received</span>
+                </div>
 
-            <div class="payment-card revenue">
-                <transition-number
-                    :update-value="state.expectedRevenue"
-                />
-                <span class="title">Revenue</span>
-            </div>
+                <div class="payment-card revenue">
+                    <transition-number
+                        :update-value="state.expectedRevenue"
+                    />
+                    <span class="title">Revenue</span>
+                </div>
+            </template>
         </div>
 
         <task-payment-create 

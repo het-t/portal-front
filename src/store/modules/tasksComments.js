@@ -20,7 +20,7 @@ const mutations = {
 }
 
 const actions = {
-    fetchList({getters, commit}, {taskId, force = false}) {
+    fetchList({getters, commit, rootGetters}, {taskId, force = false}) {
         return new Promise((resolve, reject) => {
             if (!getters['getList'](taskId)?.length || force === true) {
                 tasks.getComments({
@@ -29,7 +29,12 @@ const actions = {
                 .then(res => {
                     commit('setList', {
                         taskId,
-                        list: res.data
+                        list: res.data.map((comment) => {
+                            comment.user = rootGetters['users/getList']({}).find((user) => {
+                                return comment.userId === user.id
+                            })
+                            return comment
+                        })
                     })
                     resolve()
                 })

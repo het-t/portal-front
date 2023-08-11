@@ -13,7 +13,7 @@ import { useMeta } from 'vue-meta'
         },
         computed: {
             userType() {
-                return this.$store.getters['getUserType']
+                return this.$store.getters['getPersonalDetails']?.userType
             }
         }
     }

@@ -102,7 +102,7 @@
                         </td>
 
                         <td class="w">
-                            <span>{{ (new Date(activity?.datestamp).toLocaleString()) }}</span>
+                            <span>{{new Date(new Date(activity?.datestamp).toISOString().replaceAll('T', ' ').replaceAll('Z', ' ')).toLocaleString()}}</span>
                         </td>
                     </tr>
                 </table>
