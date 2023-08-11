@@ -11,11 +11,10 @@ const props = defineProps({
     }
 })
 const store = useStore()
+
 const users = computed(() => 
-    store.getters['users/getList']({
-        filters: ['null', 'null', 'null']
-    })?.filter((user) => {
-        return user.isActive === 1 && state.team?.map(user => user.id)?.includes(user.id) !== true
+    store.getters['users/getList']({})?.filter((user) => {
+        return state.team?.map(user => user.id)?.includes(user.id) === false
     })
 )
 
@@ -51,7 +50,13 @@ function addUser(user) {
         userId: user.id
     })
     .then(() => {
-        componentPromiseGen()
+        return componentPromiseGen()
+    })
+    .then(() => {
+        store.commit('tasks/flush', {
+            taskId: props.editTaskId,
+            list: true
+        })
     })
 }
 
@@ -61,7 +66,13 @@ function removeUser(user) {
         userId: user.id
     })
     .then(() => {
-        componentPromiseGen()
+        return componentPromiseGen()
+    })
+    .then(() => {
+        store.commit('tasks/flush', {
+            taskId: props.editTaskId,
+            list: true
+        })
     })
 }
 
@@ -115,12 +126,12 @@ onBeforeUnmount(() => {
             <div v-show="state.showUsersOptions === false" class="task-team-add-btn-icon" :style="state.team.length === 0 ? 'visibility: visible;' : ''">
                 <font-awesome-icon :icon="['fas', 'plus']" />
             </div>
-        
+
             <vue-multiselect
                 v-if="state.showUsersOptions === true"
                 @select="addUser($event)"
                 :custom-label="(user) => user.firstName + '' + user.lastName"
-                :options="users.filter((user) => state.team.includes(user) === false)"
+                :options="users.filter((user) => user.isActive === 1 && state.team.includes(user) === false)"
                 style="min-width: 200px;"
             >
                 <template v-slot:option="{option}">

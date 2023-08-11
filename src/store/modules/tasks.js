@@ -136,14 +136,14 @@ const mutations = {
     setRecordsPerPage(state, recordsPerPage) {
         state.recordsPerPage = recordsPerPage
     },
-    flush(state, {taskId}) {
-        state.tasks = {}
-
+    flush(state, {taskId, subTasks = false, list = false, details = false}) {
         if (taskId) {
-            delete state.subTasksData[taskId]
-            delete state.tasksData[taskId]
+            if (list === true) state.tasks = {}
+            if (subTasks === true) delete state.subTasksData[taskId]
+            if (details === true) delete state.tasksData[taskId]
         }
         else {
+            state.tasks = {}
             state.tasksData = {}
             state.subTasksData = {}
         }

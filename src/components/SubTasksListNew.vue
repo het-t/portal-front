@@ -34,7 +34,6 @@ const getSubTasks = computed(() => {
 
 const getUsers = computed(() =>     
     store.getters['users/getList']({})
-    .filter((user) => user.isActive === 1)
 )
 
 const getSubTasksStatuses = computed(() => 
@@ -72,12 +71,31 @@ function componentPromise(force = false) {
 
 }
 
+function refetchTasks(options) {
+    if (options.details === true) {
+        store.dispatch('tasks/fetchData', {
+            taskId: props.editTaskId,
+            force: true
+        })
+    }
+
+    options.details = false
+    store.commit('tasks/flush', options)
+}
+
 function changeSubTaskStatus(e, subTaskId) {
     state.subTasksStatusesShow = ''
     tasks.changeSubTaskStatus({
         taskId: props.editTaskId,
         subTaskId,
         statusId: e.id
+    })
+    .then(() => {
+        return refetchTasks({
+            taskId: props.editTaskId,
+            list: true,
+            details: true
+        })
     })
     .finally(() => {
         return componentPromise(true)
@@ -97,6 +115,12 @@ function addDelegationLink(user, subTask) {
         if (!state.delegationCache[subTask.id]?.length) state.delegationCache[subTask.id] = []
         subTask.delegation = state.delegationCache[subTask.id].push(user)
     })
+    .then(() => {
+        return refetchTasks({
+            taskId: props.editTaskId,
+            list: true,
+        })
+    })
     .catch(err => {
         console.log(err)
     })
@@ -112,6 +136,12 @@ function removeDelegationLink(user, subTask) {
         const index = state.delegationCache[subTask.id].indexOf(user)
         state.delegationCache[subTask.id].splice(index, 1)
         subTask.delegation = state.delegationCache[subTask.id]
+    })
+    .then(() => {
+        return refetchTasks({
+            taskId: props.editTaskId,
+            list: true,
+        })
     })
     .catch(err => {
         console.log(err)
@@ -168,7 +198,7 @@ function flatOutDelegation(rawDelegation, subTaskId) {
     })
 
     state.delegationCache[subTaskId] = delegation
-console.log(delegation)
+
     return delegation
 }
 
@@ -190,6 +220,12 @@ function subTaskDelete(subTaskId, description) {
     .then(() => {
         toast.success(`Saved`)
         return componentPromise(true)
+    })
+    .then(() => {
+        return refetchTasks({
+            taskId: props.editTaskId,
+            list: true,
+        })
     })
     .catch(() => {
         toast.error(`Oops! We can't perform this action right now`);
@@ -449,7 +485,7 @@ function createTag(tagName, subTaskId) {
                                     v-if="state.subTaskDelegationOption === subTask.id"
                                     @select="addDelegationLink($event, subTask)"
                                     :custom-label="(user) => user.firstName + '' + user.lastName"
-                                    :options="getUsers.filter((user) => flatOutDelegation(subTask.delegation, subTask.id).includes(user) === false)"
+                                    :options="getUsers.filter((user) => user.isActive === 1 && flatOutDelegation(subTask.delegation, subTask.id).includes(user) === false)"
                                     style="min-width: 200px;"
                                 >
                                     <template v-slot:option="{option}">
