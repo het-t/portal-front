@@ -46,12 +46,12 @@
           </router-link>
         </div>
 
-        <!-- <div class="link-list">
+        <div class="link-list">
           <router-link :to="{name: 'my_tasks_list'}" tabindex="-1" class="pt16 pb16 link">
-            <font-awesome-icon :icon="['fas', 'sun']" class="pa-icon"></font-awesome-icon>
+            <font-awesome-icon :icon="['fas', 'crosshairs']" class="pa-icon"></font-awesome-icon>
             <span v-if="showLabels">my&nbsp;tasks</span>
           </router-link>
-        </div> -->
+        </div>
 
         <div class="link-list">
           <router-link :to="{name: 'activity'}" tabindex="-1" class="pt16 pb16 link">
@@ -149,6 +149,9 @@ import rightCheck from '@/helpers/RightCheck'
         this.showLabels = !this.showLabels
         if (!this.showLabels) this.$refs.menu.classList.add('lessWidth')
         else this.$refs.menu.classList.remove('lessWidth')
+      },
+      handleClick() {
+        this.$store.commit('visibility/setSubTasksOptionsVisibility', {})
       }
     },
     created() {
@@ -170,6 +173,7 @@ import rightCheck from '@/helpers/RightCheck'
         this.menuToggle()
         this.$refs.menu.addEventListener('click', this.menuToggle);
       }
+      document.addEventListener('click', this.handleClick)
     },
     updated() {
       if (this.$store.getters['rights/getComponenetsVisibility'] == 0) {
@@ -192,6 +196,7 @@ import rightCheck from '@/helpers/RightCheck'
     },
     beforeUnmount() {
       this.$refs.menu.removeEventListener('click', this.menuToggle)
+      document.removeEventListener('click', this.handleClick)
     },
   }
 </script>

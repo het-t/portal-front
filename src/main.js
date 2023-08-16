@@ -53,13 +53,17 @@ import { faListCheck,
         faIndianRupee,
         faXmark,
         faGreaterThan,
-        faLessThan
+        faLessThan,
+        faCaretDown,
+        faBookmark as faBookmarkSolid,
+        faCrosshairs,
     } from '@fortawesome/free-solid-svg-icons'
 
 import {
     faThumbsUp,
     faThumbsDown,
-    faPaperPlane
+    faPaperPlane,
+    faBookmark
 } from '@fortawesome/free-regular-svg-icons'
 
 library.add(
@@ -103,7 +107,11 @@ library.add(
     faClipboardList,
     faIndianRupee,
     faGreaterThan,
-    faLessThan
+    faLessThan,
+    faCaretDown,
+    faBookmark,
+    faBookmarkSolid,
+    faCrosshairs
 )
 
 let app = createApp(App)

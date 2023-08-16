@@ -133,7 +133,7 @@
 
 <script setup>
 import VueMultiselect from 'vue-multiselect'
-import {watch, reactive, onMounted, computed, defineProps, defineEmits} from 'vue'
+import {watch, reactive, computed, defineProps, defineEmits} from 'vue'
 import { useStore } from 'vuex'
 
 const state = reactive({
@@ -323,38 +323,6 @@ function componentPromiseGenerator() {
     }
     return Promise.resolve()
 }
-
-onMounted(() => {
-    console.log(getSubTasks.value)
-    // const subTasksData = ''
-
-    // if (subTasksData !== undefined && subTasksData !== '') {  
-    //     state.unqId = subTasksData.length    
-
-    //     for(let i = 0; i<subTasksData.length; i++) {
-    //         if (subTasksData[i].statusId?.id === undefined) {
-    //             subTasksData[i].statusId = subTasksStatuses.value.find((status) => 
-    //             status.id === subTasksData[i].statusId
-    //         )
-    //         }
-
-    //         if (typeof subTasksData[i].assignedTo?.[0] === "number") {
-    //             subTasksData[i].assignedTo = subTasksData[i].assignedTo.map(userId => {
-    //                 return getUsers.value.find(user => user.id == userId)
-    //             })
-    //         }
-    //         else if (subTasksData[i].assignedTo === null ) subTasksData[i].assignedTo = []
-    //     }
-    //     state.subTasks = subTasksData
-    // }
-
-    // if (state.subTasks.length === 1 && state.subTasks[0].description === '_#_*&^') {
-    //     emits("popUpVisibilityChanged", {
-    //         visibility: true,
-    //         subTask: state.subTasks[0]
-    //     })
-    // }
-})
 </script>
 
 <style scoped>

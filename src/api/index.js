@@ -53,6 +53,7 @@ const tasks = {
     editSubTask: (args) => makePatchReq(endpoints.tasks + '/' + args.taskId + '/sub-tasks/' + args.subTaskId + '/description' , {description: args.description}),
     deleteSubTask: (args) => makeDeleteReq(endpoints.tasks + '/' + args.taskId + '/sub-tasks/' + args.subTaskId),
     changeSubTaskStatus: (args) => makePatchReq(endpoints.tasks + '/' + args.taskId + '/sub-tasks/' + args.subTaskId + '/status', {statusId: args.statusId}),
+    changeSubTaskPinStatus: (args) => makePatchReq(endpoints.tasks + '/' + args.taskId + '/sub-tasks/' + args.subTaskId + '/pin', {isPinned: args.isPinned}),
     
     getLogs: (args) => makeGetReq(endpoints.tasks + '/' + args.taskId + '/logs'),
     
@@ -94,7 +95,7 @@ const subTasksMaster = {
 
 const myTasks = {
     count: (args) => makeGetReq(endpoints.myTasks + '/count', args),
-    getList: (args) => makeGetReq(endpoints.myTasks, args),
+    getList: () => makeGetReq(endpoints.myTasks),
     changeStatus: (args) => makePatchReq(endpoints.myTasks + '/' + args.taskId + '/status', args),
     changeTags: (args) => makePatchReq(endpoints.myTasks + '/' + args.taskId + '/tags', args)
 }

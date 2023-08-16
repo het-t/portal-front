@@ -75,7 +75,6 @@ function editPayment() {
     const comments = paymentCommentRef.value.innerText?.toLowerCase()
     const receivedAt = new Date(state.receivedAt)?.toISOString()?.slice(0, 19)?.replace('T', ' ')
     let type= state.type?.toLowerCase()
-    console.log(state.amount, props.type, type, amount)
 
     tasks.editPayment({
         taskId: props.taskId,

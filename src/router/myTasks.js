@@ -16,7 +16,7 @@ const routes = {
             path: '',
             alias: 'list',
             name: 'my_tasks_list',
-            component: () => import('@/components/MyTasksList.vue'),
+            component: () => import('@/views/MyTasksView.vue'),
             meta: {
                 breadcrumb: breadcrumb.list
             }

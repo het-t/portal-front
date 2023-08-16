@@ -1,4 +1,5 @@
 import { tags, tasks } from "@/api"
+import parseSubTaskStatus from "@/helpers/parseSubTaskStatus"
 import formatFilters from "@/helpers/storeFiltersFormater"
 
 const state = {
@@ -33,6 +34,9 @@ const state = {
 }
 
 const getters = {
+    getVisibility(state) {
+        return state.visibility
+    },
     getSubTasksStatuses(state) {
         return state.subTasksStatuses
     },
@@ -83,6 +87,17 @@ const getters = {
 }
 
 const mutations = {
+    setVisibility(state, {
+        subTaskDelegationOptions = false, 
+        subTaskTagsOptions = false, 
+        subTaskStatusOptions = false
+    }) {
+        state.visibility = {
+            subTaskStatusOptions,
+            subTaskDelegationOptions,
+            subTaskTagsOptions
+        }
+    },
     //
     setData(state, {taskId, taskData}) {
         state.tasksData[taskId] = taskData
@@ -109,7 +124,7 @@ const mutations = {
         state.subTasksData[taskId]?.push(data)
     },
     editSubTaskDescription(state, {taskId, subTaskId, description}) {
-        state.subTasksData[taskId].find((subTask) => { 
+        state?.subTasksData?.[taskId]?.find((subTask) => { 
             if (subTask.id === subTaskId) subTask.description = description
         })  
     },
@@ -153,8 +168,9 @@ const mutations = {
 const actions = {
     fetchSubTasksTags({getters, commit}, {force = false}) {
         return new Promise((resolve, reject) => {
-            const storedSubTasksStatuses = getters['getSubTasksTags']
-            if(!storedSubTasksStatuses?.length || force === true) {
+            const tagsInStore = getters['getSubTasksTags']
+
+            if(!tagsInStore?.length || force === true) {
                 tags.getList(20)
                 .then((res) => {
                     commit('setSubTasksTags', res.data)
@@ -295,31 +311,7 @@ const actions = {
                     subTasks = subTasks.map((subTask) => {
                         subTask.delegation = JSON.parse(subTask.delegation)
 
-                        if (
-                            subTask.delegation[0].parentId === null 
-                            && 
-                            subTask.delegation[0].childId === null
-                        ) {
-                            subTask.delegation = []
-                            subTask.status = {id: 1, name: 'to do'}
-                        }
-                        else {
-                            let usersDelegationLink = subTask.delegation.find((delegation) => {
-                                return delegation.parentId === subTask.userId
-                            })
-                            
-                            // if user is not assigned but still have access to that sub-tasks
-                            // user must be in team of task
-                            if (!usersDelegationLink) {
-                                usersDelegationLink = subTask.delegation.find((link) => {
-                                    return link.childId === null
-                                })
-                            }
-
-                            subTask.status = getters['getSubTasksStatuses'].find((status) => {
-                                return status.id === usersDelegationLink.statusId
-                            })
-                        }
+                        parseSubTaskStatus(subTask)
 
                         if (subTask.tags == null) subTask.tags = []
                         else subTask.tags = JSON.parse(subTask.tags).map((tagId) => {

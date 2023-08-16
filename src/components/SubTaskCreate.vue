@@ -93,6 +93,12 @@ function editSubTask() {
             subTaskId: props.subTaskId,
             description: subTaskDescription
         })
+
+        store.commit('myTasks/editSubTaskDescription', {
+            subTaskId: props.subTaskId,
+            description: subTaskDescription
+        })
+
         emit('done')
     })
     .catch(() => {

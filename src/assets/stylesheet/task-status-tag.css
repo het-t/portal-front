@@ -4,8 +4,7 @@
     align-items: center;
     gap: 6px;
 }
-.task-status .indicator,
-.sub-task-status.indicator {
+.task-status .indicator {
     width: 9px;
     height: 9px;
     border-radius: 5px;
