@@ -10,7 +10,6 @@ import usersRoutes from './users.js'
 import tasksTemplateRoutes from './tasksTemplate.js'
 import settingsRoutes from './settings.js'
 import workDiaryRoutes from './workDiary.js'
-import tagsRoutes from './tags.js'
 
 let AdminPanelOrgListBreadcrumb = {
   title: 'Organizations',
@@ -75,7 +74,7 @@ let routesNew = [
       tasksRoutes,
       tasksTemplateRoutes,
       workDiaryRoutes,
-      tagsRoutes,
+      // tagsRoutes,
       activityRoutes,
       settingsRoutes,
       {

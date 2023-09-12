@@ -281,7 +281,7 @@ function changeSubTaskPinStatus(subTask) {
     @click.stop.self="setVisibility({status: subTask.id})"
     :class="subTask.status?.name?.replaceAll(' ', '')?.toLowerCase()"
     class="sub-task-ele"
-    style="display: flex; align-items: center; gap: 6px; width: 100%;"
+    style="display: flex; align-items: center; gap: 6px;"
 >
     <div
         style="margin-left: 6px; margin-bottom: 13px; margin-top: 6px; display: flex; flex-direction: column; gap: 3px;"

@@ -1,4 +1,5 @@
 <script setup>
+import swal from "sweetalert";
 import { computed, inject, nextTick, onMounted, reactive, ref } from "vue";
 import { useStore } from "vuex";
 import { tasks } from "../api/index.js";
@@ -60,6 +61,32 @@ function addComment() {
         state.disableButtons = false
     })
 }
+
+function deleteComment(comment) {
+    swal({
+        icon: 'warning',
+        title: 'Alert',
+        text: `Do you really want to delete "${comment.comment}"`,
+        buttons: true,
+        dangerMode: true
+    })
+    .then(value => {
+        if (value == null) throw null
+        
+        comment.isActive = 0
+        
+        return tasks.deleteComment({
+            taskId: props.taskId,
+            commentId: comment.id
+        })
+    })
+    .then(() => {
+        toast.success('Saved')
+    })
+    .catch((err) => {
+        if (err !== null) toast.error(`Oops! We can't perform this action right now`)
+    })
+}
 </script>
 
 <template>
@@ -107,18 +134,39 @@ function addComment() {
                     v-for="(comment, index) in comments"
                     :key="index"
                     style="display: flex; gap: 13px;"
+                    class="comment-ele"
                 >
 
                     <div>
-                        <font-awesome-icon 
-                            :icon="['fas', 'user']" 
-                        />
+                        <font-awesome-icon
+                            v-if="store.getters['images/getProfilePic'](`${comment.user?.id}_50x50`) == undefined ||
+                                store.getters['images/getProfilePic'](`${comment.user?.id}_50x50`) == ''"
+                            class="profile-pic" style="border-radius: 100%; width: 16px; height: 16px;"
+                            :icon="['fas', 'user']"
+                        ></font-awesome-icon>
+
+                        <img v-else :src="store.getters['images/getProfilePic'](`${comment.user.id}_50x50`)"
+                            loading="lazy" style="width: 22px; height: 22px; border-radius: 100%;"
+                        >
                     </div>
 
                     <div>
-                        {{comment.comment}}
+                        <div 
+                            :style="comment.isActive === 0 ? 'text-decoration: line-through; color: rgba(103, 106, 108, 0.5);' : ''"
+                            style="font-size: 13px;"
+                        >
+                            {{ comment.comment }}
 
-                        <span class="secondary-timestamp">
+                            <font-awesome-icon 
+                                @click.stop="deleteComment(comment)"
+                                :icon="['fas', 'trash']"
+                                class="show-on-hover"
+                                v-if="comment.isActive === 1"
+                            />
+                        </div>
+
+    
+                        <span style="display: inline;" class="secondary-text show-on-hover">
                             {{ comment.user.firstName + ' ' + comment.user.lastName }}
                             {{ new Date(new Date(comment.datetime).toISOString().replaceAll('T', ' ').replaceAll('Z', ' ')).toLocaleString() }}
                         </span>
@@ -132,6 +180,13 @@ function addComment() {
 <style scoped>
 div[contenteditable="true"]:empty::after {
     content: "Type Your Comment";
+}
+.show-on-hover {
+    display: none;
+    cursor: pointer;
+}
+.comment-ele:hover .show-on-hover {
+    display: inline;
 }
 button {
     padding: 6px !important;

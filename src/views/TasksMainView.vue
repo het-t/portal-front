@@ -35,7 +35,7 @@
         <div style="flex-grow: 1;">
             <task-comments
                 :task-id="parseInt(route.params.taskId)"
-                style="padding: 13px; background-color: white; border: solid 1px #e0e0e0;"
+                style="min-width: 300px; padding: 13px; background-color: white; border: solid 1px #e0e0e0;"
             />
         </div>
     </div>

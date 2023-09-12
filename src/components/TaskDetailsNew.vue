@@ -41,9 +41,9 @@ function componentPromiseGenerator() {
                     {{ getTaskDataFromStore.description ? getTaskDataFromStore.description.toLowerCase() : 'N/A'}}
                 </span>
 
-                <span>
+                <span v-if="getTaskDataFromStore.taskTemplate !== null">
                     <font-awesome-icon :icon="['fas', 'clipboard-list']"></font-awesome-icon>
-                    {{ getTaskDataFromStore.taskTemplate ? getTaskDataFromStore.taskTemplate?.toLowerCase() : 'N/A'}}
+                    {{ getTaskDataFromStore.taskTemplate?.toLowerCase() }}
                 </span>
             </div>
         </div>

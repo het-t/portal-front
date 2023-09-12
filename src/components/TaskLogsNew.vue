@@ -62,7 +62,7 @@ onMounted(function () {
 
                         {{ log.msg }}
 
-                        <span class="secondary-timestamp">
+                        <span class="secondary-text">
                             {{ log.user?.firstName + ' ' + log.user?.lastName }}
                             {{new Date(new Date(log.timestamp).toISOString().replaceAll('T', ' ').replaceAll('Z', ' ')).toLocaleString()}}
                         </span>

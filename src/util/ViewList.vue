@@ -82,6 +82,10 @@ const props = defineProps({
 watch(
     () => props.dataRaw,
     (newValue) => {
+        state.data = {}
+        state.data['Pinned'] = []
+        state.data['No Category'] = []
+        
         if (props.categories?.length > 0) state.categories.push(...props.categories)
         state.categories.unshift('Pinned')
         state.categories.push('No Category')
@@ -127,7 +131,7 @@ function groupDataRawByCategory(dataRaw) {
     for(let i = 0; i!==dataRaw.length; i++ ) {
         const record = dataRaw[i]
         
-        if (record[props.pathToPin] == true) {
+        if (record?.[props.pathToPin] == true) {
             state.data['Pinned'].push(record)
         }
         

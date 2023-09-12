@@ -278,6 +278,8 @@ function removePayment(paymentId, title, type, amount) {
     background-color: rgba(74, 73, 72, 0.2);
 }
 .payment-list-ele .status {
+    min-height: 8px;
+    min-width: 8px;
     height: 8px;
     width: 8px;
     border-radius: 8px;

@@ -66,6 +66,7 @@ onMounted(() => {
         state.title = props.title
         state.amount = props.amount
         state.receivedAt = (props.receivedAt !== null ? new Date(props.receivedAt) : null)
+        state.subTaskId = props.subTaskId
     })
 })
 

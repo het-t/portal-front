@@ -59,6 +59,7 @@ const tasks = {
     
     getComments: (args) => makeGetReq(endpoints.tasks + '/' + args.taskId + '/comments'),
     addComment: (args) => makePostReq(endpoints.tasks + '/' + args.taskId + '/comments', {comment: args.comment}),
+    deleteComment: (args) => makeDeleteReq(endpoints.tasks + '/' + args.taskId + "/comments/" + args.commentId),
     
     getDelegation: (args) => makeGetReq(endpoints.tasks + '/' + args.taskId + '/sub-tasks/' + args.subTaskId + '/delegation/'),
     addDelegationLink: (args) => makePostReq(endpoints.tasks + '/' + args.taskId + '/sub-tasks/' + args.subTaskId + '/delegation/', {parentUserId: args.parentUserId, childUserId: args.childUserId}),

@@ -16,7 +16,7 @@ const mutations = {
     },
     addComment(state, {taskId, data}) {
         state.list[taskId].unshift(data)
-    }
+    },
 }
 
 const actions = {
